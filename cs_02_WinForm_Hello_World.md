@@ -1,5 +1,4 @@
-<h1><b>결과물</b></h1>
-
+<h2><b>버튼 클릭시 동작</b></h2>
 ![screeenshot](https://github.com/user-attachments/assets/19ccacf8-eddb-4704-aadd-79ca39ea9e56)
 
 
