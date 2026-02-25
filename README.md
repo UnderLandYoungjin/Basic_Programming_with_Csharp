@@ -11,10 +11,7 @@
 
 # 허영진 (YoungJin Huh)
 
-**AI · 임베디드 · 제어 전문가**
-
-[🌐 프로필 페이지(효과 버전) 보기](./docs/index.html)
-
+**AI · 임베디드 · 제어 **
 </div>
 
 ---
@@ -70,9 +67,3 @@
 - FDM 3D프린팅
 
 ---
-
-## 📌 Notes
-- GitHub README는 보안 정책상 `<style>` / CSS 애니메이션 / 커스텀 스타일 대부분이 제한됩니다.
-- 시각 효과(그리드/네온/hover/애니메이션)를 유지하려면 `docs/index.html`을 만들고 GitHub Pages로 공개하는 방식이 가장 안정적입니다.
-</body>
-</html>
