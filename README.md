@@ -1,4 +1,4 @@
-# Basic Programming with C 폴리텍 하이테크과정 # 
+# Basic Programming with C# 폴리텍 하이테크과정 # 
 ##  강의 및 담당강사 소개 ##
 
 
