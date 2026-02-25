@@ -1,5 +1,8 @@
 # Basic_Programming_with_Csharp
 폴리텍하이테크과정 기본프로그래밍 강의
+
+![my_picture](https://github.com/user-attachments/assets/2eb000ca-20bf-40cd-8fb7-18ca414b2663)
+
 <img width="786" height="410" alt="image" src="https://github.com/user-attachments/assets/25a36bec-a4e1-4ca7-bec3-9233424ad762" />
 [profile_huh_youngjin.html](https://github.com/user-attachments/files/25541156/profile_huh_youngjin.html)
 <!DOCTYPE html>
