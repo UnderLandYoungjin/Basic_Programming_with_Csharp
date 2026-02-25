@@ -16,20 +16,20 @@
 
 ---
 
-## 🎓 Education
+##  Education
 - **부경대학교 지능로봇공학 석사**
   - AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 ---
 
-## 📜 Certifications
+##  Certifications
 - 전기기능장
 - 정보처리기사
 - FDM 3D프린팅 관련 자격
 
 ---
 
-## 💼 Career
+##  Career
 1. UnderLand 제품개발 및 소싱
 2. 산업용 제어반 및 PLC 시스템 실무
 3. 한·중 기술무역 및 기계 부품 소싱 경험
