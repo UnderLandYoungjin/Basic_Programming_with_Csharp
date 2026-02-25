@@ -1,3 +1,7 @@
+결과물
+![screeenshot](https://github.com/user-attachments/assets/19ccacf8-eddb-4704-aadd-79ca39ea9e56)
+
+
 <img width="1365" height="906" alt="image" src="https://github.com/user-attachments/assets/3e36b6af-72e7-4220-bb15-f2fb498bdb5c" />
 <img width="1365" height="908" alt="image" src="https://github.com/user-attachments/assets/5d0b2a64-8b05-438b-bc42-dc9f65558e48" />
 GUI를 사용하기 위해 보기-도구상자 클릭
@@ -10,4 +14,3 @@ GUI를 사용하기 위해 보기-도구상자 클릭
 
 cs_01_WinForm_Hello_World.cs코드 참조할것
 <img width="812" height="486" alt="image" src="https://github.com/user-attachments/assets/ab3c2fae-ed25-4a1e-a70e-0a97d4b16288" />
-![screeenshot](https://github.com/user-attachments/assets/19ccacf8-eddb-4704-aadd-79ca39ea9e56)
