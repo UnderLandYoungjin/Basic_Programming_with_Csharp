@@ -92,7 +92,6 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 **🌐 Web / Dashboard**
 
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white)
 
 </td>
