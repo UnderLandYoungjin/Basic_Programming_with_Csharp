@@ -1,7 +1,6 @@
 # Basic_Programming_with_Csharp
 폴리텍하이테크과정 기본프로그래밍 강의
 
-![my_picture](https://github.com/user-attachments/assets/2eb000ca-20bf-40cd-8fb7-18ca414b2663)
 <!-- 파일: README.md -->
 <!-- 목적: GitHub에서 안전하게 렌더링되는 강사 프로필(마크다운+제한된 HTML) -->
 <!-- 주의: GitHub는 style/script를 차단하므로, 네온/애니메이션/CSS 효과는 README에서 재현 불가 -->
