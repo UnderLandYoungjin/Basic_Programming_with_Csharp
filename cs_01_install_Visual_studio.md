@@ -14,4 +14,8 @@ https://visualstudio.microsoft.com/ko/downloads/
 
 ---
 
-<img width="957" height="485" alt="image" src="https://github.com/user-attachments/assets/2fe9495b-4282-48d6-a144-4e92dfa1666b" />
+<img width="966" height="493" alt="image" src="https://github.com/user-attachments/assets/d1ddbabc-7ae9-429a-b4bb-c54083377cf4" />
+
+---
+
+<img width="958" height="491" alt="image" src="https://github.com/user-attachments/assets/1e43743a-8cb3-4377-8b0b-4b075bca3090" />
