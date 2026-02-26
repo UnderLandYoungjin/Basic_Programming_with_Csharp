@@ -14,7 +14,7 @@ using System;
 
 class Hello   // class명을 입력하는 것으로 시작합니다.
 {
-    public static void Main()
+    public static void Main()  //Main 메소드 안에 동작시킬 코드를 입력합니다.
     {
         Console.WriteLine("Hello, World!");   // 문자열을 화면에 표시합니다.
     }
