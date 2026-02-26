@@ -9,7 +9,7 @@
 <img src="https://github.com/user-attachments/assets/2eb000ca-20bf-40cd-8fb7-18ca414b2663" width="130" alt="허영진 프로필"/>
 
 ### 허영진 · YoungJin Huh
-
+내가 좋아하는 일이 다른 사람에게도 행복이 되기를 바랍니다.
 **AI | 임베디드 | 제어시스템**
 
 --- 
