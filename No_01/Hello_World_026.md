@@ -10,24 +10,40 @@
 ## 💻 소스 코드
 
 ```csharp
-using System;
+using System;   // Console 클래스를 사용하기 위해 System 네임스페이스를 가져옵니다.
 
-class Hello   // class명을 입력하는 것으로 시작합니다.
+class Hello     // Hello라는 이름의 클래스를 정의합니다. (프로그램의 기본 단위)
 {
-    public static void Main()  //Main 메소드 안에 동작시킬 코드를 입력합니다.
+    // 프로그램이 시작되는 메서드(Main 메서드)
+    // public  : 외부에서도 접근 가능
+    // static  : 객체 생성 없이 실행 가능
+    // void    : 반환값이 없음
+    public static void Main()
     {
-        Console.WriteLine("Hello, World!");   // 문자열을 화면에 표시합니다.
+        // Console.WriteLine()
+        // Console : 콘솔(출력창) 기능을 제공하는 클래스
+        // WriteLine : 한 줄을 출력하고 줄바꿈을 수행하는 메서드
+        Console.WriteLine("Hello, World!"); // 화면에 "Hello, World!"를 출력합니다.
     }
 }
 ```
 
 ```csharp
-namespace ConsoleApp5
+using System;   // Console 기능을 사용하기 위해 System 네임스페이스를 포함합니다.
+
+namespace ConsoleApp5   // 프로젝트 이름과 동일한 네임스페이스 정의 (코드 영역 구분용)
 {
+    // internal : 같은 프로젝트 내부에서만 접근 가능
+    // class    : Program이라는 클래스 정의
     internal class Program
     {
+        // static : 객체 생성 없이 실행 가능
+        // void   : 반환값 없음
+        // Main   : 프로그램 시작 지점 (Entry Point)
+        // string[] args : 실행 시 전달되는 명령줄 인수를 저장하는 배열
         static void Main(string[] args)
         {
+            // 콘솔 창에 문자열 출력
             Console.WriteLine("Hello, World!");
         }
     }
