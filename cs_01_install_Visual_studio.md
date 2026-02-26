@@ -19,3 +19,25 @@ https://visualstudio.microsoft.com/ko/downloads/
 ---
 
 <img width="958" height="491" alt="image" src="https://github.com/user-attachments/assets/1e43743a-8cb3-4377-8b0b-4b075bca3090" />
+
+---
+
+<img width="1009" height="595" alt="image" src="https://github.com/user-attachments/assets/96e18873-75e6-4ec7-a04a-309cd329e3fc" />
+
+---
+
+<img width="1142" height="536" alt="image" src="https://github.com/user-attachments/assets/396571a8-8b79-40ff-95bb-bffc47de66ab" />
+
+---
+
+<img width="1118" height="527" alt="image" src="https://github.com/user-attachments/assets/f2563aeb-8a3f-47e3-932d-ec1b0623eece" />
+
+---
+
+<img width="1126" height="443" alt="image" src="https://github.com/user-attachments/assets/688ae8b9-e8b8-4b2a-ba94-68b160a1b9ba" />
+
+---
+프로젝트 생성후 솔루션 탐색기에서 consoleApp1에 마우스 우클릭 -> 속성 -> 전역  using의 암시적 전체 사용 체크 해제(명시적 using문 사용 위함)
+
+<img width="1122" height="737" alt="image" src="https://github.com/user-attachments/assets/b5e5193e-856a-4039-9463-22236337539d" />
+
