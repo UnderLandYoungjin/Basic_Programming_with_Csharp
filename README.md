@@ -11,10 +11,19 @@
 ### 허영진 · YoungJin Huh
 
 **AI | 임베디드 | 제어시스템**
+
 ---
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/UnderLandYoungjin)
-[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:maker@underland.co.kr)
-[![Naver Cafe](https://img.shields.io/badge/Naver_Cafe-03C75A?style=for-the-badge&logo=naver&logoColor=white)](https://cafe.naver.com/underfusion)
+<a href="https://github.com/UnderLandYoungjin" target="_blank">
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+</a>
+
+<a href="mailto:maker@underland.co.kr" target="_blank">
+  <img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white">
+</a>
+
+<a href="https://cafe.naver.com/underfusion" target="_blank">
+  <img src="https://img.shields.io/badge/Naver_Cafe-03C75A?style=for-the-badge&logo=naver&logoColor=white">
+</a>
 ---
 
 ## 📌 과정 소개
