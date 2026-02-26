@@ -21,6 +21,20 @@ class Hello   // class명을 입력하는 것으로 시작합니다.
 }
 ```
 
+```csharp
+namespace ConsoleApp5
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}
+```
+
+
 ---
 
 ## 🔍 코드 구조 설명
