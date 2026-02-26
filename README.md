@@ -6,7 +6,7 @@
 
 <div align="center">
   
-##  강의 및 담당강사 소개 ##
+##   담당강사 및 강의소개 ##
   
 <img src="https://github.com/user-attachments/assets/2eb000ca-20bf-40cd-8fb7-18ca414b2663" width="130" alt="허영진 프로필"/>
 
