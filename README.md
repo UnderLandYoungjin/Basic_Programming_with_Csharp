@@ -1,11 +1,13 @@
 # Basic Programming with C# (한국폴리텍VII대학 부산캠퍼스) # 
-##  강의 및 담당강사 소개 ##
+
 
 
 ---
 
 <div align="center">
-
+  
+##  강의 및 담당강사 소개 ##
+  
 <img src="https://github.com/user-attachments/assets/2eb000ca-20bf-40cd-8fb7-18ca414b2663" width="130" alt="허영진 프로필"/>
 
 ### 허영진 · YoungJin Huh
