@@ -41,3 +41,28 @@ https://visualstudio.microsoft.com/ko/downloads/
 
 <img width="1122" height="737" alt="image" src="https://github.com/user-attachments/assets/b5e5193e-856a-4039-9463-22236337539d" />
 
+---
+
+제대로 설치 되었는지 확인을 위해 Hello, World! 출력이 되는지 확인
+
+---
+
+<img width="1888" height="532" alt="image" src="https://github.com/user-attachments/assets/89552c73-867d-40de-a3a3-4054ddc27fa3" />
+
+---
+
+<img width="1502" height="683" alt="image" src="https://github.com/user-attachments/assets/8a2433fe-316f-462c-91cd-ad6f747a1635" />
+
+---
+
+
+<img width="1865" height="588" alt="image" src="https://github.com/user-attachments/assets/de99b242-750a-46bd-acb4-4b1bca559b60" />
+
+---
+
+Hello, World! 출력이 된다는것은 C# 실행 환경이 정상임을 의미
+
+<img width="1507" height="767" alt="image" src="https://github.com/user-attachments/assets/873a01b0-c214-444d-ad91-f29b8b37d51b" />
+
+
+
