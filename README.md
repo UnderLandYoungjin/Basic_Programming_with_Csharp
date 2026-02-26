@@ -11,9 +11,17 @@
 ### 허영진 · YoungJin Huh
 
 **AI | 임베디드 | 제어시스템**
+<a href="https://github.com/UnderLandYoungjin">
+  <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" height="60">
+</a>
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/UnderLandYoungjin)
-[![Email](https://img.shields.io/badge/Email-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:maker@underland.co.kr)
+<a href="mailto:maker@underland.co.kr">
+  <img src="https://img.shields.io/badge/Email-EA4335?style=flat-square&logo=gmail&logoColor=white" height="60">
+</a>
+
+<a href="https://cafe.naver.com/카페주소">
+  <img src="https://img.shields.io/badge/Naver_Cafe-03C75A?style=flat-square&logo=naver&logoColor=white" height="60">
+</a>
 
 </div>
 
