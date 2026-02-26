@@ -14,8 +14,7 @@
 
 --- 
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/UnderLandYoungjin) 
-[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:maker@underland.co.kr) 
+
 [![Naver Cafe](https://img.shields.io/badge/Naver_Cafe-03C75A?style=for-the-badge&logo=naver&logoColor=white)](https://cafe.naver.com/underfusion) 
 
 ---
