@@ -30,6 +30,7 @@ class Hello   // class명을 입력하는 것으로 시작합니다.
 | `using System;` | 시스템 기능(입출력 등)을 사용하기 위한 네임스페이스 선언 |
 | `class Hello` | 프로그램의 기본 단위인 **클래스** 정의. 클래스명은 자유롭게 지정 가능 |
 | `public static void Main()` | 프로그램이 시작되는 **진입점(Entry Point)** 메서드 |
+| `Console.Write(...)` | 괄호 안의 **문자열을 화면에 출력** |
 | `Console.WriteLine(...)` | 괄호 안의 **문자열을 화면에 출력**하고 줄바꿈 |
 
 ---
