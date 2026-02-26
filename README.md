@@ -20,6 +20,8 @@
 
 [![Naver Cafe](https://img.shields.io/badge/Naver_Cafe-03C75A?style=for-the-badge&logo=naver&logoColor=white)](https://cafe.naver.com/underfusion) 
 
+위의 배너를 클릭하면 네이버 카페로 이동합니다.
+
 ---
 
 ## 📌 과정 소개
