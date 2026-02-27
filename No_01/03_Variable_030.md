@@ -198,9 +198,9 @@ class Hello
 {
     public static void Main()
     {
-        float   a = 3.14f;          // float 리터럴은 f를 붙임
-        double  b = 3.141592653589; // double은 기본 실수형
-        decimal c = 3.14159265358979323846m; // decimal은 m을 붙임
+        float   a = 3.14f;
+        double  b = 3.141592653589;
+        decimal c = 3.14159265358979323846m;
 
         Console.WriteLine($"float   : {a}");
         Console.WriteLine($"double  : {b}");
@@ -261,7 +261,7 @@ class Hello
         count = 10;
         Console.WriteLine($"변경 후 : {count}");
 
-        count = count + 5;  // 현재 값에 5를 더해서 다시 저장
+        count = count + 5;
         Console.WriteLine($"5 더한 후 : {count}");
     }
 }
@@ -284,7 +284,7 @@ class Hello
 {
     public static void Main()
     {
-        string name    = "홍길동";   // 문자열 (추후 학습)
+        string name    = "홍길동";
         int    age     = 25;
         double height  = 172.3;
         float  weight  = 68.5f;
@@ -329,8 +329,6 @@ class Hello
 
 ## 📝 문제
 
-> 💡 **정답 확인 방법:** 정답 부분을 **마우스로 드래그**하면 텍스트가 나타납니다.
-
 ---
 
 ### 문제 1
@@ -350,9 +348,14 @@ class Hello
 }
 ```
 
-**정답:**
+<details>
+<summary>정답 보기</summary>
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; font-family:monospace; display:inline-block;">30</span>
+```
+30
+```
+
+</details>
 
 ---
 
@@ -367,9 +370,12 @@ class Hello
 ④ int score 1 = 100;
 ```
 
-**정답:**
+<details>
+<summary>정답 보기</summary>
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; display:inline-block; min-width:300px;">② int score_1 = 100; — 영문자, 숫자, 언더바(_)만 사용 가능하고 숫자로 시작하지 않으며 예약어가 아닌 것</span>
+② `int score_1 = 100;` — 영문자, 숫자, 언더바(`_`)만 사용 가능하고 숫자로 시작하지 않으며 예약어가 아닌 것
+
+</details>
 
 ---
 
@@ -381,9 +387,14 @@ class Hello
 float pi = ________;
 ```
 
-**정답:**
+<details>
+<summary>정답 보기</summary>
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; font-family:monospace; display:inline-block;">3.14f</span>
+```csharp
+float pi = 3.14f;
+```
+
+</details>
 
 ---
 
@@ -398,9 +409,12 @@ float pi = ________;
 ④ 3000000000
 ```
 
-**정답:**
+<details>
+<summary>정답 보기</summary>
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; display:inline-block; min-width:400px;">④ 3000000000 — int의 최댓값은 약 21억(2,147,483,647)이므로 30억은 범위를 초과합니다. long을 사용해야 합니다.</span>
+④ `3000000000` — `int`의 최댓값은 약 21억(2,147,483,647)이므로 30억은 범위를 초과합니다. `long`을 사용해야 합니다.
+
+</details>
 
 ---
 
@@ -421,9 +435,15 @@ class Hello
 }
 ```
 
-**정답:**
+<details>
+<summary>정답 보기</summary>
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; display:inline-block; min-width:500px;">① Int → int (C#의 기본 자료형은 소문자)　② age = 20 뒤에 세미콜론(;) 누락　③ float height = 175.5; → float height = 175.5f; (float 리터럴에는 f를 붙여야 함)　④ Console.WriteLine("나이: " age); → Console.WriteLine("나이: " + age); (문자열 연결 연산자 + 누락)</span>
+① `Int` → `int` (C#의 기본 자료형은 소문자)  
+② `age = 20` 뒤에 세미콜론(`;`) 누락  
+③ `float height = 175.5;` → `float height = 175.5f;` (float 리터럴에는 `f`를 붙여야 함)  
+④ `Console.WriteLine("나이: " age);` → `Console.WriteLine("나이: " + age);` (문자열 연결 연산자 `+` 누락)
+
+</details>
 
 ---
 
