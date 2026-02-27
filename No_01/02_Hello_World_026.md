@@ -174,10 +174,10 @@ class Hello
 
 <details>
 <summary>정답 보기 (클릭)</summary>
-```
+<pre>
 Hello
 World
-```
+</pre>
 
 </details>
 
