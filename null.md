@@ -1,6 +1,8 @@
+<div align="center">
+
 # Basic Programming with C# (한국폴리텍VII대학 부산캠퍼스) #
 
-
+</div>
 
 ---
 
@@ -105,6 +107,10 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 ## 📂 강의 목차
 
+<table align="center">
+<tr>
+<td>
+
 ```
 Basic_Programming_with_Csharp/
 │
@@ -114,6 +120,10 @@ Basic_Programming_with_Csharp/
 ├── 04_Collections/     ← 배열, List, Dictionary
 └── 05_Practice/        ← 실습 문제, 미니 프로젝트
 ```
+
+</td>
+</tr>
+</table>
 
 ---
 
