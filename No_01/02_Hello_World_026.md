@@ -7,7 +7,6 @@
 ---
 
 ## 💻 소스 코드
-
 ```csharp
 using System;   // Console 클래스를 사용하기 위해 System 네임스페이스를 가져옵니다.
 class Hello     // Hello라는 이름의 클래스를 정의합니다. (프로그램의 기본 단위)
@@ -25,7 +24,6 @@ class Hello     // Hello라는 이름의 클래스를 정의합니다. (프로�
     }
 }
 ```
-
 ```csharp
 using System;   // Console 기능을 사용하기 위해 System 네임스페이스를 포함합니다.
 namespace ConsoleApp5   // 프로젝트 이름과 동일한 네임스페이스 정의 (코드 영역 구분용)
@@ -62,7 +60,6 @@ namespace ConsoleApp5   // 프로젝트 이름과 동일한 네임스페이스 �
 ---
 
 ## ▶️ 실행 결과
-
 ```
 Hello, World!
 ```
@@ -83,7 +80,6 @@ Hello, World!
 ### 예제 1 — 이름을 바꿔서 출력해보기
 
 `"Hello, World!"` 대신 원하는 문자열로 바꿔서 출력해봅니다.
-
 ```csharp
 using System;
 class Hello
@@ -108,7 +104,6 @@ My name is C#.
 
 `Console.Write()` 는 줄바꿈 없이 이어서 출력하고,
 `Console.WriteLine()` 은 출력 후 줄바꿈을 합니다.
-
 ```csharp
 using System;
 class Hello
@@ -134,7 +129,6 @@ Hello, World!
 ### 예제 3 — 여러 줄 출력하기
 
 `Console.WriteLine()` 을 여러 번 사용하면 여러 줄을 출력할 수 있습니다.
-
 ```csharp
 using System;
 class Hello
@@ -159,14 +153,11 @@ class Hello
 
 ## 📝 문제
 
-> 💡 **정답 확인 방법:** 정답 부분을 **마우스로 드래그**하면 텍스트가 나타납니다.
-
 ---
 
 ### 문제 1
 
 다음 코드에서 화면에 출력되는 결과는 무엇인가요?
-
 ```csharp
 using System;
 class Hello
@@ -181,25 +172,20 @@ class Hello
 
 **정답:**
 
-<span style="background-color:#000000; color:#FFFFFF; padding:4px 12px; border-radius:4px; font-family:monospace; display:inline-block;">
-Hello<br>World
-</span>
-
 <details>
 <summary>정답 보기 (클릭)</summary>
-
-Hello  
+```
+Hello
 World
+```
 
 </details>
-
 
 ---
 
 ### 문제 2
 
 다음 코드의 실행 결과는 무엇인가요?
-
 ```csharp
 using System;
 class Hello
@@ -216,7 +202,14 @@ class Hello
 
 **정답:**
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; font-family:monospace; display:inline-block;">C# is fun!<br>Done.</span>
+<details>
+<summary>정답 보기 (클릭)</summary>
+```
+C# is fun!
+Done.
+```
+
+</details>
 
 ---
 
@@ -226,14 +219,19 @@ class Hello
 
 **정답:**
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; display:inline-block; min-width:500px;">Console.Write()는 출력 후 줄바꿈을 하지 않아 다음 출력이 같은 줄에 이어집니다. Console.WriteLine()은 출력 후 자동으로 줄바꿈하여 다음 출력이 새 줄에서 시작됩니다.</span>
+<details>
+<summary>정답 보기 (클릭)</summary>
+
+`Console.Write()`는 출력 후 줄바꿈을 하지 않아 다음 출력이 같은 줄에 이어집니다.  
+`Console.WriteLine()`은 출력 후 자동으로 줄바꿈하여 다음 출력이 새 줄에서 시작됩니다.
+
+</details>
 
 ---
 
 ### 문제 4
 
 아래 빈칸을 채워 `Hello, C#!` 이 출력되도록 코드를 완성하세요.
-
 ```csharp
 using System;
 class Hello
@@ -247,14 +245,19 @@ class Hello
 
 **정답:**
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; font-family:monospace; display:inline-block;">WriteLine</span>
+<details>
+<summary>정답 보기 (클릭)</summary>
+```
+WriteLine
+```
+
+</details>
 
 ---
 
 ### 문제 5
 
 다음 코드에서 **잘못된 부분**을 모두 찾아 수정하세요.
-
 ```csharp
 using System
 class Hello
@@ -268,7 +271,15 @@ class Hello
 
 **정답:**
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; display:inline-block; min-width:500px;">① using System 뒤에 세미콜론(;) 누락 → using System;　② console → Console (C#은 대소문자 구분)　③ writeline → WriteLine (대소문자 구분)　④ Console.WriteLine("Hello, World!") 뒤에 세미콜론(;) 누락</span>
+<details>
+<summary>정답 보기 (클릭)</summary>
+
+① `using System` 뒤에 세미콜론(`;`) 누락 → `using System;`  
+② `console` → `Console` (C#은 대소문자 구분)  
+③ `writeline` → `WriteLine` (대소문자 구분)  
+④ `Console.WriteLine("Hello, World!")` 뒤에 세미콜론(`;`) 누락
+
+</details>
 
 ---
 
