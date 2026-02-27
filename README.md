@@ -105,28 +105,6 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 ---
 
-## 📂 강의 목차
-
-<table align="center">
-<tr>
-<td>
-
-```
-Basic_Programming_with_Csharp/
-│
-├── 01_Basics/          ← 변수, 자료형, 연산자, 조건문, 반복문
-├── 02_Methods/         ← 함수(메서드), 매개변수, 반환, 오버로딩
-├── 03_OOP/             ← 클래스, 객체, 상속, 인터페이스, 예외처리
-├── 04_Collections/     ← 배열, List, Dictionary
-└── 05_Practice/        ← 실습 문제, 미니 프로젝트
-```
-
-</td>
-</tr>
-</table>
-
----
-
 ## 📌 과정 소개
 
 | 항목 | 내용 |
@@ -138,19 +116,28 @@ Basic_Programming_with_Csharp/
 
 ---
 
+## 🎯 강의목표
+
+-  C#의 기본 문법, 자료형, 제어문, 배열 등을 이해하고 콘솔 기반 프로그램을 작성할 수 있다.
+-  메서드와 클래스 구조를 이해하고 객체지향 개념을 활용하여 프로그램을 설계·구현할 수 있다.
+-  Windows Forms를 활용하여 이벤트 기반 GUI 프로그램을 구현하고 종합 프로젝트를 완성할 수 있다.
+
+---
+
 ## 🗓️ 주차별 학습 내용
 
-| 주차 | 주제 | 핵심 키워드 |
-|:----:|:----:|:----:|
-| 1주 | 개발 환경 세팅 | Visual Studio, .NET, Hello World |
-| 2주 | 자료형과 변수 | int, string, bool, var |
-| 3주 | 입출력과 연산 | Console.WriteLine, 연산자 |
-| 4주 | 조건문과 반복문 | if, switch, for, while |
-| 5주 | 메서드 | 정의, 매개변수, 반환값 |
-| 6주 | 클래스와 객체 | OOP, 생성자, 접근제한자 |
-| 7주 | 상속과 인터페이스 | inheritance, interface |
-| 8주 | 컬렉션 | Array, List, Dictionary |
-| 9~10주 | 실습 프로젝트 | 미니 프로젝트 |
+| 주차 | 강의 및 실습 내용 | 핵심 키워드 |
+|:----:|:----------------|:----:|
+| 1주 | C# 개발환경 구축 및 기본 구조 이해 | Visual Studio, .NET, Hello World |
+| 2주 | 변수, 자료형, 연산자 실습 | int, string, bool, var |
+| 3주 | 입출력 처리 및 형변환 실습 | Console.WriteLine, Convert, 캐스팅 |
+| 4주 | 조건문과 반복문 제어 | if, switch, for, while |
+| 5주 | 배열과 문자열 처리 | Array, string 메서드 |
+| 6주 | 메서드 정의와 호출 | 정의, 매개변수, 반환값, 오버로딩 |
+| 7주 | 클래스와 객체지향 개념 이해 | OOP, 생성자, 접근제한자 |
+| 8주 | 상속, 인터페이스 및 컬렉션 활용 | inheritance, interface, List, Dictionary |
+| 9주 | Windows Forms 기초 및 이벤트 처리 | Form, Button, TextBox, EventHandler |
+| 10주 | GUI 기반 종합 프로젝트 구현 | 미니 프로젝트 |
 
 ---
 
