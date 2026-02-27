@@ -19,7 +19,8 @@
 
 <div align="center">
 
-[<img width="320" alt="naver_cafe_banner" src="https://github.com/user-attachments/assets/445bcbba-43ff-4796-bb69-f93638b7226b">](https://cafe.naver.com/underfusion)
+[<img width="320" alt="naver_cafe_banner" src="https://github.com/user-attachments/assets/c803d8b1-6a3b-40f9-a607-c8882430cdd3">](https://cafe.naver.com/underfusion)
+
 
 위의 배너를 클릭하면 네이버 카페로 이동합니다.
 
