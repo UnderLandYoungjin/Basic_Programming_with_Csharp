@@ -15,12 +15,15 @@
 
 **AI | 임베디드 | 제어시스템**
 
---- 
+---
 
+<div align="center">
 
-[![Naver Cafe](https://img.shields.io/badge/Naver_Cafe-03C75A?style=for-the-badge&logo=naver&logoColor=white)](https://cafe.naver.com/underfusion) 
+[![Naver Cafe](https://img.shields.io/badge/NAVER_CAFE-03C75A?style=for-the-badge&logo=naver&logoColor=white)](https://cafe.naver.com/underfusion)
 
 위의 배너를 클릭하면 네이버 카페로 이동합니다.
+
+</div>
 
 ---
 
