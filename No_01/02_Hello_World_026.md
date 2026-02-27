@@ -185,6 +185,15 @@ class Hello
 Hello<br>World
 </span>
 
+<details>
+<summary>정답 보기 (클릭)</summary>
+
+Hello  
+World
+
+</details>
+
+
 ---
 
 ### 문제 2
