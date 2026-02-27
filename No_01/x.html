@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>C# 첫 번째 프로그램 — Hello, World!</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0d0d14;
+      --surface:   #13131f;
+      --surface2:  #1c1c2e;
+      --border:    #2a2a40;
+      --border2:   #38385a;
+      --accent:    #7c6af7;
+      --accent2:   #a78bfa;
+      --green:     #4ade80;
+      --red:       #f87171;
+      --yellow:    #fbbf24;
+      --cyan:      #67e8f9;
+      --text:      #e2e0ff;
+      --muted:     #6b6b9a;
+      --comment:   #4a4a72;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ── 상단 헤더 ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d14 0%, #1a1030 50%, #0d0d14 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 50%, rgba(124,106,247,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 80% 30%, rgba(167,139,250,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124,106,247,0.15);
+      border: 1px solid rgba(124,106,247,0.35);
+      color: var(--accent2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 40%, #e879f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ── 네비게이션 탭 ── */
+    .nav-tabs {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,13,20,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 24px;
+    }
+    .nav-tab {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 7px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+      background: var(--surface2);
+      border-color: var(--border);
+    }
+    .nav-tab.active {
+      color: var(--accent2);
+      background: rgba(124,106,247,0.12);
+      border-color: rgba(124,106,247,0.35);
+    }
+
+    /* ── 레이아웃 ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── 섹션 ── */
+    .section {
+      margin-bottom: 40px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(124,106,247,0.15);
+      border: 1px solid rgba(124,106,247,0.3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── 개요 카드 ── */
+    .overview-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 28px;
+      font-size: 15px;
+      color: #c4c4e0;
+      line-height: 1.8;
+    }
+    .overview-card strong {
+      color: #e879f9;
+    }
+
+    /* ── 코드 블록 ── */
+    .code-block {
+      margin-bottom: 20px;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #1e1e30;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 10px 16px;
+    }
+    .code-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .code-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+    }
+    .code-dot.r { background: #f87171; }
+    .code-dot.y { background: #fbbf24; }
+    .code-dot.g { background: #4ade80; }
+    .code-lang {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-left: auto;
+    }
+    .code-label-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: rgba(124,106,247,0.2);
+      color: var(--accent2);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    pre.code-body {
+      background: #111120;
+      border: 1px solid var(--border);
+      border-top: 1px solid #2a2a3f;
+      border-radius: 0 0 10px 10px;
+      padding: 22px 24px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      line-height: 1.8;
+      color: #cdd6f4;
+    }
+    /* 문법 하이라이팅 */
+    .kw   { color: #89b4fa; }
+    .cl   { color: #a6e3a1; }
+    .str  { color: #f38ba8; }
+    .cm   { color: var(--comment); font-style: italic; }
+    .mn   { color: #fab387; }
+    .ns   { color: #cba6f7; }
+
+    /* ── 결과 박스 ── */
+    .result-box {
+      background: #0a1a0f;
+      border: 1px solid #1a3a22;
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 22px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: var(--green);
+      position: relative;
+    }
+    .result-box::before {
+      content: 'OUTPUT';
+      position: absolute;
+      top: -1px; right: 14px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--green);
+      background: #0a1a0f;
+      padding: 0 6px;
+    }
+
+    /* ── 테이블 ── */
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .styled-table th {
+      background: #1c1c30;
+      color: var(--accent2);
+      font-weight: 700;
+      padding: 12px 18px;
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+    .styled-table td {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      color: #c4c4e0;
+      vertical-align: top;
+    }
+    .styled-table tr:hover td { background: #18182a; }
+    .styled-table code {
+      background: #1c1c2e;
+      color: #89b4fa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    /* ── 핵심 포인트 ── */
+    .keypoints {
+      display: grid;
+      gap: 10px;
+    }
+    .keypoint {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      transition: border-color 0.2s;
+    }
+    .keypoint:hover { border-color: var(--border2); }
+    .kp-dot {
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .keypoint p { font-size: 14px; color: #c4c4e0; }
+    .keypoint code {
+      background: #1c1c2e;
+      color: #89b4fa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+
+    /* ── 예제 카드 ── */
+    .example-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    .example-card:hover { border-color: var(--border2); }
+    .example-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: #17172a;
+      border-bottom: 1px solid var(--border);
+    }
+    .ex-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(124,106,247,0.2);
+      color: var(--accent2);
+      padding: 2px 9px;
+      border-radius: 5px;
+    }
+    .example-card-header h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .example-body {
+      padding: 20px;
+    }
+    .example-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+    .example-desc code {
+      background: #1c1c2e;
+      color: #89b4fa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+
+    /* ── 문제 카드 ── */
+    .quiz-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    .quiz-card:hover { border-color: var(--border2); }
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: #17172a;
+      border-bottom: 1px solid var(--border);
+    }
+    .quiz-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #7c6af7, #a78bfa);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 5px;
+    }
+    .quiz-header h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .quiz-body {
+      padding: 20px;
+    }
+    .quiz-question {
+      font-size: 14.5px;
+      color: #c4c4e0;
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .quiz-question code {
+      background: #1c1c2e;
+      color: #89b4fa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── 정답 가림 ── */
+    .answer-section {
+      margin-top: 16px;
+    }
+    .answer-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(124,106,247,0.1);
+      border: 1px solid rgba(124,106,247,0.3);
+      color: var(--accent2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+    .answer-toggle-btn:hover {
+      background: rgba(124,106,247,0.2);
+      border-color: rgba(124,106,247,0.5);
+    }
+    .answer-toggle-btn .btn-icon { font-size: 13px; transition: transform 0.3s; }
+    .answer-toggle-btn.open .btn-icon { transform: rotate(180deg); }
+
+    .answer-box {
+      background: #0d0d1a;
+      border: 1px dashed var(--border2);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-size: 14px;
+      color: #cdd6f4;
+      line-height: 1.8;
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .answer-box.visible { display: block; }
+    .answer-box.code-answer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--green);
+      background: #0a1a0f;
+      border-color: #1a3a22;
+    }
+    .answer-box ol {
+      padding-left: 20px;
+    }
+    .answer-box ol li {
+      margin-bottom: 6px;
+      color: #c4c4e0;
+    }
+    .answer-box code {
+      background: #1c1c2e;
+      color: #89b4fa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+    .answer-label-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .answer-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .answer-divider {
+      flex: 1;
+      height: 1px;
+      background: #1a3a22;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── 팁 박스 ── */
+    .tip-box {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #1a1410;
+      border: 1px solid #3a2e1a;
+      border-left: 3px solid var(--yellow);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: #c4b4a0;
+      line-height: 1.7;
+      margin-top: 10px;
+    }
+    .tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .tip-box code {
+      background: #2a2010;
+      color: var(--yellow);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+    .tip-box strong { color: var(--yellow); }
+
+    /* ── 구분선 ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* ── 스크롤바 ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">🟣 C# 입문 · Lesson 01</div>
+  <h1>Hello, World!</h1>
+  <p>C# 프로그램의 기본 구조를 이해하는 첫 번째 예제</p>
+</div>
+
+<!-- 네비게이션 탭 -->
+<nav class="nav-tabs">
+  <a class="nav-tab active" href="#overview">📌 개요</a>
+  <a class="nav-tab" href="#code">💻 소스코드</a>
+  <a class="nav-tab" href="#structure">🔍 구조설명</a>
+  <a class="nav-tab" href="#points">📝 핵심포인트</a>
+  <a class="nav-tab" href="#examples">🧪 예제</a>
+  <a class="nav-tab" href="#quiz">📝 문제</a>
+</nav>
+
+<div class="container">
+
+  <!-- 개요 -->
+  <div class="section" id="overview">
+    <div class="section-header">
+      <div class="section-icon">📌</div>
+      <h2>개요</h2>
+    </div>
+    <div class="overview-card">
+      프로그램을 설치했다면, 가장 먼저 만들어 볼 것은 <strong>"Hello, World!"</strong>를 출력하는 간단한 프로그램입니다.<br>
+      이 예제를 통해 C# 프로그램의 <strong>기본 구조</strong>를 이해할 수 있습니다.
+    </div>
+  </div>
+
+  <!-- 소스 코드 -->
+  <div class="section" id="code">
+    <div class="section-header">
+      <div class="section-icon">💻</div>
+      <h2>소스 코드</h2>
+    </div>
+
+    <!-- 코드 1 -->
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots">
+          <div class="code-dot r"></div>
+          <div class="code-dot y"></div>
+          <div class="code-dot g"></div>
+        </div>
+        <span class="code-label-tag">간단 버전</span>
+        <span class="code-lang">C#</span>
+      </div>
+      <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;   <span class="cm">// Console 클래스를 사용하기 위해 System 네임스페이스를 가져옵니다.</span>
+
+<span class="kw">class</span> <span class="cl">Hello</span>     <span class="cm">// Hello라는 이름의 클래스를 정의합니다. (프로그램의 기본 단위)</span>
+{
+    <span class="cm">// 프로그램이 시작되는 메서드(Main 메서드)</span>
+    <span class="cm">// public  : 외부에서도 접근 가능</span>
+    <span class="cm">// static  : 객체 생성 없이 실행 가능</span>
+    <span class="cm">// void    : 반환값이 없음</span>
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span class="cm">// Console.WriteLine()</span>
+        <span class="cm">// Console : 콘솔(출력창) 기능을 제공하는 클래스</span>
+        <span class="cm">// WriteLine : 한 줄을 출력하고 줄바꿈을 수행하는 메서드</span>
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"Hello, World!"</span>); <span class="cm">// 화면에 "Hello, World!"를 출력합니다.</span>
+    }
+}</pre>
+    </div>
+
+    <!-- 코드 2 -->
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots">
+          <div class="code-dot r"></div>
+          <div class="code-dot y"></div>
+          <div class="code-dot g"></div>
+        </div>
+        <span class="code-label-tag">Visual Studio 기본 템플릿</span>
+        <span class="code-lang">C#</span>
+      </div>
+      <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;   <span class="cm">// Console 기능을 사용하기 위해 System 네임스페이스를 포함합니다.</span>
+
+<span class="kw">namespace</span> <span class="ns">ConsoleApp5</span>   <span class="cm">// 프로젝트 이름과 동일한 네임스페이스 정의 (코드 영역 구분용)</span>
+{
+    <span class="cm">// internal : 같은 프로젝트 내부에서만 접근 가능</span>
+    <span class="cm">// class    : Program이라는 클래스 정의</span>
+    <span class="kw">internal class</span> <span class="cl">Program</span>
+    {
+        <span class="cm">// static : 객체 생성 없이 실행 가능</span>
+        <span class="cm">// void   : 반환값 없음</span>
+        <span class="cm">// Main   : 프로그램 시작 지점 (Entry Point)</span>
+        <span class="cm">// string[] args : 실행 시 전달되는 명령줄 인수를 저장하는 배열</span>
+        <span class="kw">static void</span> <span class="mn">Main</span>(<span class="kw">string</span>[] args)
+        {
+            <span class="cm">// 콘솔 창에 문자열 출력</span>
+            <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"Hello, World!"</span>);
+        }
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- 코드 구조 설명 -->
+  <div class="section" id="structure">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <h2>코드 구조 설명</h2>
+    </div>
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>구성 요소</th>
+          <th>설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>using System;</code></td>
+          <td>시스템 기능(입출력 등)을 사용하기 위한 네임스페이스 선언</td>
+        </tr>
+        <tr>
+          <td><code>class Hello</code></td>
+          <td>프로그램의 기본 단위인 <strong>클래스</strong> 정의. 클래스명은 자유롭게 지정 가능</td>
+        </tr>
+        <tr>
+          <td><code>public static void Main()</code></td>
+          <td>프로그램이 시작되는 <strong>진입점(Entry Point)</strong> 메서드</td>
+        </tr>
+        <tr>
+          <td><code>Console.Write(...)</code></td>
+          <td>괄호 안의 <strong>문자열을 화면에 출력</strong> (줄바꿈 없음)</td>
+        </tr>
+        <tr>
+          <td><code>Console.WriteLine(...)</code></td>
+          <td>괄호 안의 <strong>문자열을 화면에 출력</strong>하고 줄바꿈</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <br>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">▶️ 실행 결과</p>
+    <div class="result-box">Hello, World!</div>
+  </div>
+
+  <!-- 핵심 포인트 -->
+  <div class="section" id="points">
+    <div class="section-header">
+      <div class="section-icon">📝</div>
+      <h2>핵심 포인트</h2>
+    </div>
+    <div class="keypoints">
+      <div class="keypoint">
+        <div class="kp-dot"></div>
+        <p>C# 프로그램은 반드시 <code>class</code> 안에 작성합니다.</p>
+      </div>
+      <div class="keypoint">
+        <div class="kp-dot"></div>
+        <p>프로그램은 항상 <code>Main()</code> 메서드에서 시작됩니다.</p>
+      </div>
+      <div class="keypoint">
+        <div class="kp-dot"></div>
+        <p><code>Console.WriteLine()</code> 은 텍스트를 출력할 때 가장 자주 사용하는 메서드입니다.</p>
+      </div>
+      <div class="keypoint">
+        <div class="kp-dot"></div>
+        <p>문장 끝에는 반드시 <strong>세미콜론 <code>;</code></strong> 을 붙입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- 예제 -->
+  <div class="section" id="examples">
+    <div class="section-header">
+      <div class="section-icon">🧪</div>
+      <h2>예제</h2>
+    </div>
+
+    <!-- 예제 1 -->
+    <div class="example-card">
+      <div class="example-card-header">
+        <span class="ex-num">예제 01</span>
+        <h3>이름을 바꿔서 출력해보기</h3>
+      </div>
+      <div class="example-body">
+        <p class="example-desc"><code>"Hello, World!"</code> 대신 원하는 문자열로 바꿔서 출력해봅니다. 한글도 출력할 수 있습니다.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
+            <span class="code-lang">C#</span>
+          </div>
+          <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;
+<span class="kw">class</span> <span class="cl">Hello</span>
+{
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"안녕하세요, C#!"</span>);   <span class="cm">// 한글도 출력 가능합니다.</span>
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"My name is C#."</span>);
+    }
+}</pre>
+        </div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">▶️ 실행 결과</p>
+        <div class="result-box">안녕하세요, C#!<br>My name is C#.</div>
+      </div>
+    </div>
+
+    <!-- 예제 2 -->
+    <div class="example-card">
+      <div class="example-card-header">
+        <span class="ex-num">예제 02</span>
+        <h3>Write 와 WriteLine 차이</h3>
+      </div>
+      <div class="example-body">
+        <p class="example-desc">
+          <code>Console.Write()</code> 는 줄바꿈 없이 이어서 출력하고,
+          <code>Console.WriteLine()</code> 은 출력 후 줄바꿈을 합니다.
+        </p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
+            <span class="code-lang">C#</span>
+          </div>
+          <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;
+<span class="kw">class</span> <span class="cl">Hello</span>
+{
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span class="cl">Console</span>.<span class="mn">Write</span>(<span class="str">"Hello, "</span>);       <span class="cm">// 줄바꿈 없이 이어서 출력</span>
+        <span class="cl">Console</span>.<span class="mn">Write</span>(<span class="str">"World!"</span>);        <span class="cm">// 같은 줄에 이어서 출력</span>
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>();            <span class="cm">// 줄바꿈만 수행</span>
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"다음 줄입니다."</span>);
+    }
+}</pre>
+        </div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">▶️ 실행 결과</p>
+        <div class="result-box">Hello, World!<br>다음 줄입니다.</div>
+      </div>
+    </div>
+
+    <!-- 예제 3 -->
+    <div class="example-card">
+      <div class="example-card-header">
+        <span class="ex-num">예제 03</span>
+        <h3>여러 줄 출력하기</h3>
+      </div>
+      <div class="example-body">
+        <p class="example-desc"><code>Console.WriteLine()</code> 을 여러 번 사용하면 여러 줄을 출력할 수 있습니다.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
+            <span class="code-lang">C#</span>
+          </div>
+          <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;
+<span class="kw">class</span> <span class="cl">Hello</span>
+{
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"==================="</span>);
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"  C# 프로그래밍 시작  "</span>);
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"==================="</span>);
+    }
+}</pre>
+        </div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">▶️ 실행 결과</p>
+        <div class="result-box">===================<br>&nbsp;&nbsp;C# 프로그래밍 시작<br>===================</div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- 문제 -->
+  <div class="section" id="quiz">
+    <div class="section-header">
+      <div class="section-icon">📝</div>
+      <h2>문제</h2>
+    </div>
+
+    <div class="tip-box" style="margin-bottom:28px;">
+      <span class="tip-icon">💡</span>
+      <span><strong>정답 확인 방법:</strong> 각 문제 아래의 <strong>[ 정답 보기 ]</strong> 버튼을 클릭하면 정답이 나타납니다.</span>
+    </div>
+
+    <!-- 문제 1 -->
+    <div class="quiz-card">
+      <div class="quiz-header">
+        <span class="quiz-num">Q 01</span>
+        <h3>출력 결과 맞히기</h3>
+      </div>
+      <div class="quiz-body">
+        <p class="quiz-question">다음 코드에서 화면에 출력되는 결과는 무엇인가요?</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
+            <span class="code-lang">C#</span>
+          </div>
+          <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;
+<span class="kw">class</span> <span class="cl">Hello</span>
+{
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"Hello"</span>);
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"World"</span>);
+    }
+}</pre>
+        </div>
+        <div class="answer-section">
+          <button class="answer-toggle-btn" onclick="toggleAnswer(this)">
+            <span class="btn-icon">▼</span> 정답 보기
+          </button>
+          <div class="answer-box code-answer">
+            <div class="answer-label-row">
+              <span class="answer-label">✓ OUTPUT</span>
+              <div class="answer-divider"></div>
+            </div>
+Hello
+World
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문제 2 -->
+    <div class="quiz-card">
+      <div class="quiz-header">
+        <span class="quiz-num">Q 02</span>
+        <h3>Write / WriteLine 혼합 출력</h3>
+      </div>
+      <div class="quiz-body">
+        <p class="quiz-question">다음 코드의 실행 결과는 무엇인가요?</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
+            <span class="code-lang">C#</span>
+          </div>
+          <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;
+<span class="kw">class</span> <span class="cl">Hello</span>
+{
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span class="cl">Console</span>.<span class="mn">Write</span>(<span class="str">"C#"</span>);
+        <span class="cl">Console</span>.<span class="mn">Write</span>(<span class="str">" is"</span>);
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">" fun!"</span>);
+        <span class="cl">Console</span>.<span class="mn">WriteLine</span>(<span class="str">"Done."</span>);
+    }
+}</pre>
+        </div>
+        <div class="answer-section">
+          <button class="answer-toggle-btn" onclick="toggleAnswer(this)">
+            <span class="btn-icon">▼</span> 정답 보기
+          </button>
+          <div class="answer-box code-answer">
+            <div class="answer-label-row">
+              <span class="answer-label">✓ OUTPUT</span>
+              <div class="answer-divider"></div>
+            </div>
+C# is fun!
+Done.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문제 3 -->
+    <div class="quiz-card">
+      <div class="quiz-header">
+        <span class="quiz-num">Q 03</span>
+        <h3>개념 설명</h3>
+      </div>
+      <div class="quiz-body">
+        <p class="quiz-question"><code>Console.Write()</code> 와 <code>Console.WriteLine()</code> 의 차이를 설명하세요.</p>
+        <div class="answer-section">
+          <button class="answer-toggle-btn" onclick="toggleAnswer(this)">
+            <span class="btn-icon">▼</span> 정답 보기
+          </button>
+          <div class="answer-box">
+            <div class="answer-label-row">
+              <span class="answer-label" style="color:var(--accent2);">✓ 정답</span>
+              <div class="answer-divider" style="background:var(--border2);"></div>
+            </div>
+            <ul style="padding-left:18px; color:#c4c4e0; line-height:1.9;">
+              <li><code>Console.Write()</code> — 출력 후 <strong>줄바꿈을 하지 않습니다.</strong> 다음 출력이 같은 줄에 이어집니다.</li>
+              <li><code>Console.WriteLine()</code> — 출력 후 <strong>자동으로 줄바꿈</strong>하여 다음 출력이 새 줄에서 시작됩니다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문제 4 -->
+    <div class="quiz-card">
+      <div class="quiz-header">
+        <span class="quiz-num">Q 04</span>
+        <h3>빈칸 채우기</h3>
+      </div>
+      <div class="quiz-body">
+        <p class="quiz-question">아래 빈칸을 채워 <code>Hello, C#!</code> 이 출력되도록 코드를 완성하세요.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
+            <span class="code-lang">C#</span>
+          </div>
+          <pre class="code-body"><span class="kw">using</span> <span class="cl">System</span>;
+<span class="kw">class</span> <span class="cl">Hello</span>
+{
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span class="cl">Console</span>.<span style="background:#2a2a10; color:#fbbf24; padding:0 4px; border-radius:3px;">________</span>(<span class="str">"Hello, C#!"</span>);
+    }
+}</pre>
+        </div>
+        <div class="answer-section">
+          <button class="answer-toggle-btn" onclick="toggleAnswer(this)">
+            <span class="btn-icon">▼</span> 정답 보기
+          </button>
+          <div class="answer-box code-answer">
+            <div class="answer-label-row">
+              <span class="answer-label">✓ 정답</span>
+              <div class="answer-divider"></div>
+            </div>
+Console.<strong style="color:#fbbf24;">WriteLine</strong>("Hello, C#!");
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문제 5 -->
+    <div class="quiz-card">
+      <div class="quiz-header">
+        <span class="quiz-num">Q 05</span>
+        <h3>오류 찾기</h3>
+      </div>
+      <div class="quiz-body">
+        <p class="quiz-question">다음 코드에서 <strong>잘못된 부분</strong>을 모두 찾아 수정하세요.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
+            <span class="code-label-tag" style="background:rgba(248,113,113,0.15); color:#f87171; border:1px solid rgba(248,113,113,0.3);">오류 코드</span>
+            <span class="code-lang">C#</span>
+          </div>
+          <pre class="code-body"><span style="color:#f87171;">using System</span>         <span class="cm">← ❶</span>
+<span class="kw">class</span> <span class="cl">Hello</span>
+{
+    <span class="kw">public static void</span> <span class="mn">Main</span>()
+    {
+        <span style="color:#f87171;">console</span>.<span style="color:#f87171;">writeline</span>(<span class="str">"Hello, World!"</span>)   <span class="cm">← ❷ ❸ ❹</span>
+    }
+}</pre>
+        </div>
+        <div class="answer-section">
+          <button class="answer-toggle-btn" onclick="toggleAnswer(this)">
+            <span class="btn-icon">▼</span> 정답 보기
+          </button>
+          <div class="answer-box">
+            <div class="answer-label-row">
+              <span class="answer-label" style="color:var(--accent2);">✓ 정답 (4가지 오류)</span>
+              <div class="answer-divider" style="background:var(--border2);"></div>
+            </div>
+            <ol style="padding-left:20px; line-height:2; color:#c4c4e0;">
+              <li>❶ <code>using System</code> 뒤에 세미콜론 누락 → <code>using System<strong style="color:#4ade80;">;</strong></code></li>
+              <li>❷ <code>console</code> → 대문자로 <code><strong style="color:#4ade80;">Console</strong></code> (C#은 대소문자 구분)</li>
+              <li>❸ <code>writeline</code> → 대문자로 <code><strong style="color:#4ade80;">WriteLine</strong></code> (대소문자 구분)</li>
+              <li>❹ <code>Console.WriteLine(...)</code> 뒤에 세미콜론 누락 → 끝에 <code><strong style="color:#4ade80;">;</strong></code> 추가</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 팁 -->
+    <div class="tip-box">
+      <span class="tip-icon">📌</span>
+      <span>C#은 <strong>대소문자를 구분</strong>합니다. <code>console</code> 과 <code>Console</code> 은 전혀 다른 것으로 인식됩니다!</span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleAnswer(btn) {
+    const box = btn.nextElementSibling;
+    const isOpen = box.classList.contains('visible');
+    box.classList.toggle('visible');
+    btn.classList.toggle('open');
+    btn.innerHTML = isOpen
+      ? '<span class="btn-icon">▼</span> 정답 보기'
+      : '<span class="btn-icon">▼</span> 정답 닫기';
+  }
+
+  // 네비게이션 탭 활성화
+  const tabs = document.querySelectorAll('.nav-tab');
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tabs.forEach(t => {
+          t.classList.toggle('active', t.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
