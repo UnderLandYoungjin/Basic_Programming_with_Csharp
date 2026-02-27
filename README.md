@@ -1,6 +1,6 @@
 <div align="center">
 
-# Basic Programming with C# (한국폴리텍VII대학 부산캠퍼스) #
+## Basic Programming with C# (한국폴리텍VII대학 부산캠퍼스) ##
 
 </div>
 
