@@ -181,7 +181,9 @@ class Hello
 
 **정답:**
 
-<span style="background-color:#000000; color:#000000; padding:4px 12px; border-radius:4px; user-select:text; font-family:monospace; display:inline-block;">Hello<br>World</span>
+<span style="background-color:#000000; color:#FFFFFF; padding:4px 12px; border-radius:4px; font-family:monospace; display:inline-block;">
+Hello<br>World
+</span>
 
 ---
 
