@@ -1,0 +1,826 @@
+# 🟣 C# 제4강 — 배열 (Array)
+
+## 📌 개요
+**배열(Array)** 은 **같은 자료형의 여러 값**을 **하나의 변수**에 묶어서 저장하는 자료구조입니다.  
+예를 들어, 학생 5명의 점수를 저장할 때 변수를 5개 만드는 대신, 배열 하나로 한꺼번에 관리할 수 있습니다.
+
+---
+
+## 1. 배열 선언과 초기화
+
+### 📌 배열 선언 방법
+
+```
+자료형[] 변수이름 = new 자료형[크기];
+```
+
+```csharp
+int[]    scores  = new int[5];      // 정수형 배열, 5칸
+string[] names   = new string[3];   // 문자열 배열, 3칸
+double[] prices  = new double[4];   // 실수형 배열, 4칸
+```
+
+> 💡 배열을 선언하면 각 칸은 자료형의 **기본값**으로 채워집니다.  
+> - `int` → `0`, `double` → `0.0`, `string` → `null`, `bool` → `false`
+
+---
+
+### 📌 값과 함께 초기화
+
+선언과 동시에 값을 넣을 수 있습니다.
+
+```csharp
+// 방법 1: new 키워드 사용
+int[] scores = new int[] { 90, 85, 78, 92, 88 };
+
+// 방법 2: 크기 생략 (값의 개수로 자동 결정)
+int[] scores = new int[5] { 90, 85, 78, 92, 88 };
+
+// 방법 3: 간략하게 초기화 (가장 많이 사용) ✅ 권장
+int[] scores = { 90, 85, 78, 92, 88 };
+```
+
+```csharp
+string[] names = { "홍길동", "김철수", "이영희" };
+double[] prices = { 1500.0, 3200.5, 800.0 };
+```
+
+---
+
+## 2. 배열 요소 접근 (인덱스)
+
+배열의 각 칸은 **인덱스(Index)** 로 접근합니다.  
+인덱스는 **0부터 시작**합니다.
+
+```
+배열이름[인덱스]
+```
+
+```csharp
+int[] scores = { 90, 85, 78, 92, 88 };
+
+//  인덱스:    0    1    2    3    4
+//  값:       90   85   78   92   88
+```
+
+### 📌 배열 요소 읽기
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 90, 85, 78, 92, 88 };
+
+        Console.WriteLine(scores[0]); // 90
+        Console.WriteLine(scores[1]); // 85
+        Console.WriteLine(scores[4]); // 88
+    }
+}
+```
+
+**실행 결과**
+```
+90
+85
+88
+```
+
+---
+
+### 📌 배열 요소 수정
+
+인덱스를 지정하여 값을 변경할 수 있습니다.
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 90, 85, 78, 92, 88 };
+
+        scores[2] = 100;  // 78 → 100으로 변경
+
+        Console.WriteLine(scores[2]); // 100
+    }
+}
+```
+
+**실행 결과**
+```
+100
+```
+
+> ⚠️ **주의:** 배열의 범위를 벗어난 인덱스에 접근하면 **IndexOutOfRangeException** 오류가 발생합니다.
+>
+> ```csharp
+> int[] arr = { 1, 2, 3 };
+> Console.WriteLine(arr[5]); // ❌ 오류! 인덱스 0~2만 유효
+> ```
+
+---
+
+## 3. 배열의 길이 (Length)
+
+`.Length` 속성으로 배열의 크기(요소 개수)를 알 수 있습니다.
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 90, 85, 78, 92, 88 };
+
+        Console.WriteLine(scores.Length); // 5
+    }
+}
+```
+
+**실행 결과**
+```
+5
+```
+
+---
+
+## 4. 배열과 반복문 (for / foreach)
+
+### 📌 for 반복문으로 배열 순회
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 90, 85, 78, 92, 88 };
+
+        for (int i = 0; i < scores.Length; i++)
+        {
+            Console.WriteLine($"scores[{i}] = {scores[i]}");
+        }
+    }
+}
+```
+
+**실행 결과**
+```
+scores[0] = 90
+scores[1] = 85
+scores[2] = 78
+scores[3] = 92
+scores[4] = 88
+```
+
+---
+
+### 📌 foreach 반복문으로 배열 순회 ✅ 권장
+
+인덱스 없이 요소를 하나씩 꺼내 사용할 때 편리합니다.
+
+```
+foreach (자료형 변수 in 배열이름)
+{
+    // 반복할 코드
+}
+```
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        string[] names = { "홍길동", "김철수", "이영희" };
+
+        foreach (string name in names)
+        {
+            Console.WriteLine($"이름: {name}");
+        }
+    }
+}
+```
+
+**실행 결과**
+```
+이름: 홍길동
+이름: 김철수
+이름: 이영희
+```
+
+> 💡 **for vs foreach**
+> - `for` : 인덱스가 필요할 때, 요소를 수정할 때 사용
+> - `foreach` : 단순히 모든 요소를 읽을 때 사용 (더 간결)
+
+---
+
+## 5. 배열 활용 예제
+
+### 📌 배열 합계 / 평균 구하기
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 90, 85, 78, 92, 88 };
+        int sum = 0;
+
+        foreach (int score in scores)
+        {
+            sum += score;
+        }
+
+        double average = (double)sum / scores.Length;
+
+        Console.WriteLine($"합계: {sum}");
+        Console.WriteLine($"평균: {average}");
+    }
+}
+```
+
+**실행 결과**
+```
+합계: 433
+평균: 86.6
+```
+
+---
+
+### 📌 배열에서 최댓값 / 최솟값 찾기
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 90, 85, 78, 92, 88 };
+        int max = scores[0];
+        int min = scores[0];
+
+        for (int i = 1; i < scores.Length; i++)
+        {
+            if (scores[i] > max) max = scores[i];
+            if (scores[i] < min) min = scores[i];
+        }
+
+        Console.WriteLine($"최댓값: {max}");
+        Console.WriteLine($"최솟값: {min}");
+    }
+}
+```
+
+**실행 결과**
+```
+최댓값: 92
+최솟값: 78
+```
+
+---
+
+## 6. 다차원 배열 (2D Array)
+
+**2차원 배열**은 행(row)과 열(column)로 구성된 표(Table) 형태의 배열입니다.
+
+### 📌 2차원 배열 선언과 초기화
+
+```
+자료형[,] 변수이름 = new 자료형[행 수, 열 수];
+```
+
+```csharp
+// 3행 2열 배열
+int[,] matrix = new int[3, 2];
+
+// 초기화와 함께 선언
+int[,] matrix = {
+    { 1, 2 },
+    { 3, 4 },
+    { 5, 6 }
+};
+```
+
+### 📌 2차원 배열 접근
+
+```
+배열이름[행 인덱스, 열 인덱스]
+```
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[,] matrix = {
+            { 1, 2 },
+            { 3, 4 },
+            { 5, 6 }
+        };
+
+        Console.WriteLine(matrix[0, 0]); // 1  (0행 0열)
+        Console.WriteLine(matrix[1, 1]); // 4  (1행 1열)
+        Console.WriteLine(matrix[2, 0]); // 5  (2행 0열)
+    }
+}
+```
+
+**실행 결과**
+```
+1
+4
+5
+```
+
+### 📌 2차원 배열 전체 출력 (이중 for문)
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[,] matrix = {
+            { 1, 2, 3 },
+            { 4, 5, 6 },
+            { 7, 8, 9 }
+        };
+
+        int rows = matrix.GetLength(0); // 행 수
+        int cols = matrix.GetLength(1); // 열 수
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                Console.Write($"{matrix[i, j]}\t");
+            }
+            Console.WriteLine();
+        }
+    }
+}
+```
+
+**실행 결과**
+```
+1	2	3	
+4	5	6	
+7	8	9	
+```
+
+> 💡 `GetLength(0)` → 행(row) 수, `GetLength(1)` → 열(column) 수
+
+---
+
+## 7. Array 클래스 주요 메서드
+
+`System.Array` 클래스는 배열을 다루는 다양한 메서드를 제공합니다.
+
+### 📌 Array.Sort() — 배열 정렬
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 90, 85, 78, 92, 88 };
+
+        Array.Sort(scores); // 오름차순 정렬
+
+        foreach (int s in scores)
+        {
+            Console.Write(s + " ");
+        }
+    }
+}
+```
+
+**실행 결과**
+```
+78 85 88 90 92
+```
+
+### 📌 Array.Reverse() — 배열 역순
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 78, 85, 88, 90, 92 };
+
+        Array.Reverse(scores); // 역순 (내림차순)
+
+        foreach (int s in scores)
+        {
+            Console.Write(s + " ");
+        }
+    }
+}
+```
+
+**실행 결과**
+```
+92 90 88 85 78
+```
+
+### 📌 Array.IndexOf() — 특정 값의 인덱스 찾기
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        string[] names = { "홍길동", "김철수", "이영희" };
+
+        int idx = Array.IndexOf(names, "김철수");
+        Console.WriteLine($"김철수의 인덱스: {idx}"); // 1
+    }
+}
+```
+
+**실행 결과**
+```
+김철수의 인덱스: 1
+```
+
+> 💡 값이 없으면 `-1` 을 반환합니다.
+
+---
+
+## 8. 배열 vs 변수 비교
+
+| 구분 | 일반 변수 | 배열 |
+|---|---|---|
+| 데이터 수 | 값 1개 | 같은 자료형의 값 여러 개 |
+| 선언 예시 | `int score = 90;` | `int[] scores = { 90, 85, 78 };` |
+| 접근 방법 | 변수명 | `배열명[인덱스]` |
+| 크기 확인 | 없음 | `.Length` |
+| 반복 처리 | 하나씩 직접 처리 | `for`, `foreach` 활용 |
+
+---
+
+## 🧪 예제
+
+### 예제 1 — 성적 통계 프로그램
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 85, 92, 78, 96, 73, 88, 100, 65, 90, 82 };
+
+        int sum = 0;
+        int max = scores[0];
+        int min = scores[0];
+
+        foreach (int score in scores)
+        {
+            sum += score;
+            if (score > max) max = score;
+            if (score < min) min = score;
+        }
+
+        double avg = (double)sum / scores.Length;
+
+        Console.WriteLine("=== 성적 통계 ===");
+        Console.WriteLine($"학생 수  : {scores.Length}명");
+        Console.WriteLine($"총 합계  : {sum}점");
+        Console.WriteLine($"평균 점수: {avg:F1}점");
+        Console.WriteLine($"최고 점수: {max}점");
+        Console.WriteLine($"최저 점수: {min}점");
+    }
+}
+```
+
+**실행 결과**
+```
+=== 성적 통계 ===
+학생 수  : 10명
+총 합계  : 849점
+평균 점수: 84.9점
+최고 점수: 100점
+최저 점수: 65점
+```
+
+---
+
+### 예제 2 — 성적 정렬 출력
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        string[] names  = { "홍길동", "김철수", "이영희", "박민준", "최지은" };
+        int[]    scores = {     85,      92,      78,      96,      73 };
+
+        // 점수 기준 정렬 (배열 두 개를 함께 정렬)
+        Array.Sort(scores, names);
+        Array.Reverse(scores);
+        Array.Reverse(names);
+
+        Console.WriteLine("=== 성적표 (높은 순) ===");
+        Console.WriteLine("순위\t이름\t점수");
+        for (int i = 0; i < names.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}위\t{names[i]}\t{scores[i]}점");
+        }
+    }
+}
+```
+
+**실행 결과**
+```
+=== 성적표 (높은 순) ===
+순위	이름	점수
+1위	박민준	96점
+2위	김철수	92점
+3위	홍길동	85점
+4위	이영희	78점
+5위	최지은	73점
+```
+
+---
+
+### 예제 3 — 2차원 배열로 학생 성적표 만들기
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        string[] subjects = { "국어", "영어", "수학" };
+        string[] students = { "홍길동", "김철수", "이영희" };
+
+        int[,] scores = {
+            { 85, 90, 78 },  // 홍길동
+            { 92, 88, 95 },  // 김철수
+            { 76, 83, 91 }   // 이영희
+        };
+
+        Console.Write("이름\t");
+        foreach (string subject in subjects)
+        {
+            Console.Write($"{subject}\t");
+        }
+        Console.WriteLine("평균");
+        Console.WriteLine(new string('-', 40));
+
+        for (int i = 0; i < students.Length; i++)
+        {
+            int sum = 0;
+            Console.Write($"{students[i]}\t");
+            for (int j = 0; j < subjects.Length; j++)
+            {
+                Console.Write($"{scores[i, j]}\t");
+                sum += scores[i, j];
+            }
+            Console.WriteLine($"{sum / subjects.Length:F1}");
+        }
+    }
+}
+```
+
+**실행 결과**
+```
+이름	국어	영어	수학	평균
+----------------------------------------
+홍길동	85	90	78	84.3
+김철수	92	88	95	91.6
+이영희	76	83	91	83.3
+```
+
+---
+
+## 🔍 배열 요약 정리
+
+| 구분 | 내용 |
+|---|---|
+| 배열 선언 | `int[] arr = new int[5];` |
+| 초기화 | `int[] arr = { 1, 2, 3, 4, 5 };` |
+| 요소 접근 | `arr[0]`, `arr[1]`, ... (0부터 시작) |
+| 길이 | `arr.Length` |
+| for 순회 | `for (int i = 0; i < arr.Length; i++)` |
+| foreach 순회 | `foreach (int x in arr)` |
+| 정렬 | `Array.Sort(arr)` |
+| 역순 | `Array.Reverse(arr)` |
+| 인덱스 검색 | `Array.IndexOf(arr, 값)` |
+| 2차원 배열 | `int[,] arr = new int[행, 열];` |
+| 2차원 길이 | `arr.GetLength(0)` (행), `arr.GetLength(1)` (열) |
+
+---
+
+## 📝 문제
+
+---
+
+### 문제 1
+
+다음 코드에서 화면에 출력되는 결과는 무엇인가요?
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] numbers = { 10, 20, 30, 40, 50 };
+        Console.WriteLine(numbers[0]);
+        Console.WriteLine(numbers[2]);
+        Console.WriteLine(numbers[4]);
+        Console.WriteLine(numbers.Length);
+    }
+}
+```
+
+<details>
+<summary>정답 보기</summary>
+
+```
+10
+30
+50
+5
+```
+
+</details>
+
+---
+
+### 문제 2
+
+다음 중 올바른 배열 선언은 무엇인가요?
+
+```
+① int[] arr = new int(5);
+② int arr[] = new int[5];
+③ int[] arr = new int[5];
+④ int[5] arr = new int[];
+```
+
+<details>
+<summary>정답 보기</summary>
+
+③ `int[] arr = new int[5];`  
+C#에서 배열은 자료형 뒤에 `[]`를 붙이고, `new 자료형[크기]`로 생성합니다.
+
+</details>
+
+---
+
+### 문제 3
+
+다음 배열의 합계를 구하는 코드의 빈칸을 채우세요.
+
+```csharp
+int[] numbers = { 1, 2, 3, 4, 5 };
+int sum = 0;
+
+foreach (________ n in numbers)
+{
+    sum ________ n;
+}
+
+Console.WriteLine(sum);
+```
+
+<details>
+<summary>정답 보기</summary>
+
+```csharp
+foreach (int n in numbers)
+{
+    sum += n;
+}
+```
+
+출력 결과: `15`
+
+</details>
+
+---
+
+### 문제 4
+
+다음 코드의 출력 결과는 무엇인가요?
+
+```csharp
+int[] arr = { 5, 3, 8, 1, 9, 2 };
+Array.Sort(arr);
+foreach (int n in arr)
+{
+    Console.Write(n + " ");
+}
+```
+
+<details>
+<summary>정답 보기</summary>
+
+```
+1 2 3 5 8 9
+```
+
+`Array.Sort()`는 오름차순으로 정렬합니다.
+
+</details>
+
+---
+
+### 문제 5
+
+다음 코드에서 **잘못된 부분**을 모두 찾아 수정하세요.
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = new int(3);
+        scores[1] = 90;
+        scores[2] = 85;
+        scores[3] = 78;
+
+        Console.WriteLine(scores.length);
+    }
+}
+```
+
+<details>
+<summary>정답 보기</summary>
+
+① `new int(3)` → `new int[3]` (배열 생성 시 소괄호가 아닌 대괄호 사용)  
+② `scores[3] = 78;` → `scores[2] = 78;` (인덱스는 0~2까지, 3은 범위 초과)  
+③ `scores.length` → `scores.Length` (C#은 대소문자 구분, `L`이 대문자)
+
+수정된 코드:
+```csharp
+int[] scores = new int[3];
+scores[0] = 90;
+scores[1] = 85;
+scores[2] = 78;
+Console.WriteLine(scores.Length);
+```
+
+</details>
+
+---
+
+### 문제 6 (심화)
+
+5명의 시험 점수 `{ 72, 88, 95, 63, 80 }`를 배열에 저장하고,  
+점수를 내림차순으로 정렬하여 등수와 함께 출력하는 코드를 작성하세요.
+
+```
+출력 결과:
+1등: 95점
+2등: 88점
+3등: 80점
+4등: 72점
+5등: 63점
+```
+
+<details>
+<summary>정답 보기</summary>
+
+```csharp
+using System;
+class Hello
+{
+    public static void Main()
+    {
+        int[] scores = { 72, 88, 95, 63, 80 };
+
+        Array.Sort(scores);
+        Array.Reverse(scores);
+
+        for (int i = 0; i < scores.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}등: {scores[i]}점");
+        }
+    }
+}
+```
+
+</details>
+
+---
+
+> 📌 **Tip:**
+> - 배열의 인덱스는 **0부터 시작**합니다. 크기가 5인 배열의 마지막 인덱스는 **4**입니다.
+> - 배열의 모든 요소를 순서대로 처리할 때는 **`foreach`** 를 사용하면 간결합니다.
+> - 배열을 정렬할 때는 **`Array.Sort()`**, 역순으로 만들 때는 **`Array.Reverse()`** 를 사용하세요.
+> - 2차원 배열은 **`자료형[,]`** 으로 선언하고, **`[행, 열]`** 로 접근합니다.
