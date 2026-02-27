@@ -105,29 +105,6 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 ---
 
-## 📂 강의 목차
-
-<table align="center">
-<tr>
-<td>
-
-```
-Basic_Programming_with_Csharp/
-│
-├── 01_Basics/          ← 변수, 자료형, 연산자, 조건문, 반복문
-├── 02_Methods/         ← 함수(메서드), 매개변수, 반환, 오버로딩
-├── 03_OOP/             ← 클래스, 객체, 상속, 인터페이스, 예외처리
-├── 04_Collections/     ← 배열, List, Dictionary
-├── 05_WinForms/        ← Windows Forms, 이벤트 처리, GUI 프로그래밍
-└── 06_Practice/        ← 실습 문제, 종합 프로젝트
-```
-
-</td>
-</tr>
-</table>
-
----
-
 ## 📌 과정 소개
 
 | 항목 | 내용 |
