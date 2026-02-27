@@ -1,13 +1,15 @@
-# Basic Programming with C# (한국폴리텍VII대학 부산캠퍼스) # 
+<div align="center">
 
+# Basic Programming with C# (한국폴리텍VII대학 부산캠퍼스) #
 
+</div>
 
 ---
 
 <div align="center">
-  
-##   담당강사 및 강의소개 ##
-  
+
+## 담당강사 및 강의소개 ##
+
 <img src="https://github.com/user-attachments/assets/2eb000ca-20bf-40cd-8fb7-18ca414b2663" width="130" alt="허영진 프로필"/>
 
 ### 허영진 · YoungJin Huh
@@ -17,28 +19,23 @@
 
 ---
 
-<div align="center">
-
 [<img width="320" alt="naver_cafe_banner" src="https://github.com/user-attachments/assets/c803d8b1-6a3b-40f9-a607-c8882430cdd3">](https://cafe.naver.com/underfusion)
 
-
 위의 배너를 클릭하면 네이버 카페로 이동합니다.
-
-</div>
-
 
 ---
 
 ## 🎓 강사학력
 
-**국립부경대학교 · 지능로봇공학 석사**  
+**국립부경대학교 · 지능로봇공학 석사**
 
 AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 ---
+
 ## 🏅 보유자격증
 
-**전기기능장 · 정보처리기사 · 3D프린터운용기능사**  
+**전기기능장 · 정보처리기사 · 3D프린터운용기능사**
 
 ---
 
@@ -48,18 +45,13 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 **AI Vision — 모니터링 시스템 개발**
 
-
 ---
-
-</div>
-
-
 
 ## 🔧 기술 스택
 
-<table>
+<table align="center">
 <tr>
-<td valign="top" width="33%">
+<td align="center" valign="top" width="33%">
 
 **🤖 AI Vision**
 
@@ -68,7 +60,7 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 ![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=flat-square&logo=opencv&logoColor=white)
 
 </td>
-<td valign="top" width="33%">
+<td align="center" valign="top" width="33%">
 
 **💻 Languages**
 
@@ -77,7 +69,7 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 ![C++](https://img.shields.io/badge/C%2FC%2B%2B-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)
 
 </td>
-<td valign="top" width="33%">
+<td align="center" valign="top" width="33%">
 
 **⚙️ Control & Embedded**
 
@@ -88,10 +80,9 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 </td>
 </tr>
 <tr>
-<td valign="top">
+<td align="center" valign="top">
 
 **🌐 Web / Dashboard**
-
 
 ![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
@@ -100,7 +91,7 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=flat-square&logo=mariadb&logoColor=white)
 
 </td>
-<td valign="top">
+<td align="center" valign="top">
 
 **🖨️ Design / HW**
 
@@ -116,6 +107,10 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 ## 📂 강의 목차
 
+<table align="center">
+<tr>
+<td>
+
 ```
 Basic_Programming_with_Csharp/
 │
@@ -125,24 +120,28 @@ Basic_Programming_with_Csharp/
 ├── 04_Collections/     ← 배열, List, Dictionary
 └── 05_Practice/        ← 실습 문제, 미니 프로젝트
 ```
+
+</td>
+</tr>
+</table>
+
 ---
 
 ## 📌 과정 소개
 
 | 항목 | 내용 |
-|------|------|
+|:----:|:----:|
 | 과정 | 폴리텍 하이테크과정 |
 | 과목 | 기본프로그래밍 (C#) |
 | 대상 | 하이테크과정 수강생 |
 | 목표 | 문법 → 실습 → 문제해결 방식으로 기초 체력 확보 |
-
 
 ---
 
 ## 🗓️ 주차별 학습 내용
 
 | 주차 | 주제 | 핵심 키워드 |
-|:----:|------|-------------|
+|:----:|:----:|:----:|
 | 1주 | 개발 환경 세팅 | Visual Studio, .NET, Hello World |
 | 2주 | 자료형과 변수 | int, string, bool, var |
 | 3주 | 입출력과 연산 | Console.WriteLine, 연산자 |
@@ -154,8 +153,6 @@ Basic_Programming_with_Csharp/
 | 9~10주 | 실습 프로젝트 | 미니 프로젝트 |
 
 ---
-
-<div align="center">
 
 *본 자료는 폴리텍 하이테크과정 수업용으로 제작되었습니다.*
 
