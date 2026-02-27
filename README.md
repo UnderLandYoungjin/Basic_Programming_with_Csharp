@@ -19,8 +19,7 @@
 
 <div align="center">
 
-[![Naver Cafe](https://img.shields.io/badge/NAVER_CAFE-03C75A?style=for-the-badge&logo=naver&logoColor=white)](https://cafe.naver.com/underfusion)
-<img width="400" height="60" alt="naver_cafe_banner" src="https://github.com/user-attachments/assets/445bcbba-43ff-4796-bb69-f93638b7226b" />
+[<img width="320" alt="naver_cafe_banner" src="https://github.com/user-attachments/assets/445bcbba-43ff-4796-bb69-f93638b7226b">](https://cafe.naver.com/underfusion)
 
 위의 배너를 클릭하면 네이버 카페로 이동합니다.
 
