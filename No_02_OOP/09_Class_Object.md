@@ -555,10 +555,3 @@ Console.WriteLine($"넓이: {c.Area()}");
 
 ---
 
-<div align="center">
-
-## 🚀 Practice Makes Perfect
-
-객체지향은 암기가 아니라 **반복 실습으로 이해하는 구조입니다.**
-
-</div>
