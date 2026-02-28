@@ -55,15 +55,15 @@ class Hello
 {
     public static void Main()
     {
-        int score = 55;
+        int temperature = 20;
 
-        if (score >= 60)
+        if (temperature >= 30)
         {
-            Console.WriteLine("합격입니다!");
+            Console.WriteLine("날씨가 덥습니다.");
         }
         else
         {
-            Console.WriteLine("불합격입니다.");
+            Console.WriteLine("날씨가 적당합니다.");
         }
     }
 }
@@ -71,7 +71,7 @@ class Hello
 
 **실행 결과**
 ```
-불합격입니다.
+날씨가 적당합니다.
 ```
 
 ---
@@ -86,23 +86,19 @@ class Hello
 {
     public static void Main()
     {
-        int score = 82;
+        int temperature = 5;
 
-        if (score >= 90)
+        if (temperature >= 30)
         {
-            Console.WriteLine("A 등급");
+            Console.WriteLine("날씨가 덥습니다.");
         }
-        else if (score >= 80)
+        else if (temperature >= 15)
         {
-            Console.WriteLine("B 등급");
-        }
-        else if (score >= 70)
-        {
-            Console.WriteLine("C 등급");
+            Console.WriteLine("날씨가 적당합니다.");
         }
         else
         {
-            Console.WriteLine("F 등급");
+            Console.WriteLine("날씨가 춥습니다.");
         }
     }
 }
@@ -110,7 +106,7 @@ class Hello
 
 **실행 결과**
 ```
-B 등급
+날씨가 춥습니다.
 ```
 
 > 💡 **Tip:** `else if`는 위에서부터 순서대로 조건을 확인합니다.  
