@@ -1,8 +1,5 @@
-<div align="center">
 
 # 🟣 C# 제12강 — 다형성과 인터페이스 (Polymorphism & Interface)
-
-</div>
 
 ---
 
