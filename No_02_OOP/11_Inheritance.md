@@ -1,26 +1,72 @@
+<div align="center">
+
 # 🟣 C# 제11강 — 상속 (Inheritance)
 
-## 📌 개요
-**상속(Inheritance)** 은 기존 클래스의 **필드와 메서드를 물려받아** 새로운 클래스를 만드는 기능입니다.  
-코드를 반복해서 작성하지 않아도 되고, **공통 기능은 부모에게**, **고유 기능은 자식에게** 두어 구조를 깔끔하게 유지할 수 있습니다.
-
-> 👨‍👩‍👧 **비유:** 부모님의 재산(코드)을 자녀가 물려받고,  
-> 자녀는 거기에 자신만의 것을 추가합니다.  
-> 부모 것을 그대로 쓰거나, 자신만의 방식으로 바꿔 쓸 수도 있습니다.
+</div>
 
 ---
 
-## 1. 기본 상속
+# 📌 강의 목표
 
-`: 부모클래스` 형태로 상속합니다.
+이 강의를 마치면 다음을 이해할 수 있습니다:
 
+- 상속의 개념과 필요성
+- 부모 / 자식 클래스 관계
+- `base` 키워드 사용법
+- 메서드 오버라이딩 (`virtual` / `override`)
+- `sealed`로 상속 금지
+- 부모 타입으로 자식 객체 참조
+
+---
+
+# 📚 왜 상속이 필요한가?
+
+기존 방식:
+
+```csharp
+class Dog
+{
+    public string name;
+    public int    age;
+    public void Eat()   { ... }
+    public void Sleep() { ... }
+    public void Bark()  { ... }
+}
+
+class Cat
+{
+    public string name;
+    public int    age;
+    public void Eat()  { ... }   // Dog와 중복!
+    public void Sleep(){ ... }   // Dog와 중복!
+    public void Purr() { ... }
+}
 ```
+
+문제점:
+
+- 공통 코드가 중복됨
+- 수정할 때 모든 클래스를 일일이 변경해야 함
+
+👉 해결: **공통 기능은 부모에게, 고유 기능은 자식에게 = 상속**
+
+> 👨‍👩‍👧 부모님의 재산(코드)을 자녀가 물려받고, 자녀는 거기에 자신만의 것을 추가합니다.
+
+---
+
+# 🏗 상속 기본 구조
+
+```csharp
 class 자식클래스 : 부모클래스
 {
     // 부모의 필드·메서드를 자동으로 물려받음
     // 추가 필드·메서드 작성
 }
 ```
+
+---
+
+# 🐶 예제 1 — 기본 상속 (Animal)
 
 ```csharp
 using System;
@@ -42,7 +88,7 @@ class Animal
     }
 }
 
-// 자식 클래스 (파생 클래스) — Animal을 상속
+// 자식 클래스 — Animal을 상속
 class Dog : Animal
 {
     public string breed;
@@ -61,9 +107,9 @@ class Cat : Animal
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Dog dog = new Dog();
         dog.name  = "초코";
@@ -91,11 +137,31 @@ class Hello
 나비가 그릉그릉거립니다.
 ```
 
+### 핵심
+
+- `Eat()`, `Sleep()` → 부모에서 물려받아 그대로 사용
+- `Bark()`, `Purr()` → 각 자식 클래스의 고유 기능
+- 공통 코드를 한 곳에서 관리 가능
+
 ---
 
-## 2. base 키워드
+# 🔑 base 키워드
 
 `base`는 **부모 클래스의 생성자나 메서드**를 자식에서 호출할 때 사용합니다.
+
+```csharp
+class 자식클래스 : 부모클래스
+{
+    public 자식클래스(매개변수) : base(부모에게 전달할 값)
+    {
+        // 자식만의 초기화
+    }
+}
+```
+
+---
+
+## 🐕 예제 2 — base 생성자 호출
 
 ```csharp
 using System;
@@ -117,7 +183,6 @@ class Dog : Animal
 {
     public string breed;
 
-    // base(...)로 부모 생성자 호출
     public Dog(string name, int age, string breed) : base(name, age)
     {
         this.breed = breed;
@@ -130,9 +195,9 @@ class Dog : Animal
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Dog dog = new Dog("망고", 2, "말티즈");
         dog.Info();
@@ -147,17 +212,25 @@ Dog 생성자 호출: 말티즈
 이름: 망고, 나이: 2, 품종: 말티즈
 ```
 
-> 💡 **Tip:** 자식 생성자는 항상 부모 생성자를 먼저 호출합니다.  
-> `base(...)`를 명시하지 않으면 **기본 생성자(매개변수 없는)** 가 자동 호출됩니다.
+### 핵심
+
+- 자식 생성자는 항상 **부모 생성자를 먼저** 호출
+- `base(...)` 미작성 시 **기본 생성자(매개변수 없는)** 가 자동 호출
 
 ---
 
-## 3. 메서드 오버라이딩 (Method Overriding)
+# 🔄 메서드 오버라이딩 (Method Overriding)
 
 부모에게서 물려받은 메서드를 **자식이 자신만의 방식으로 재정의**하는 것입니다.
 
-- 부모 메서드에 `virtual` 키워드를 붙입니다.
-- 자식 메서드에 `override` 키워드를 붙입니다.
+| 키워드 | 위치 | 의미 |
+|--------|------|------|
+| `virtual` | 부모 메서드 | 자식이 재정의할 수 있음을 표시 |
+| `override` | 자식 메서드 | 부모 메서드를 실제로 재정의 |
+
+---
+
+## 🐾 예제 3 — 오버라이딩 (Sound)
 
 ```csharp
 using System;
@@ -171,7 +244,6 @@ class Animal
         this.name = name;
     }
 
-    // virtual: 자식이 재정의할 수 있음을 표시
     public virtual void Sound()
     {
         Console.WriteLine($"{name}가 소리를 냅니다.");
@@ -182,7 +254,6 @@ class Dog : Animal
 {
     public Dog(string name) : base(name) { }
 
-    // override: 부모 메서드를 재정의
     public override void Sound()
     {
         Console.WriteLine($"{name}: 왈왈!");
@@ -209,9 +280,9 @@ class Cow : Animal
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Animal[] animals = {
             new Dog("초코"),
@@ -234,14 +305,28 @@ class Hello
 누렁이: 음메~
 ```
 
-> 💡 **Tip:** 같은 `Sound()` 메서드를 호출해도 **객체 종류에 따라 다르게 동작**합니다.  
-> 이것이 바로 다음 강에서 배울 **다형성(Polymorphism)** 의 핵심입니다!
+### 핵심
+
+- 같은 `Sound()` 메서드를 호출해도 **객체 종류에 따라 다르게 동작**
+- 이것이 다음 강에서 배울 **다형성(Polymorphism)** 의 핵심!
 
 ---
 
-## 4. base로 부모 메서드 호출
+# ↩️ base로 부모 메서드 호출
 
-오버라이딩하면서도 부모의 원래 동작을 함께 사용하고 싶을 때 `base.메서드명()`을 사용합니다.
+오버라이딩하면서도 **부모의 원래 동작을 함께 사용**하고 싶을 때 `base.메서드명()`을 사용합니다.
+
+```csharp
+public override void Start()
+{
+    base.Start();  // 부모 메서드 먼저 실행
+    // 자식만의 추가 동작
+}
+```
+
+---
+
+## 🚗 예제 4 — base 메서드 호출 (ElectricCar)
 
 ```csharp
 using System;
@@ -263,9 +348,9 @@ class ElectricCar : Vehicle
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         ElectricCar ec = new ElectricCar();
         ec.Start();
@@ -281,7 +366,7 @@ class Hello
 
 ---
 
-## 5. sealed — 상속 금지
+# 🔒 sealed — 상속 금지
 
 `sealed` 키워드를 붙이면 **더 이상 상속할 수 없습니다.**
 
@@ -294,13 +379,24 @@ sealed class FinalClass
 // class ChildClass : FinalClass { }  // ❌ 컴파일 에러!
 ```
 
-> 💡 **Tip:** 중요한 보안 클래스나 변경되어선 안 되는 핵심 클래스에 `sealed`를 사용합니다.
+### 핵심
+
+- 중요한 보안 클래스나 변경되어선 안 되는 핵심 클래스에 사용
 
 ---
 
-## 6. 상속 관계와 형 변환
+# 📐 상속 관계와 형 변환
 
 자식 클래스의 객체는 **부모 타입 변수에 담을 수 있습니다.**
+
+```csharp
+Shape s1 = new Circle(5);   // 부모 타입에 자식 객체 담기
+Shape s2 = new Square(4);
+```
+
+---
+
+## 🔷 예제 5 — 형 변환 (Shape)
 
 ```csharp
 using System;
@@ -335,14 +431,14 @@ class Square : Shape
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
-        Shape s1 = new Circle(5);   // 부모 타입에 자식 객체 담기
+        Shape s1 = new Circle(5);
         Shape s2 = new Square(4);
 
-        Console.WriteLine($"원의 넓이:    {s1.Area()}");
+        Console.WriteLine($"원의 넓이:     {s1.Area()}");
         Console.WriteLine($"사각형의 넓이: {s2.Area()}");
     }
 }
@@ -350,13 +446,13 @@ class Hello
 
 **실행 결과**
 ```
-원의 넓이:    78.5
+원의 넓이:     78.5
 사각형의 넓이: 16
 ```
 
 ---
 
-## 🧪 예제 — 직원 급여 시스템
+# 💼 종합 예제 — 직원 급여 시스템
 
 ```csharp
 using System;
@@ -417,14 +513,14 @@ class PartTimer : Employee
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
-        Employee[]  staff = {
-            new Employee  ("김철수",   3000000),
-            new Manager   ("박팀장",   4000000, 1000000),
-            new PartTimer ("이알바",   120, 9860)
+        Employee[] staff = {
+            new Employee ("김철수", 3000000),
+            new Manager  ("박팀장", 4000000, 1000000),
+            new PartTimer("이알바", 120, 9860)
         };
 
         Console.WriteLine("=== 이번 달 급여 명세 ===");
@@ -446,10 +542,10 @@ class Hello
 
 ---
 
-## 🔍 핵심 개념 요약
+# 📊 핵심 정리
 
 | 개념 | 키워드 | 설명 |
-|---|---|---|
+|------|--------|------|
 | 상속 | `: 부모클래스` | 부모의 필드·메서드를 물려받음 |
 | 부모 호출 | `base` | 부모 생성자·메서드 호출 |
 | 재정의 허용 | `virtual` | 자식이 오버라이딩 가능하게 표시 |
@@ -459,9 +555,7 @@ class Hello
 
 ---
 
-## 📝 문제
-
----
+# 📝 학습 체크
 
 ### 문제 1
 
@@ -505,10 +599,11 @@ B의 Hello
 
 ### 문제 2
 
-`Animal` 클래스를 상속받는 `Bird` 클래스를 작성하세요.  
-- 추가 필드: `canFly` (bool, 날 수 있는지)  
-- 생성자: `name`, `age`, `canFly` 초기화  
-- `Sound()` 오버라이딩: `"{name}: 짹짹!"` 출력  
+`Animal` 클래스를 상속받는 `Bird` 클래스를 작성하세요.
+
+- 추가 필드: `canFly` (bool, 날 수 있는지)
+- 생성자: `name`, `age`, `canFly` 초기화
+- `Sound()` 오버라이딩: `"{name}: 짹짹!"` 출력
 - `Fly()` 메서드: 날 수 있으면 `"날아갑니다!"`, 없으면 `"날지 못합니다."` 출력
 
 <details>
@@ -548,7 +643,7 @@ class Bird : Animal
 <summary>정답 보기</summary>
 
 `virtual`은 부모 메서드에 **"자식이 재정의할 수 있다"** 고 표시하는 것이고,  
-`override`는 자식 메서드에 **"실제로 부모 메서드를 재정의한다"** 고 명시하는 것입니다.  
+`override`는 자식 메서드에 **"실제로 부모 메서드를 재정의한다"** 고 명시하는 것입니다.
 
 이 두 키워드를 함께 사용해야 C#이 런타임 시 올바른 메서드를 호출할 수 있습니다.  
 `virtual` 없이 `override`를 쓰면 컴파일 에러가 발생합니다.
@@ -557,8 +652,18 @@ class Bird : Animal
 
 ---
 
-> 📌 **Tip:**
-> - 상속은 **"is-a" 관계**일 때 사용합니다. (개 **is a** 동물 ✅ / 개 **is a** 자동차 ❌)
-> - 공통 기능은 **부모 클래스에**, 고유 기능은 **자식 클래스에** 작성합니다.
-> - `virtual` / `override`는 항상 쌍으로 사용합니다.
-> - `base`로 부모의 생성자와 메서드를 자식에서 호출할 수 있습니다.
+# ⏭ 다음 강의 예고
+
+- 다형성 (Polymorphism)
+- 추상 클래스 (`abstract`)
+- 인터페이스 (`interface`)
+
+---
+
+<div align="center">
+
+## 🚀 Practice Makes Perfect
+
+객체지향은 암기가 아니라 **반복 실습으로 이해하는 구조입니다.**
+
+</div>
