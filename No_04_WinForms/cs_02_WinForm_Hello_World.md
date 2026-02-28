@@ -1,6 +1,6 @@
 <h2><b>버튼 클릭시 동작</b></h2>
 
-![screeenshot](https://github.com/user-attachments/assets/19ccacf8-eddb-4704-aadd-79ca39ea9e56)
+
 ![554632528-19ccacf8-eddb-4704-aadd-79ca39ea9e56](https://github.com/user-attachments/assets/b14a5180-c1b3-4022-9f72-53601227e4e2)
 
 
