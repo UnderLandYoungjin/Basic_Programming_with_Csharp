@@ -21,8 +21,7 @@ class Hello
 using System;   
 namespace ConsoleApp5   
 {
-    // internal : 같은 프로젝트 내부에서만 접근 가능
-    // class    : Program이라는 클래스 정의
+
     internal class Program
     {
         static void Main(string[] args)
