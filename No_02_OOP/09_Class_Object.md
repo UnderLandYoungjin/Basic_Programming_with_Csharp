@@ -1,9 +1,7 @@
-<div align="center">
 
 # 🟣 C# 제9강 — 클래스와 객체 (Class & Object)
 
-
-</div>
+>
 
 ---
 
