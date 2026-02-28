@@ -1,18 +1,49 @@
+<div align="center">
+
 # 🟣 C# 제10강 — 접근 제한자와 프로퍼티 (Access Modifier & Property)
 
-## 📌 개요
-클래스 내부의 데이터를 **외부에서 함부로 바꾸지 못하도록** 보호하는 것이 객체지향의 중요한 원칙 중 하나입니다.  
-이를 **캡슐화(Encapsulation)** 라고 하며, **접근 제한자**와 **프로퍼티**가 그 핵심 도구입니다.
-
-> 🏦 **비유:** 은행 금고는 함부로 열 수 없습니다.  
-> 반드시 은행 직원(메서드)을 통해서만 돈을 넣고 뺄 수 있죠.  
-> 이것이 바로 캡슐화의 개념입니다.
+</div>
 
 ---
 
-## 1. 접근 제한자 (Access Modifier)
+# 📌 강의 목표
 
-클래스의 필드, 메서드, 클래스 자체에 **접근 가능한 범위**를 지정합니다.
+이 강의를 마치면 다음을 이해할 수 있습니다:
+
+- 접근 제한자 (`public` / `private`)의 차이
+- 캡슐화의 개념과 필요성
+- 프로퍼티 (`get` / `set`) 사용법
+- 자동 프로퍼티와 읽기 전용 프로퍼티
+- 정적 멤버 (`static`)의 의미와 활용
+
+---
+
+# 📚 왜 접근 제한자가 필요한가?
+
+기존 방식:
+
+```csharp
+class Person
+{
+    public string name;
+    public int    age;
+}
+```
+
+문제점:
+
+- 외부에서 잘못된 값을 넣어도 막을 방법이 없음
+- 데이터 보호가 되지 않음
+
+👉 해결: **접근 제한자로 데이터를 보호하는 구조 = 캡슐화**
+
+> 🏦 은행 금고는 함부로 열 수 없습니다. 반드시 은행 직원(메서드)을 통해서만 돈을 넣고 뺄 수 있죠. 이것이 바로 캡슐화의 개념입니다.
+
+---
+
+# 🔐 접근 제한자 (Access Modifier)
+
+클래스의 필드, 메서드에 **접근 가능한 범위**를 지정합니다.
 
 | 접근 제한자 | 접근 가능 범위 |
 |---|---|
@@ -20,7 +51,9 @@
 | `private` | 같은 클래스 내부에서만 접근 가능 |
 | `protected` | 같은 클래스 + 자식 클래스에서 접근 가능 (11강에서 상세히) |
 
-### 📌 public vs private
+---
+
+# 🐶 예제 1 — public vs private
 
 ```csharp
 using System;
@@ -37,7 +70,7 @@ class Person
             Console.WriteLine("유효하지 않은 나이입니다.");
             return;
         }
-        age = a;  // 클래스 내부에서는 접근 가능
+        age = a;
     }
 
     public int GetAge()
@@ -46,15 +79,15 @@ class Person
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Person p = new Person();
         p.name = "홍길동";   // public → 접근 가능
         // p.age = 25;       // ❌ private → 컴파일 에러!
 
-        p.SetAge(25);        // 메서드를 통해서만 age 설정
+        p.SetAge(25);
         Console.WriteLine($"{p.name}, {p.GetAge()}살");
 
         p.SetAge(-5);        // 유효하지 않은 값 → 거부됨
@@ -68,23 +101,45 @@ class Hello
 유효하지 않은 나이입니다.
 ```
 
-> 💡 **Tip:** 필드는 보통 `private`으로 숨기고, 메서드를 통해서만 접근하도록 설계합니다.  
-> 이렇게 하면 **잘못된 값이 들어오는 것을 방지**할 수 있습니다.
+### 핵심
+
+- 필드는 `private`으로 숨기고
+- 메서드를 통해서만 접근하도록 설계
+- **잘못된 값이 들어오는 것을 방지**
 
 ---
 
-## 2. 프로퍼티 (Property)
+# 🏗 프로퍼티 (Property)
 
-`GetAge()` / `SetAge()` 처럼 getter/setter 메서드를 쌍으로 만드는 것은 번거롭습니다.  
-C#은 이를 더 깔끔하게 처리하는 **프로퍼티** 문법을 제공합니다.
+## 왜 필요한가?
 
+기존 방식:
+
+```csharp
+p.SetAge(25);
+int a = p.GetAge();
 ```
+
+문제:
+
+- getter / setter 메서드를 쌍으로 만들어야 함
+- 코드가 번거롭고 길어짐
+
+---
+
+## 프로퍼티 구조
+
+```csharp
 접근제한자 자료형 프로퍼티이름
 {
     get { return 필드; }
     set { 필드 = value; }
 }
 ```
+
+---
+
+## 📋 예제 2 — 프로퍼티 적용
 
 ```csharp
 using System;
@@ -94,7 +149,6 @@ class Person
     private string name;
     private int    age;
 
-    // 프로퍼티
     public string Name
     {
         get { return name; }
@@ -116,9 +170,9 @@ class Person
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Person p = new Person();
 
@@ -142,9 +196,18 @@ class Hello
 
 ---
 
-## 3. 자동 프로퍼티 (Auto Property)
+# ✂️ 자동 프로퍼티 (Auto Property)
 
-단순히 값을 읽고 쓰기만 하면 된다면, **한 줄로 간결하게** 작성할 수 있습니다.
+단순히 값을 읽고 쓰기만 하면 된다면 **한 줄로 간결하게** 작성할 수 있습니다.
+
+```csharp
+public string Name  { get; set; }
+public int    Price { get; set; }
+```
+
+---
+
+## 🛒 예제 3 — 자동 프로퍼티 (Product)
 
 ```csharp
 using System;
@@ -168,9 +231,9 @@ class Product
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Product p1 = new Product("노트북", 1200000, 5);
         Product p2 = new Product("마우스",   35000, 30);
@@ -178,7 +241,7 @@ class Hello
         p1.PrintInfo();
         p2.PrintInfo();
 
-        p1.Stock -= 2;  // 재고 감소
+        p1.Stock -= 2;
         Console.WriteLine($"노트북 남은 재고: {p1.Stock}개");
     }
 }
@@ -193,9 +256,17 @@ class Hello
 
 ---
 
-## 4. 읽기 전용 프로퍼티
+# 🔒 읽기 전용 프로퍼티
 
-`set`을 제거하거나 `private set`으로 설정하면 **외부에서 값을 변경하지 못하도록** 막을 수 있습니다.
+`private set`을 사용하면 **외부에서 값을 변경하지 못하도록** 막을 수 있습니다.
+
+```csharp
+public int Salary { get; private set; }  // 외부에서 직접 변경 불가
+```
+
+---
+
+## 💼 예제 4 — 읽기 전용 (Employee)
 
 ```csharp
 using System;
@@ -211,7 +282,6 @@ class Employee
         Salary = salary;
     }
 
-    // 연봉 인상은 반드시 이 메서드를 통해서만
     public void RaiseSalary(int amount)
     {
         if (amount > 0)
@@ -222,15 +292,15 @@ class Employee
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Employee emp = new Employee("이수진", 3000000);
         Console.WriteLine($"{emp.Name}: {emp.Salary}원");
 
         // emp.Salary = 5000000;  // ❌ private set → 외부 변경 불가!
-        emp.RaiseSalary(500000);   // 메서드를 통해서만 변경 가능
+        emp.RaiseSalary(500000);
 
         Console.WriteLine($"{emp.Name}: {emp.Salary}원");
     }
@@ -246,10 +316,15 @@ class Hello
 
 ---
 
-## 5. 정적 멤버 (static)
+# 🔧 정적 멤버 (static)
 
-`static`이 붙은 필드나 메서드는 **객체를 만들지 않고도** 클래스 이름으로 직접 사용할 수 있습니다.  
+`static`이 붙은 필드나 메서드는 **객체를 만들지 않고도** 클래스 이름으로 직접 사용할 수 있습니다.
+
 모든 객체가 **공유하는 데이터나 기능**에 사용합니다.
+
+---
+
+## 🔢 예제 5 — 정적 멤버 (Counter)
 
 ```csharp
 using System;
@@ -272,9 +347,9 @@ class Counter
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Counter c1 = new Counter("A");
         Counter c2 = new Counter("B");
@@ -293,12 +368,14 @@ C 생성 (총 3개)
 전체 생성된 객체 수: 3
 ```
 
-> 💡 **Tip:** `Console.WriteLine()`, `Math.Abs()` 등 우리가 자주 쓰는 것들이  
-> 바로 `static` 메서드입니다. 객체 없이 클래스 이름으로 바로 사용하죠.
+### 핵심
+
+- `Console.WriteLine()`, `Math.Abs()` 등 자주 쓰는 것들이 바로 `static` 메서드
+- 객체 없이 클래스 이름으로 바로 사용 가능
 
 ---
 
-## 🧪 예제 — 학생 관리 클래스
+# 🏦 종합 예제 — Student
 
 ```csharp
 using System;
@@ -311,7 +388,7 @@ class Student
 
     public Student(string name, int score)
     {
-        Name  = name;
+        Name = name;
         SetScore(score);
     }
 
@@ -341,9 +418,9 @@ class Student
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Student s1 = new Student("홍길동", 92);
         Student s2 = new Student("김영희", 73);
@@ -352,7 +429,7 @@ class Hello
         s1.PrintInfo();
         s2.PrintInfo();
 
-        s2.SetScore(85);   // 점수 수정
+        s2.SetScore(85);
         s2.PrintInfo();
     }
 }
@@ -368,7 +445,7 @@ class Hello
 
 ---
 
-## 🔍 핵심 개념 요약
+# 📊 핵심 정리
 
 | 개념 | 키워드 | 설명 |
 |---|---|---|
@@ -381,9 +458,7 @@ class Hello
 
 ---
 
-## 📝 문제
-
----
+# 📝 학습 체크
 
 ### 문제 1
 
@@ -414,6 +489,7 @@ b.pages = 300;          // ②
 ### 문제 2
 
 아래 조건에 맞는 `Rectangle` 클래스를 작성하세요.
+
 - `Width`, `Height` : 자동 프로퍼티 (`private set`)
 - 생성자에서 초기화
 - `Area()` 메서드: 넓이 반환
@@ -463,8 +539,18 @@ Console.WriteLine($"둘레: {r.Perimeter()}");  // 20
 
 ---
 
-> 📌 **Tip:**
-> - 필드는 `private`, 외부 접근은 **프로퍼티**를 통해 하도록 설계하는 것이 좋습니다.
-> - **자동 프로퍼티** `{ get; set; }` 를 활용하면 코드가 훨씬 간결해집니다.
-> - 모든 객체가 공유하는 데이터에는 **`static`** 을 활용하세요.
-> - 외부에서 값을 변경하면 안 되는 필드는 **`private set`** 으로 보호하세요.
+# ⏭ 다음 강의 예고
+
+- 상속 (Inheritance)
+- `protected` 접근 제한자 상세
+- 부모 클래스와 자식 클래스의 관계
+
+---
+
+<div align="center">
+
+## 🚀 Practice Makes Perfect
+
+객체지향은 암기가 아니라 **반복 실습으로 이해하는 구조입니다.**
+
+</div>
