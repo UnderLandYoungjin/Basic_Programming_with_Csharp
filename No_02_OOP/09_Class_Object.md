@@ -1,25 +1,74 @@
+<div align="center">
+
 # 🟣 C# 제9강 — 클래스와 객체 (Class & Object)
 
-## 📌 개요
-**클래스(Class)** 는 현실 세계의 사물이나 개념을 코드로 표현하는 **설계도**입니다.  
-**객체(Object)** 는 그 설계도를 바탕으로 실제로 만들어진 **실체**입니다.
+초급 직업훈련 과정용 강의 자료  
+C# 객체지향 기초 개념 정리
 
-> 🏠 **비유:** 클래스는 집의 **건축 설계도**, 객체는 그 설계도로 지어진 **실제 집**입니다.  
-> 설계도 하나로 집을 여러 채 지을 수 있듯이, 클래스 하나로 객체를 여러 개 만들 수 있습니다.
+</div>
 
 ---
 
-## 1. 클래스 정의와 객체 생성
+# 📌 강의 목표
 
-### 📌 클래스 기본 구조
+이 강의를 마치면 다음을 이해할 수 있습니다:
 
+- 클래스와 객체의 차이
+- 객체 생성 방법 (`new`)
+- 필드와 메서드의 역할
+- 생성자의 필요성과 동작 원리
+- `this` 키워드의 의미
+
+---
+
+# 📚 왜 클래스가 필요한가?
+
+기존 방식:
+
+```csharp
+string name = "홍길동";
+int age = 25;
 ```
+
+문제점:
+
+- 관련 데이터가 분리되어 있음
+- 사람 수가 늘어나면 변수 증가
+- 기능(행동)을 묶을 수 없음
+
+👉 해결: **데이터 + 기능을 하나로 묶는 구조 = 클래스**
+
+---
+
+# 🏗 클래스와 객체 개념
+
+| 구분 | 의미 |
+|------|------|
+| 클래스 | 객체를 만들기 위한 설계도 |
+| 객체 | 클래스로 만든 실제 인스턴스 |
+
+비유:
+
+- 설계도 → 클래스
+- 실제 건물 → 객체
+
+> 🏠 설계도 하나로 집을 여러 채 지을 수 있듯이, 클래스 하나로 객체를 여러 개 만들 수 있습니다.
+
+---
+
+# 🧱 클래스 기본 구조
+
+```csharp
 class 클래스이름
 {
     // 필드 (데이터)
     // 메서드 (기능)
 }
 ```
+
+---
+
+# 🐶 예제 1 — 기본 클래스 (Dog)
 
 ```csharp
 using System;
@@ -43,11 +92,10 @@ class Dog
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
-        // 객체 생성 (new 키워드)
         Dog dog1 = new Dog();
         dog1.name  = "초코";
         dog1.age   = 3;
@@ -58,11 +106,11 @@ class Hello
         dog2.age   = 5;
         dog2.breed = "골든리트리버";
 
-        dog1.Info();   // 이름: 초코, 나이: 3살, 품종: 푸들
-        dog1.Bark();   // 초코가 짖습니다: 왈왈!
+        dog1.Info();
+        dog1.Bark();
 
-        dog2.Info();   // 이름: 망고, 나이: 5살, 품종: 골든리트리버
-        dog2.Bark();   // 망고가 짖습니다: 왈왈!
+        dog2.Info();
+        dog2.Bark();
     }
 }
 ```
@@ -75,11 +123,15 @@ class Hello
 망고가 짖습니다: 왈왈!
 ```
 
-> 💡 **Tip:** `new` 키워드로 객체를 생성하고, `.`(점)으로 필드와 메서드에 접근합니다.
+### 핵심
+
+- `new` → 객체 생성
+- `.` → 필드/메서드 접근
+- 객체는 서로 독립적
 
 ---
 
-## 2. 필드 (Field)
+# 📦 필드 (Field)
 
 클래스가 가지는 **데이터(속성)** 를 저장하는 변수입니다.
 
@@ -93,9 +145,9 @@ class Car
     public int    speed;   // 현재 속도
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Car car = new Car();
         car.brand = "현대";
@@ -114,11 +166,11 @@ class Hello
 
 ---
 
-## 3. 메서드 (Method)
+# ⚙️ 메서드 (Method)
 
 클래스가 수행하는 **기능(행동)** 을 정의합니다.
 
-```
+```csharp
 반환형 메서드이름(매개변수)
 {
     // 실행 코드
@@ -149,9 +201,9 @@ class Calculator
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Calculator calc = new Calculator();
 
@@ -172,13 +224,46 @@ class Hello
 
 ---
 
-## 4. 생성자 (Constructor)
+# 🏗 생성자 (Constructor)
 
-객체가 **생성될 때 자동으로 호출**되는 특별한 메서드입니다.  
-필드의 초기값을 설정할 때 주로 사용합니다.
+## 왜 필요한가?
 
-- 클래스 이름과 **이름이 같아야** 합니다.
-- **반환형이 없습니다** (void도 쓰지 않음).
+기존 방식:
+
+```csharp
+Dog d = new Dog();
+d.name = "초코";
+d.age  = 3;
+```
+
+문제:
+
+- 초기화 누락 가능
+- 코드가 길어짐
+
+---
+
+## 생성자 구조
+
+```csharp
+class 클래스명
+{
+    public 클래스명(매개변수)
+    {
+        // 초기 설정
+    }
+}
+```
+
+규칙:
+
+1. 클래스 이름과 동일
+2. 반환형 없음 (void도 쓰지 않음)
+3. `new` 할 때 자동 실행
+
+---
+
+## 🧑 예제 2 — 생성자 적용 (Person)
 
 ```csharp
 using System;
@@ -202,9 +287,9 @@ class Person
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Person p1 = new Person("홍길동", 25);
         Person p2 = new Person("김영희", 30);
@@ -223,14 +308,36 @@ class Hello
 안녕하세요, 저는 김영희이고 30살입니다.
 ```
 
-> 💡 **Tip:** 생성자를 따로 정의하지 않으면 C#이 **기본 생성자(매개변수 없는 생성자)** 를 자동으로 만들어줍니다.
+> 💡 생성자를 따로 정의하지 않으면 C#이 **기본 생성자(매개변수 없는 생성자)** 를 자동으로 만들어줍니다.
 
 ---
 
-## 5. this 키워드
+# 🔍 this 키워드
 
-`this`는 **현재 객체 자신**을 가리킵니다.  
-매개변수 이름과 필드 이름이 같을 때 구분하기 위해 사용합니다.
+## 문제 상황
+
+```csharp
+name = name;
+```
+
+필드에 값이 저장되지 않음.
+
+---
+
+## 해결
+
+```csharp
+this.name = name;
+```
+
+| 구분 | 의미 |
+|------|------|
+| this.name | 필드 |
+| name | 매개변수 |
+
+---
+
+## 🎓 예제 3 — this 적용 (Student)
 
 ```csharp
 using System;
@@ -240,7 +347,6 @@ class Student
     public string name;
     public int    grade;
 
-    // 매개변수와 필드 이름이 같을 때 this로 구분
     public Student(string name, int grade)
     {
         this.name  = name;   // this.name = 필드, name = 매개변수
@@ -253,9 +359,9 @@ class Student
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         Student s = new Student("이민준", 3);
         s.Print();
@@ -270,9 +376,7 @@ class Hello
 
 ---
 
-## 🧪 예제
-
-### 예제 1 — 은행 계좌 클래스
+# 🏦 종합 예제 — BankAccount
 
 ```csharp
 using System;
@@ -311,9 +415,9 @@ class BankAccount
     }
 }
 
-class Hello
+class Program
 {
-    public static void Main()
+    static void Main()
     {
         BankAccount account = new BankAccount("홍길동", 10000);
         account.PrintInfo();
@@ -336,22 +440,20 @@ class Hello
 
 ---
 
-## 🔍 핵심 개념 요약
+# 📊 핵심 정리
 
 | 개념 | 설명 | 비유 |
-|---|---|---|
+|------|------|------|
 | 클래스 | 객체를 만들기 위한 설계도 | 건축 설계도 |
-| 객체 | 클래스로 만든 실체 | 실제 건물 |
+| 객체 | new로 생성된 실체 | 실제 건물 |
 | 필드 | 객체가 가진 데이터 | 건물의 방 개수, 면적 |
-| 메서드 | 객체가 수행하는 기능 | 건물에서 할 수 있는 일 |
-| 생성자 | 객체 생성 시 자동 호출 | 입주 당일 초기 세팅 |
+| 메서드 | 객체의 기능 | 건물에서 할 수 있는 일 |
+| 생성자 | 객체 생성 시 초기 설정 | 입주 당일 초기 세팅 |
 | this | 현재 객체 자신 | "나 자신" |
 
 ---
 
-## 📝 문제
-
----
+# 📝 학습 체크
 
 ### 문제 1
 
@@ -390,9 +492,10 @@ Console.WriteLine(b.Area());
 
 ### 문제 2
 
-생성자를 포함한 `Circle` 클래스를 작성하세요.  
-- 필드: `radius` (반지름)  
-- 메서드: `Area()` — 원의 넓이 반환 (`3.14 * radius * radius`)  
+생성자를 포함한 `Circle` 클래스를 작성하세요.
+
+- 필드: `radius` (반지름)
+- 메서드: `Area()` — 원의 넓이 반환 (`3.14 * radius * radius`)
 - 생성자: `radius`를 매개변수로 받아 초기화
 
 <details>
@@ -446,8 +549,18 @@ Console.WriteLine($"넓이: {c.Area()}");
 
 ---
 
-> 📌 **Tip:**
-> - 클래스는 **설계도**, 객체는 **실체**입니다.
-> - `new` 키워드로 객체를 생성하고, `.`으로 필드·메서드에 접근합니다.
-> - **생성자**를 활용하면 객체 생성 시 초기값을 깔끔하게 설정할 수 있습니다.
-> - 필드명과 매개변수명이 같을 때는 **`this`** 로 구분합니다.
+# ⏭ 다음 강의 예고
+
+- 접근 제한자 (public / private)
+- 캡슐화
+- 왜 필드를 public으로 두면 위험한가
+
+---
+
+<div align="center">
+
+## 🚀 Practice Makes Perfect
+
+객체지향은 암기가 아니라 **반복 실습으로 이해하는 구조입니다.**
+
+</div>
