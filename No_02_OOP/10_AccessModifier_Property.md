@@ -1,7 +1,6 @@
 <div align="center">
 
-# 🟣 C# 제10강 — 접근 제한자와 프로퍼티 
-(Access Modifier & Property)
+# 🟣 C# 제10강 — 접근 제한자와 프로퍼티 (Access Modifier & Property)
 
 </div>
 
