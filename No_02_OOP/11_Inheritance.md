@@ -1,8 +1,6 @@
-<div align="center">
 
 # 🟣 C# 제11강 — 상속 (Inheritance)
 
-</div>
 
 ---
 
