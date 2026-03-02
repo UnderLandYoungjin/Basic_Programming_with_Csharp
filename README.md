@@ -97,7 +97,7 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 **🖨️ Design / HW**
 
 ![3D CAD](https://img.shields.io/badge/3D_CAD-FF0000?style=flat-square)
-![FDM](https://img.shields.io/badge/FDM_3D프린팅-FF6B35?style=flat-square)
+![3D Printing](https://img.shields.io/badge/3D프린팅-FF6B35?style=flat-square)
 
 </td>
 <td></td>
