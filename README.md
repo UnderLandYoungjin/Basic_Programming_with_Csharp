@@ -13,7 +13,7 @@
 <img src="https://github.com/user-attachments/assets/2eb000ca-20bf-40cd-8fb7-18ca414b2663" width="130" alt="허영진 프로필"/>
 
 ### 허영진 · YoungJin Huh
-내가 좋아하는 일이 다른 사람에게도 행복이 되기를 바랍니다. [질문&과제]
+내가 좋아하는 일이 다른 사람에게도 행복이 되기를 바랍니다. 
 
 **AI | 임베디드 | 자동화**
 
@@ -21,7 +21,7 @@
 
 [<img width="320" alt="naver_cafe_banner" src="https://github.com/user-attachments/assets/c803d8b1-6a3b-40f9-a607-c8882430cdd3">](https://cafe.naver.com/underfusion)
 
-위의 배너를 클릭하면 네이버 카페로 이동합니다.
+위의 배너를 클릭하면 네이버 카페로 이동합니다.(질문&과제 등등)
 
 ---
 
