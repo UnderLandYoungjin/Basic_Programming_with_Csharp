@@ -75,7 +75,7 @@ AI Vision 기반 졸음 인식 및 객체 탐지 시스템 연구
 
 ![PLC](https://img.shields.io/badge/PLC_제어-FF6B35?style=flat-square)
 ![AVR](https://img.shields.io/badge/AVR-333333?style=flat-square)
-![Linux](https://img.shields.io/badge/Linux_보드-FCC624?style=flat-square&logo=linux&logoColor=black)
+![Arduino](https://img.shields.io/badge/Arduino-00979D?style=flat-square&logo=arduino&logoColor=white)
 
 </td>
 </tr>
