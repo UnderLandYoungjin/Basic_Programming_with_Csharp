@@ -40,11 +40,7 @@ https://visualstudio.microsoft.com/ko/downloads/
 <img width="1126" height="443" alt="image" src="https://github.com/user-attachments/assets/688ae8b9-e8b8-4b2a-ba94-68b160a1b9ba" />
 
 ---
-프로젝트 생성후 솔루션 탐색기에서 consoleApp1에 마우스 우클릭 -> 속성 -> 전역  using의 암시적 전체 사용 체크 해제(명시적 using문 사용 위함)
 
-<img width="1122" height="737" alt="image" src="https://github.com/user-attachments/assets/b5e5193e-856a-4039-9463-22236337539d" />
-
----
 
 제대로 설치 되었는지 확인을 위해 Hello, World! 출력이 되는지 확인
 
