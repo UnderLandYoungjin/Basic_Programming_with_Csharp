@@ -73,18 +73,11 @@ class Hello
 
 ### 📌 문자열과 변수를 함께 출력하기
 
-#### 방법 1 — `+` 연산자로 연결
+#### 방법 1 — `+` 연산자로 연결 ✅ 사용
 
 ```csharp
 Console.WriteLine("나이: " + age);
 Console.WriteLine("키: " + height);
-```
-
-#### 방법 2 — 문자열 보간 (String Interpolation, `$` 사용) ✅ 권장
-
-```csharp
-Console.WriteLine($"나이: {age}");
-Console.WriteLine($"키: {height}");
 ```
 
 **실행 결과**
@@ -151,14 +144,14 @@ class Hello
         long   g = -9000000000000000000;
         ulong  h = 18000000000000000000;
 
-        Console.WriteLine($"sbyte  : {a}");
-        Console.WriteLine($"byte   : {b}");
-        Console.WriteLine($"short  : {c}");
-        Console.WriteLine($"ushort : {d}");
-        Console.WriteLine($"int    : {e}");
-        Console.WriteLine($"uint   : {f}");
-        Console.WriteLine($"long   : {g}");
-        Console.WriteLine($"ulong  : {h}");
+        Console.WriteLine("sbyte  : " + a);
+        Console.WriteLine("byte   : " + b);
+        Console.WriteLine("short  : " + c);
+        Console.WriteLine("ushort : " + d);
+        Console.WriteLine("int    : " + e);
+        Console.WriteLine("uint   : " + f);
+        Console.WriteLine("long   : " + g);
+        Console.WriteLine("ulong  : " + h);
     }
 }
 ```
@@ -202,9 +195,9 @@ class Hello
         double  b = 3.141592653589;
         decimal c = 3.14159265358979323846m;
 
-        Console.WriteLine($"float   : {a}");
-        Console.WriteLine($"double  : {b}");
-        Console.WriteLine($"decimal : {c}");
+        Console.WriteLine("float   : " + a);
+        Console.WriteLine("double  : " + b);
+        Console.WriteLine("decimal : " + c);
     }
 }
 ```
@@ -231,8 +224,8 @@ class Hello
         int    score  = 95;
         double weight = 68.5;
 
-        Console.WriteLine($"점수 : {score}점");
-        Console.WriteLine($"몸무게 : {weight}kg");
+        Console.WriteLine("점수 : " + score + "점");
+        Console.WriteLine("몸무게 : " + weight + "kg");
     }
 }
 ```
@@ -256,13 +249,13 @@ class Hello
     public static void Main()
     {
         int count = 0;
-        Console.WriteLine($"초기값 : {count}");
+        Console.WriteLine("초기값 : " + count);
 
         count = 10;
-        Console.WriteLine($"변경 후 : {count}");
+        Console.WriteLine("변경 후 : " + count);
 
         count = count + 5;
-        Console.WriteLine($"5 더한 후 : {count}");
+        Console.WriteLine("5 더한 후 : " + count);
     }
 }
 ```
@@ -290,10 +283,10 @@ class Hello
         float  weight  = 68.5f;
 
         Console.WriteLine("=== 개인 정보 ===");
-        Console.WriteLine($"이름   : {name}");
-        Console.WriteLine($"나이   : {age}세");
-        Console.WriteLine($"키     : {height}cm");
-        Console.WriteLine($"몸무게 : {weight}kg");
+        Console.WriteLine("이름   : " + name);
+        Console.WriteLine("나이   : " + age + "세");
+        Console.WriteLine("키     : " + height + "cm");
+        Console.WriteLine("몸무게 : " + weight + "kg");
     }
 }
 ```
