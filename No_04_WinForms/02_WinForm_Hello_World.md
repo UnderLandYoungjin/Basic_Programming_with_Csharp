@@ -13,7 +13,7 @@ GUI를 사용하기 위해 보기-도구상자 클릭
 
 
 
-cs_01_WinForm_Hello_World.cs코드 참조할것
+02_WinForm_Hello_World.cs코드 참조할것
 <img width="812" height="486" alt="image" src="https://github.com/user-attachments/assets/ab3c2fae-ed25-4a1e-a70e-0a97d4b16288" />
 
 
