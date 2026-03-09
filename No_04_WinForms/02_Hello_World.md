@@ -208,6 +208,41 @@ private void button1_Click(object sender, EventArgs e)
 
 </details>
 
+<details>
+
+```
+    namespace WinFormsApp8
+{
+    public partial class Form1 : Form
+    {
+        
+        public Form1()
+        {
+            InitializeComponent();
+            label1.Text = "Hello, World!";
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (label1.Text == "Hello, World!")
+            {
+                label1.Text = "안녕하세요!";
+            }
+            else
+            {
+                label1.Text = "Hello, World!";
+            }
+        }
+    }
+}
+```
+
+</details>
+
+
+
+
+
 ---
 
-*본 강의 자료는 한국폴리텍대학 AI소프트웨어융합 과정용으로 제작되었습니다.*
+
