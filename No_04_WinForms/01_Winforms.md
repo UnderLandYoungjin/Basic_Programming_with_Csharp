@@ -6,6 +6,7 @@
 
 <img width="2507" height="1330" alt="image" src="https://github.com/user-attachments/assets/59e27f79-edfb-4ff4-9dc5-4e5dca5a4d9b" />
 
+F7과 Shift+F7로 코드보기와 디자인 보기를 전환 할수있다.
 
 # Visual Studio WinForms 화면 구성
 
