@@ -190,7 +190,7 @@ private void button1_Click(object sender, EventArgs e)
 ```
 
 <details>
-<summary>정답 보기 (스스로 풀어본 후 확인하세요!)</summary>
+<summary>정답 보기1 (스스로 풀어본 후 확인하세요!)</summary>
 
 ```csharp
 private void button1_Click(object sender, EventArgs e)
@@ -209,6 +209,7 @@ private void button1_Click(object sender, EventArgs e)
 </details>
 
 <details>
+<summary>정답 보기2 (스스로 풀어본 후 확인하세요!)</summary>
 
 ```
     namespace WinFormsApp8
