@@ -4,7 +4,8 @@
 <img width="2536" height="1387" alt="image" src="https://github.com/user-attachments/assets/033ed6f0-317b-453f-a15d-b33c4a0b400d" />
 
 
-<img width="2506" height="1330" alt="image" src="https://github.com/user-attachments/assets/f83ddc74-3cfa-45d6-8b0c-e18407769a92" />
+<img width="2507" height="1330" alt="image" src="https://github.com/user-attachments/assets/59e27f79-edfb-4ff4-9dc5-4e5dca5a4d9b" />
+
 
 # Visual Studio WinForms 화면 구성
 
