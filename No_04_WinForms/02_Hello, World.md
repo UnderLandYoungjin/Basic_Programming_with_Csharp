@@ -18,3 +18,6 @@ namespace WinFormsApp8
     }
 }
 ```
+
+<img width="795" height="480" alt="image" src="https://github.com/user-attachments/assets/e9670587-f3b1-4ef6-a892-5fbd284c3bec" />
+<img width="784" height="473" alt="image" src="https://github.com/user-attachments/assets/78c4ab5b-8730-4d92-9c0a-f9ef389b868b" />
