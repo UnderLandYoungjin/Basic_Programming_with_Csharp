@@ -5,7 +5,183 @@
 
 
 
+# LINQ 실습 - 단어 통계 분석기 (WinForms)
 
+> **학습 목표**: LINQ의 핵심 메서드를 WinForms 실전 예제로 체험한다.
+
+---
+
+## 1. 완성 화면
+
+- RichTextBox에 텍스트 입력
+- "분석 실행" 버튼 클릭
+- ListView에 단어 빈도 순위표 출력 (1~3위 색상 강조)
+- 총 단어 수 / 고유 단어 수 통계 표시
+
+---
+
+## 2. 필요한 컨트롤 (디자이너에서 드래그앤드롭)
+
+| 컨트롤 | Name 속성 | 역할 |
+|--------|-----------|------|
+| `RichTextBox` | `rtbInput` | 텍스트 입력 영역 |
+| `Button` | `btnAnalyze` | 분석 실행 |
+| `Button` | `btnClear` | 초기화 |
+| `ListView` | `lvResult` | 순위표 출력 |
+| `Label` | `lblTotal` | 총 통계 표시 |
+| `NumericUpDown` | `nudTop` | 상위 N개 선택 |
+
+> **버튼 이벤트 연결**: 각 버튼을 디자이너에서 더블클릭하거나,  
+> 속성창 → ⚡ 이벤트 탭 → Click 항목에 메서드명 직접 입력
+
+---
+
+## 3. 전체 코드
+
+```csharp
+using System.Text.RegularExpressions;
+
+namespace WinFormsApp10
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            // ListView 초기 설정
+            lvResult.Columns.Add("순위", 50);
+            lvResult.Columns.Add("단어", 270);
+            lvResult.Columns.Add("출연횟수", 180);
+            lvResult.View = View.Details;
+            lvResult.FullRowSelect = true;
+
+            // NumericUpDown 범위 설정
+            nudTop.Minimum = 1;
+            nudTop.Maximum = 500;
+            nudTop.Value = 10;
+
+            // 샘플 텍스트
+            rtbInput.Text = "apple banana apple orange banana apple grape banana orange apple";
+        }
+
+        // 분석 실행 버튼
+        private void btnAnalyze_Click_1(object sender, EventArgs e)
+        {
+            string text = rtbInput.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                MessageBox.Show("텍스트를 입력해주세요!", "알림");
+                return;
+            }
+
+            // Step 1. 단어 추출 (정규식으로 영문/한글만)
+            var words = Regex.Matches(text.ToLower(), @"[a-zA-Z가-힣]+")
+                             .Cast<Match>()
+                             .Select(m => m.Value)
+                             .ToList();
+
+            // Step 2. LINQ 핵심 체이닝
+            int topN = (int)nudTop.Value;
+
+            var ranking = words
+                .GroupBy(w => w)                                           // 단어별 그룹화
+                .Select(g => new { Word = g.Key, Count = g.Count() })      // 단어 + 횟수
+                .OrderByDescending(x => x.Count)                           // 많은 순 정렬
+                .ThenBy(x => x.Word)                                       // 동점이면 알파벳순
+                .Take(topN)                                                // 상위 N개만
+                .ToList();
+
+            // Step 3. ListView에 결과 출력
+            lvResult.Items.Clear();
+
+            for (int i = 0; i < ranking.Count; i++)
+            {
+                var item = new ListViewItem((i + 1).ToString());
+                item.SubItems.Add(ranking[i].Word);
+                item.SubItems.Add(ranking[i].Count.ToString());
+
+                // 1~3위 색상 강조
+                if      (i == 0) item.BackColor = System.Drawing.Color.Gold;
+                else if (i == 1) item.BackColor = System.Drawing.Color.Silver;
+                else if (i == 2) item.BackColor = System.Drawing.Color.Peru;
+
+                lvResult.Items.Add(item);
+            }
+
+            // Step 4. 총 통계
+            int totalWords  = words.Count;
+            int uniqueWords = words.Distinct().Count();
+
+            lblTotal.Text = $"총 단어: {totalWords}개  |  고유 단어: {uniqueWords}개  |  TOP {topN} 표시 중";
+        }
+
+        // 초기화 버튼
+        private void btnClear_Click_1(object sender, EventArgs e)
+        {
+            rtbInput.Clear();
+            lvResult.Items.Clear();
+            lblTotal.Text = "";
+        }
+    }
+}
+```
+
+---
+
+## 4. LINQ 핵심 포인트 해설
+
+```csharp
+var ranking = words
+    .GroupBy(w => w)                      // ① 같은 단어끼리 묶기
+    .Select(g => new { ... })             // ② 단어명 + 개수로 변환
+    .OrderByDescending(x => x.Count)      // ③ 많은 순으로 정렬
+    .ThenBy(x => x.Word)                  // ④ 개수 같으면 알파벳순
+    .Take(topN)                           // ⑤ 상위 N개만 자르기
+    .ToList();                            // ⑥ 여기서 실제 실행!
+```
+
+### 메서드별 역할 요약
+
+| 메서드 | 역할 | SQL 비유 |
+|--------|------|----------|
+| `GroupBy` | 같은 값끼리 그룹화 | `GROUP BY` |
+| `Select` | 원하는 형태로 변환 | `SELECT` |
+| `OrderByDescending` | 내림차순 정렬 | `ORDER BY DESC` |
+| `ThenBy` | 2차 정렬 기준 추가 | `, 컬럼명 ASC` |
+| `Take(n)` | 앞에서 n개만 추출 | `LIMIT n` |
+| `Distinct` | 중복 제거 | `DISTINCT` |
+| `ToList()` | 실제 실행 (지연 실행 종료) | — |
+
+---
+
+## 5. 지연 실행(Lazy Evaluation) 개념
+
+```csharp
+// 이 시점에서는 아직 실행되지 않음 — 쿼리 정의만 함
+var ranking = words.GroupBy(...).Select(...).OrderByDescending(...);
+
+// ToList() 호출 시 비로소 실행됨
+var result = ranking.ToList();  // ← 실제 실행 시점
+```
+
+> 💡 **왜 중요한가?**  
+> 데이터베이스(EF Core) 연동 시 `ToList()` 전까지 SQL이 실행되지 않는다.  
+> 조건을 추가하면 최적화된 쿼리 한 번으로 처리된다.
+
+---
+
+## 6. 실습 과제
+
+1. `Where`를 추가해서 **2글자 이상 단어만** 통계에 포함시켜보기
+2. `Any()`를 사용해서 특정 단어가 텍스트에 있는지 확인하는 버튼 추가하기
+3. 결과를 **알파벳순 정렬**로 바꿔보기 (`OrderBy` 사용)
+4. 통계에 **최빈 단어 1개**만 MessageBox로 띄워보기 (`First()` 사용)
+
+---
+
+*Korea Polytechnic University | AI Software Convergence | C# 강의자료*
 
 
 
