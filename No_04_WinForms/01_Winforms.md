@@ -6,5 +6,4 @@
 
 <img width="2506" height="1330" alt="image" src="https://github.com/user-attachments/assets/f83ddc74-3cfa-45d6-8b0c-e18407769a92" />
 
-##UI 화면
-우리가 만드는 프로그램의 User Interface
+##UI 화면 우리가 만드는 프로그램의 User Interface##
