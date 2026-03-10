@@ -1,3 +1,5 @@
+# C# WinForms 기초 — 입력된 변수의 타입을 출력하는 프로그램
+
 <img width="806" height="483" alt="image" src="https://github.com/user-attachments/assets/7d7b6689-6d3f-453c-9916-f061405265ee" />
 
 
