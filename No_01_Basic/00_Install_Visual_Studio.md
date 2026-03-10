@@ -64,9 +64,7 @@ Hello, World! 출력이 된다는것은 C# 실행 환경이 정상임을 의미
 <img width="1507" height="767" alt="image" src="https://github.com/user-attachments/assets/873a01b0-c214-444d-ad91-f29b8b37d51b" />
 
 
-
-도구 모든 설정 > 텍스트 편집기 > 코드 완성 > 일반
-<img width="1804" height="997" alt="image" src="https://github.com/user-attachments/assets/de71cc14-3b66-4597-9928-10152d503a84" />
+---
 
 모든설정 > 언어 > C# > IntelliSense
 <img width="1345" height="806" alt="image" src="https://github.com/user-attachments/assets/5083d54f-3dcb-4682-b007-f9a2e00e722d" />
