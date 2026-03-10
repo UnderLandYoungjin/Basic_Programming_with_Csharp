@@ -41,20 +41,26 @@ namespace CharCounter
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
+            // 텍스트박스에 입력된 문자열을 string 변수에 저장
             string input = txtInput.Text;
 
+            // 전체 글자 수 (공백, 특수문자 포함)
             int total   = input.Length;
+
+            // 공백 수, 특수문자 수 카운터 초기화
             int spaces  = 0;
             int special = 0;
 
+            // string을 char 단위로 하나씩 꺼내서 확인
             foreach (char c in input)
             {
-                if (c == ' ')
+                if (c == ' ')                       // 공백이면
                     spaces++;
-                else if (!char.IsLetterOrDigit(c))
+                else if (!char.IsLetterOrDigit(c))  // 글자도 숫자도 아니면 → 특수문자
                     special++;
             }
 
+            // 결과를 Label에 출력 (\r\n 은 WinForms Label의 줄바꿈)
             lblResult.Text =
                 $"전체 글자 수 : {total}\r\n" +
                 $"공백 수      : {spaces}\r\n" +
