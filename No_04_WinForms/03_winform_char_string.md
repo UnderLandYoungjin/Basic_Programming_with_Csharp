@@ -1,4 +1,5 @@
 # 🟣 C# 제3강 실습 — 글자 수 분석기 (WinForms)
+<img width="785" height="476" alt="image" src="https://github.com/user-attachments/assets/dde3e27e-9701-486a-8ae1-2bf4b95edd51" />
 
 ## 📌 개요
 
