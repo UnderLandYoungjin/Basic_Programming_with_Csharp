@@ -1,5 +1,5 @@
 # 🟣 C# 제3강 실습 — 글자 수 분석기 (WinForms)
-<img width="785" height="476" alt="image" src="https://github.com/user-attachments/assets/dde3e27e-9701-486a-8ae1-2bf4b95edd51" />
+
 
 ## 📌 개요
 
@@ -10,17 +10,7 @@ TextBox에 글자를 입력하고 버튼을 클릭하면
 
 ## 🎯 완성 화면 미리보기
 
-```
-┌────────────────────────────────────────┐
-│  입력:  [ 안녕하세요! 반갑습니다.    ] │
-│                                        │
-│         [ 글자 수 분석 ]               │
-│                                        │
-│  전체 글자 수  :  13                   │
-│  공백 수       :  1                    │
-│  특수문자 수   :  2                    │
-└────────────────────────────────────────┘
-```
+<img width="785" height="476" alt="image" src="https://github.com/user-attachments/assets/dde3e27e-9701-486a-8ae1-2bf4b95edd51" />
 
 ---
 
