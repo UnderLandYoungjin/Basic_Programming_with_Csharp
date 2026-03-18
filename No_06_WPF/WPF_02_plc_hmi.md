@@ -1,5 +1,5 @@
-# PLC HMI 모니터링 시스템 - WPF + Modbus TCP
-
+# PLC HMI 모니터링 시스템 - WPF + Modbus TCP (닷넷 런타임 필요함)
+https://dotnet.microsoft.com/ko-kr/download/dotnet/thank-you/runtime-desktop-8.0.25-windows-x64-installer?cid=getdotnetcore
 
 https://github.com/user-attachments/assets/d4b4c810-4168-4170-bfde-3eca439e5293
 
