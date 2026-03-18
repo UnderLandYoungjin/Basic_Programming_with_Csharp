@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정렬 알고리즘 시각화 비교기</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1a2236;
+    --accent-cyan: #06d6a0;
+    --accent-orange: #ff6b35;
+    --accent-pink: #ef476f;
+    --accent-blue: #118ab2;
+    --accent-yellow: #ffd166;
+    --accent-purple: #9b5de5;
+    --accent-teal: #2ec4b6;
+    --text-primary: #e8edf5;
+    --text-secondary: #8899b4;
+    --text-muted: #4a5a75;
+    --border: #2a3654;
+    --bar-default: #3a4f78;
+    --bar-comparing: #ffd166;
+    --bar-swapping: #ef476f;
+    --bar-sorted: #06d6a0;
+    --bar-pivot: #9b5de5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(6,214,160,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 80%, rgba(155,93,229,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(17,138,178,0.04) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 1700px; margin: 0 auto;
+    padding: 20px 24px 40px;
+  }
+
+  .header { text-align: center; margin-bottom: 22px; }
+
+  .header h1 {
+    font-size: 2.1rem; font-weight: 900; letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue), var(--accent-purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+
+  .header p {
+    font-size: 0.88rem; color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .header .badge {
+    display: inline-block;
+    background: rgba(6,214,160,0.12); color: var(--accent-cyan);
+    padding: 4px 14px; border-radius: 20px;
+    font-size: 0.76rem; font-weight: 600; margin-top: 6px;
+    border: 1px solid rgba(6,214,160,0.2);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    align-items: center; justify-content: center;
+    padding: 16px 22px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; margin-bottom: 16px;
+  }
+
+  .control-group { display: flex; align-items: center; gap: 8px; }
+
+  .control-group label {
+    font-size: 0.8rem; color: var(--text-secondary);
+    font-weight: 500; white-space: nowrap;
+  }
+
+  select, input[type="range"] {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    color: var(--text-primary); border-radius: 8px;
+    padding: 7px 11px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; cursor: pointer; transition: border-color 0.2s;
+  }
+  select:hover, input[type="range"]:hover { border-color: var(--accent-cyan); }
+  select:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(6,214,160,0.15); }
+
+  input[type="range"] {
+    -webkit-appearance: none; width: 110px; height: 6px;
+    padding: 0; border-radius: 3px; background: var(--border);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 15px; height: 15px;
+    border-radius: 50%; background: var(--accent-cyan); cursor: pointer;
+    box-shadow: 0 0 8px rgba(6,214,160,0.4);
+  }
+
+  .speed-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; color: var(--accent-cyan);
+    min-width: 28px; text-align: center;
+  }
+
+  button {
+    padding: 8px 20px; border: none; border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700; font-size: 0.83rem; cursor: pointer;
+    transition: all 0.25s ease; letter-spacing: 0.3px;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--accent-cyan), #05b88a);
+    color: var(--bg-primary);
+    box-shadow: 0 4px 15px rgba(6,214,160,0.3);
+  }
+  .btn-start:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6,214,160,0.4); }
+  .btn-stop { background: linear-gradient(135deg, var(--accent-pink), #d63a5c); color: white; box-shadow: 0 4px 15px rgba(239,71,111,0.3); }
+  .btn-reset { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); }
+  .btn-reset:hover:not(:disabled) { border-color: var(--accent-orange); color: var(--accent-orange); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .legend {
+    display: flex; gap: 16px; justify-content: center;
+    margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.76rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; }
+  .legend-color { width: 13px; height: 13px; border-radius: 3px; }
+
+  .sort-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px; margin-bottom: 20px;
+  }
+
+  .sort-panel {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; transition: border-color 0.3s;
+    animation: slideUp 0.4s ease-out backwards;
+  }
+  .sort-panel:nth-child(2) { animation-delay: 0.04s; }
+  .sort-panel:nth-child(3) { animation-delay: 0.08s; }
+  .sort-panel:nth-child(4) { animation-delay: 0.12s; }
+  .sort-panel:nth-child(5) { animation-delay: 0.16s; }
+  .sort-panel:nth-child(6) { animation-delay: 0.20s; }
+  .sort-panel.running { border-color: rgba(6,214,160,0.3); }
+  .sort-panel.done { border-color: rgba(6,214,160,0.5); }
+
+  .sort-panel.intro-highlight {
+    border: 2px solid rgba(17,138,178,0.5);
+    box-shadow: 0 0 20px rgba(17,138,178,0.1);
+  }
+  .sort-panel.intro-highlight .panel-header {
+    background: rgba(17,138,178,0.06);
+  }
+
+  .panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+  }
+
+  .algo-name {
+    font-weight: 700; font-size: 0.92rem;
+    display: flex; align-items: center; gap: 7px;
+  }
+
+  .algo-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  .algo-complexity {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: var(--text-muted); background: var(--bg-secondary);
+    padding: 3px 9px; border-radius: 6px;
+  }
+
+  .algo-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    color: var(--accent-blue); background: rgba(17,138,178,0.12);
+    padding: 2px 7px; border-radius: 4px; margin-left: 4px;
+    border: 1px solid rgba(17,138,178,0.25);
+  }
+
+  .panel-stats {
+    display: flex; gap: 14px; padding: 8px 16px;
+    background: rgba(0,0,0,0.15);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.73rem;
+  }
+
+  .stat { display: flex; align-items: center; gap: 4px; }
+  .stat-label { color: var(--text-muted); }
+  .stat-value { color: var(--accent-cyan); font-weight: 600; min-width: 48px; }
+  .stat-time { color: var(--accent-yellow); }
+
+  .bar-container {
+    padding: 14px 10px 10px; height: 190px;
+    display: flex; align-items: flex-end; gap: 1px;
+  }
+
+  .bar {
+    flex: 1; background: var(--bar-default);
+    border-radius: 2px 2px 0 0; min-width: 1px;
+  }
+  .bar.comparing { background: var(--bar-comparing); }
+  .bar.swapping { background: var(--bar-swapping); }
+  .bar.sorted { background: var(--bar-sorted); }
+  .bar.pivot { background: var(--bar-pivot); }
+
+  .panel-status {
+    text-align: center; padding: 7px;
+    font-size: 0.75rem; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace; min-height: 30px;
+  }
+  .status-waiting { color: var(--text-muted); }
+  .status-running { color: var(--accent-yellow); animation: pulse 1s ease-in-out infinite; }
+  .status-done { color: var(--accent-cyan); }
+
+  .results-section {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 22px; display: none;
+  }
+  .results-section.show { display: block; }
+  .results-section h3 { font-size: 1rem; margin-bottom: 12px; color: var(--accent-cyan); }
+
+  .results-table {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+  }
+  .results-table th {
+    text-align: left; padding: 9px 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-secondary); font-weight: 600;
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .results-table td {
+    padding: 9px 12px; border-bottom: 1px solid rgba(42,54,84,0.5);
+    color: var(--text-primary);
+  }
+  .results-table tr:last-child td { border-bottom: none; }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 25px; height: 25px; border-radius: 50%;
+    font-weight: 700; font-size: 0.76rem;
+  }
+  .rank-1 { background: rgba(6,214,160,0.2); color: var(--accent-cyan); }
+  .rank-2 { background: rgba(255,209,102,0.2); color: var(--accent-yellow); }
+  .rank-3 { background: rgba(255,107,53,0.2); color: var(--accent-orange); }
+  .rank-other { background: rgba(138,153,180,0.15); color: var(--text-secondary); }
+
+  .info-section {
+    margin-top: 18px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 22px;
+  }
+  .info-section h3 { font-size: 1rem; margin-bottom: 14px; color: var(--accent-purple); }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .info-card {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+  }
+  .info-card h4 {
+    font-size: 0.88rem; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .info-card p {
+    font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6;
+  }
+  .info-card code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(6,214,160,0.1); color: var(--accent-cyan);
+    padding: 1px 5px; border-radius: 4px; font-size: 0.75rem;
+  }
+
+  .info-card.intro-card {
+    border-color: rgba(17,138,178,0.35);
+    background: linear-gradient(135deg, rgba(17,138,178,0.08), var(--bg-secondary));
+    grid-column: 1 / -1;
+  }
+
+  .intro-flow {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; flex-wrap: wrap;
+  }
+
+  .flow-step {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; font-weight: 600;
+  }
+  .flow-arrow { color: var(--text-muted); font-size: 1.1rem; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 1200px) {
+    .sort-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .sort-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.5rem; }
+    .controls { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>정렬 알고리즘 시각화 비교기</h1>
+    <p>Sorting Algorithm Visual Comparator — 6 Algorithms</p>
+    <div class="badge">C# Array.Sort() = IntroSort = QuickSort + HeapSort + InsertionSort</div>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>배열 크기:</label>
+      <select id="sizeSelect">
+        <option value="20">20개</option>
+        <option value="50" selected>50개</option>
+        <option value="100">100개</option>
+        <option value="150">150개</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>초기 상태:</label>
+      <select id="orderSelect">
+        <option value="random">랜덤</option>
+        <option value="nearly">거의 정렬됨</option>
+        <option value="reversed">역순</option>
+        <option value="fewUnique">중복 많음</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>속도:</label>
+      <input type="range" id="speedRange" min="1" max="100" value="50">
+      <span class="speed-val" id="speedVal">50</span>
+    </div>
+    <button class="btn-start" id="btnStart" onclick="startAll()">▶ 정렬 시작</button>
+    <button class="btn-stop" id="btnStop" onclick="stopAll()" disabled>■ 중지</button>
+    <button class="btn-reset" id="btnReset" onclick="resetAll()">↻ 초기화</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-color" style="background:var(--bar-default)"></div>미정렬</div>
+    <div class="legend-item"><div class="legend-color" style="background:var(--bar-comparing)"></div>비교 중</div>
+    <div class="legend-item"><div class="legend-color" style="background:var(--bar-swapping)"></div>교환 중</div>
+    <div class="legend-item"><div class="legend-color" style="background:var(--bar-pivot)"></div>피벗</div>
+    <div class="legend-item"><div class="legend-color" style="background:var(--bar-sorted)"></div>정렬 완료</div>
+  </div>
+
+  <div class="sort-grid" id="sortGrid"></div>
+
+  <div class="results-section" id="resultsSection">
+    <h3>📊 정렬 결과 비교</h3>
+    <table class="results-table">
+      <thead>
+        <tr><th>순위</th><th>알고리즘</th><th>비교 횟수</th><th>교환 횟수</th><th>소요 시간</th></tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
+
+  <div class="info-section">
+    <h3>📚 알고리즘 설명</h3>
+    <div class="info-grid">
+      <div class="info-card intro-card">
+        <h4><span class="algo-dot" style="background:var(--accent-blue)"></span> 인트로소트 (IntroSort) — C# Array.Sort()의 실체</h4>
+        <p>IntroSort는 3가지 정렬을 상황에 맞게 전환하는 하이브리드 알고리즘입니다. QuickSort의 빠른 평균 성능 + HeapSort의 최악 O(n log n) 보장 + InsertionSort의 소규모 효율성을 결합합니다.</p>
+        <div class="intro-flow">
+          <div class="flow-step" style="background:rgba(155,93,229,0.15);color:var(--accent-purple);">① QuickSort 시작</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step" style="background:rgba(46,196,182,0.15);color:var(--accent-teal);">② 재귀 깊이 초과 → HeapSort</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step" style="background:rgba(239,71,111,0.15);color:var(--accent-pink);">③ 파티션 ≤16 → InsertionSort</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <h4><span class="algo-dot" style="background:var(--accent-cyan)"></span> 버블 정렬</h4>
+        <p>인접 요소를 반복 비교·교환. <code>O(n²)</code>. 가장 단순하지만 가장 느림.</p>
+      </div>
+      <div class="info-card">
+        <h4><span class="algo-dot" style="background:var(--accent-orange)"></span> 선택 정렬</h4>
+        <p>매번 최솟값을 찾아 앞에 배치. <code>O(n²)</code>. 교환 횟수가 적음.</p>
+      </div>
+      <div class="info-card">
+        <h4><span class="algo-dot" style="background:var(--accent-pink)"></span> 삽입 정렬</h4>
+        <p>올바른 위치에 삽입. <code>O(n²)</code>이지만 거의 정렬된 데이터에서 <code>O(n)</code>. IntroSort의 마무리 단계.</p>
+      </div>
+      <div class="info-card">
+        <h4><span class="algo-dot" style="background:var(--accent-teal)"></span> 힙 정렬</h4>
+        <p>최대 힙을 구성한 뒤 루트를 반복 추출. 항상 <code>O(n log n)</code> 보장. IntroSort가 최악 상황에서 전환하는 안전망.</p>
+      </div>
+      <div class="info-card">
+        <h4><span class="algo-dot" style="background:var(--accent-purple)"></span> 퀵 정렬</h4>
+        <p>피벗 기준 분할정복. 평균 <code>O(n log n)</code>, 최악 <code>O(n²)</code>. IntroSort의 주력 엔진.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const algorithms = [
+  { id: 'bubble',    name: '버블 정렬',   en: 'Bubble',    color: 'var(--accent-cyan)',   complexity: 'O(n²)',         tag: '' },
+  { id: 'selection', name: '선택 정렬',   en: 'Selection', color: 'var(--accent-orange)', complexity: 'O(n²)',         tag: '' },
+  { id: 'insertion', name: '삽입 정렬',   en: 'Insertion', color: 'var(--accent-pink)',   complexity: 'O(n²)~O(n)',    tag: 'IntroSort③' },
+  { id: 'heap',      name: '힙 정렬',     en: 'Heap',      color: 'var(--accent-teal)',   complexity: 'O(n log n)',    tag: 'IntroSort②' },
+  { id: 'quick',     name: '퀵 정렬',     en: 'Quick',     color: 'var(--accent-purple)', complexity: 'O(n log n) avg',tag: 'IntroSort①' },
+  { id: 'intro',     name: '인트로소트',  en: 'IntroSort', color: 'var(--accent-blue)',   complexity: 'O(n log n)',    tag: 'C# Array.Sort()' },
+];
+
+let sorters = {};
+let baseArray = [];
+let isRunning = false;
+let stopRequested = false;
+
+function generateArray(size, order) {
+  let arr = [];
+  for (let i = 1; i <= size; i++) arr.push(i);
+  if (order === 'random') {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  } else if (order === 'reversed') {
+    arr.reverse();
+  } else if (order === 'nearly') {
+    const swaps = Math.floor(size * 0.1);
+    for (let s = 0; s < swaps; s++) {
+      const i = Math.floor(Math.random() * size);
+      const j = Math.floor(Math.random() * size);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  } else if (order === 'fewUnique') {
+    arr = [];
+    const vals = [Math.floor(size*0.2), Math.floor(size*0.4), Math.floor(size*0.6), Math.floor(size*0.8), size];
+    for (let i = 0; i < size; i++) arr.push(vals[Math.floor(Math.random() * vals.length)]);
+  }
+  return arr;
+}
+
+function buildPanels() {
+  const grid = document.getElementById('sortGrid');
+  grid.innerHTML = '';
+  algorithms.forEach(algo => {
+    const isIntro = algo.id === 'intro';
+    const tagHtml = algo.tag ? `<span class="algo-tag">${algo.tag}</span>` : '';
+    grid.innerHTML += `
+      <div class="sort-panel${isIntro ? ' intro-highlight' : ''}" id="panel-${algo.id}">
+        <div class="panel-header">
+          <span class="algo-name">
+            <span class="algo-dot" style="background:${algo.color}"></span>
+            ${algo.name} <span style="color:var(--text-muted);font-weight:400;font-size:0.78rem">${algo.en}</span>
+            ${tagHtml}
+          </span>
+          <span class="algo-complexity">${algo.complexity}</span>
+        </div>
+        <div class="panel-stats">
+          <div class="stat"><span class="stat-label">비교:</span><span class="stat-value" id="cmp-${algo.id}">0</span></div>
+          <div class="stat"><span class="stat-label">교환:</span><span class="stat-value" id="swp-${algo.id}">0</span></div>
+          <div class="stat"><span class="stat-label">시간:</span><span class="stat-value stat-time" id="time-${algo.id}">0ms</span></div>
+        </div>
+        <div class="bar-container" id="bars-${algo.id}"></div>
+        <div class="panel-status status-waiting" id="status-${algo.id}">대기 중...</div>
+      </div>`;
+  });
+}
+
+function renderBars(id, arr, hl = {}) {
+  const c = document.getElementById('bars-' + id);
+  if (!c) return;
+  const mx = Math.max(...arr);
+  if (c.children.length !== arr.length) {
+    c.innerHTML = '';
+    for (let i = 0; i < arr.length; i++) {
+      const b = document.createElement('div');
+      b.className = 'bar';
+      c.appendChild(b);
+    }
+  }
+  const bars = c.children;
+  for (let i = 0; i < arr.length; i++) {
+    bars[i].style.height = (arr[i] / mx * 100) + '%';
+    let cls = 'bar';
+    if (hl.sorted && hl.sorted.has(i)) cls += ' sorted';
+    else if (hl.pivot !== undefined && hl.pivot === i) cls += ' pivot';
+    else if (hl.swapping && hl.swapping.has(i)) cls += ' swapping';
+    else if (hl.comparing && hl.comparing.has(i)) cls += ' comparing';
+    bars[i].className = cls;
+  }
+}
+
+function updateStats(id, cmp, swp, t) {
+  document.getElementById('cmp-' + id).textContent = cmp.toLocaleString();
+  document.getElementById('swp-' + id).textContent = swp.toLocaleString();
+  document.getElementById('time-' + id).textContent = t >= 0 ? t + 'ms' : '...';
+}
+
+function setStatus(id, text, type) {
+  const el = document.getElementById('status-' + id);
+  el.textContent = text;
+  el.className = 'panel-status status-' + type;
+  const p = document.getElementById('panel-' + id);
+  const isIntro = id === 'intro';
+  p.className = 'sort-panel' + (isIntro ? ' intro-highlight' : '') + (type === 'running' ? ' running' : type === 'done' ? ' done' : '');
+}
+
+function getDelay() {
+  const s = parseInt(document.getElementById('speedRange').value);
+  return Math.max(0, Math.round(100 - s));
+}
+function sleep(ms) { return ms <= 0 ? Promise.resolve() : new Promise(r => setTimeout(r, ms)); }
+function allSorted(arr) { return new Set(arr.map((_, i) => i)); }
+
+// ═══════════════════════════════════════════════
+// SORTING ALGORITHMS
+// ═══════════════════════════════════════════════
+
+async function bubbleSort(arr, id) {
+  const n = arr.length;
+  let cmp = 0, swp = 0;
+  const sorted = new Set();
+  const t0 = performance.now();
+  for (let i = 0; i < n - 1; i++) {
+    if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+    for (let j = 0; j < n - 1 - i; j++) {
+      if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+      cmp++;
+      renderBars(id, arr, { comparing: new Set([j, j+1]), sorted });
+      updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+      await sleep(getDelay());
+      if (arr[j] > arr[j+1]) {
+        [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+        swp++;
+        renderBars(id, arr, { swapping: new Set([j, j+1]), sorted });
+        await sleep(getDelay());
+      }
+    }
+    sorted.add(n - 1 - i);
+  }
+  sorted.add(0);
+  const elapsed = Math.round(performance.now() - t0);
+  renderBars(id, arr, { sorted: allSorted(arr) });
+  updateStats(id, cmp, swp, elapsed);
+  return { comparisons: cmp, swaps: swp, time: elapsed };
+}
+
+async function selectionSort(arr, id) {
+  const n = arr.length;
+  let cmp = 0, swp = 0;
+  const sorted = new Set();
+  const t0 = performance.now();
+  for (let i = 0; i < n - 1; i++) {
+    if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+    let mi = i;
+    for (let j = i + 1; j < n; j++) {
+      if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+      cmp++;
+      renderBars(id, arr, { comparing: new Set([mi, j]), sorted });
+      updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+      await sleep(getDelay());
+      if (arr[j] < arr[mi]) mi = j;
+    }
+    if (mi !== i) {
+      [arr[i], arr[mi]] = [arr[mi], arr[i]];
+      swp++;
+      renderBars(id, arr, { swapping: new Set([i, mi]), sorted });
+      await sleep(getDelay());
+    }
+    sorted.add(i);
+  }
+  sorted.add(n - 1);
+  const elapsed = Math.round(performance.now() - t0);
+  renderBars(id, arr, { sorted: allSorted(arr) });
+  updateStats(id, cmp, swp, elapsed);
+  return { comparisons: cmp, swaps: swp, time: elapsed };
+}
+
+async function insertionSortFull(arr, id) {
+  const n = arr.length;
+  let cmp = 0, swp = 0;
+  const sorted = new Set([0]);
+  const t0 = performance.now();
+  for (let i = 1; i < n; i++) {
+    if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+    const key = arr[i];
+    let j = i - 1;
+    cmp++;
+    renderBars(id, arr, { comparing: new Set([i, j]), sorted });
+    updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+    await sleep(getDelay());
+    while (j >= 0 && arr[j] > key) {
+      if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+      arr[j + 1] = arr[j];
+      swp++; cmp++;
+      j--;
+      renderBars(id, arr, { swapping: new Set([j+1, j+2]), sorted });
+      updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+      await sleep(getDelay());
+    }
+    arr[j + 1] = key;
+    sorted.add(i);
+  }
+  const elapsed = Math.round(performance.now() - t0);
+  renderBars(id, arr, { sorted: allSorted(arr) });
+  updateStats(id, cmp, swp, elapsed);
+  return { comparisons: cmp, swaps: swp, time: elapsed };
+}
+
+async function heapSort(arr, id) {
+  const n = arr.length;
+  let cmp = 0, swp = 0;
+  const sorted = new Set();
+  const t0 = performance.now();
+
+  async function heapify(size, i) {
+    let largest = i;
+    const l = 2 * i + 1, r = 2 * i + 2;
+    cmp++;
+    if (l < size && arr[l] > arr[largest]) largest = l;
+    cmp++;
+    if (r < size && arr[r] > arr[largest]) largest = r;
+    if (largest !== i) {
+      [arr[i], arr[largest]] = [arr[largest], arr[i]];
+      swp++;
+      renderBars(id, arr, { swapping: new Set([i, largest]), sorted });
+      updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+      await sleep(getDelay());
+      if (stopRequested) return;
+      await heapify(size, largest);
+    }
+  }
+
+  setStatus(id, '정렬 중... (힙 구성)', 'running');
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+    await heapify(n, i);
+  }
+
+  setStatus(id, '정렬 중... (추출)', 'running');
+  for (let i = n - 1; i > 0; i--) {
+    if (stopRequested) return { comparisons: cmp, swaps: swp, time: -1 };
+    [arr[0], arr[i]] = [arr[i], arr[0]];
+    swp++;
+    sorted.add(i);
+    renderBars(id, arr, { swapping: new Set([0, i]), sorted });
+    updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+    await sleep(getDelay());
+    await heapify(i, 0);
+  }
+  sorted.add(0);
+  const elapsed = Math.round(performance.now() - t0);
+  renderBars(id, arr, { sorted: allSorted(arr) });
+  updateStats(id, cmp, swp, elapsed);
+  return { comparisons: cmp, swaps: swp, time: elapsed };
+}
+
+async function quickSort(arr, id) {
+  let cmp = 0, swp = 0;
+  const sorted = new Set();
+  const t0 = performance.now();
+
+  async function partition(lo, hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (arr[lo] > arr[mid]) { [arr[lo], arr[mid]] = [arr[mid], arr[lo]]; swp++; }
+    if (arr[lo] > arr[hi])  { [arr[lo], arr[hi]]  = [arr[hi], arr[lo]];  swp++; }
+    if (arr[mid] > arr[hi]) { [arr[mid], arr[hi]] = [arr[hi], arr[mid]]; swp++; }
+    const pivot = arr[mid];
+    [arr[mid], arr[hi]] = [arr[hi], arr[mid]]; swp++;
+    let i = lo - 1;
+    for (let j = lo; j < hi; j++) {
+      if (stopRequested) return -1;
+      cmp++;
+      if (arr[j] <= pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]]; swp++;
+        renderBars(id, arr, { swapping: new Set([i, j]), pivot: hi, sorted });
+        updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+        await sleep(getDelay());
+      }
+    }
+    [arr[i+1], arr[hi]] = [arr[hi], arr[i+1]]; swp++;
+    renderBars(id, arr, { swapping: new Set([i+1, hi]), sorted });
+    await sleep(getDelay());
+    return i + 1;
+  }
+
+  async function qs(lo, hi) {
+    if (stopRequested || lo >= hi) {
+      if (lo >= 0 && lo < arr.length) sorted.add(lo);
+      if (hi >= 0 && hi < arr.length) sorted.add(hi);
+      return;
+    }
+    const p = await partition(lo, hi);
+    if (p === -1) return;
+    sorted.add(p);
+    renderBars(id, arr, { sorted });
+    await qs(lo, p - 1);
+    await qs(p + 1, hi);
+  }
+
+  await qs(0, arr.length - 1);
+  const elapsed = Math.round(performance.now() - t0);
+  renderBars(id, arr, { sorted: allSorted(arr) });
+  updateStats(id, cmp, swp, elapsed);
+  return { comparisons: cmp, swaps: swp, time: elapsed };
+}
+
+async function introSort(arr, id) {
+  let cmp = 0, swp = 0;
+  const sorted = new Set();
+  const t0 = performance.now();
+  const THRESHOLD = 16;
+  const maxDepth = 2 * Math.floor(Math.log2(arr.length));
+  let currentPhase = '';
+
+  function updatePhase(phase) {
+    if (phase !== currentPhase) {
+      currentPhase = phase;
+      setStatus(id, `정렬 중... (${phase})`, 'running');
+    }
+  }
+
+  async function heapify(size, i, offset) {
+    let largest = i;
+    const l = 2*i+1, r = 2*i+2;
+    cmp++;
+    if (l < size && arr[offset+l] > arr[offset+largest]) largest = l;
+    cmp++;
+    if (r < size && arr[offset+r] > arr[offset+largest]) largest = r;
+    if (largest !== i) {
+      [arr[offset+i], arr[offset+largest]] = [arr[offset+largest], arr[offset+i]];
+      swp++;
+      renderBars(id, arr, { swapping: new Set([offset+i, offset+largest]), sorted });
+      updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+      await sleep(getDelay());
+      if (stopRequested) return;
+      await heapify(size, largest, offset);
+    }
+  }
+
+  async function heapSortRange(lo, hi) {
+    updatePhase('HeapSort 전환');
+    const n = hi - lo + 1;
+    for (let i = Math.floor(n/2)-1; i >= 0; i--) {
+      if (stopRequested) return;
+      await heapify(n, i, lo);
+    }
+    for (let i = n-1; i > 0; i--) {
+      if (stopRequested) return;
+      [arr[lo], arr[lo+i]] = [arr[lo+i], arr[lo]]; swp++;
+      renderBars(id, arr, { swapping: new Set([lo, lo+i]), sorted });
+      updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+      await sleep(getDelay());
+      await heapify(i, 0, lo);
+    }
+  }
+
+  async function insertionRange(lo, hi) {
+    updatePhase('InsertionSort 마무리');
+    for (let i = lo+1; i <= hi; i++) {
+      if (stopRequested) return;
+      const key = arr[i]; let j = i-1;
+      cmp++;
+      while (j >= lo && arr[j] > key) {
+        arr[j+1] = arr[j]; swp++; cmp++; j--;
+      }
+      arr[j+1] = key;
+      renderBars(id, arr, { comparing: new Set([i, j+1]), sorted });
+      updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+      await sleep(getDelay());
+    }
+  }
+
+  async function introPartition(lo, hi) {
+    const mid = Math.floor((lo+hi)/2);
+    if (arr[lo] > arr[mid]) { [arr[lo], arr[mid]] = [arr[mid], arr[lo]]; swp++; }
+    if (arr[lo] > arr[hi])  { [arr[lo], arr[hi]]  = [arr[hi], arr[lo]];  swp++; }
+    if (arr[mid] > arr[hi]) { [arr[mid], arr[hi]] = [arr[hi], arr[mid]]; swp++; }
+    const pivot = arr[mid];
+    [arr[mid], arr[hi]] = [arr[hi], arr[mid]]; swp++;
+    let i = lo - 1;
+    for (let j = lo; j < hi; j++) {
+      if (stopRequested) return -1;
+      cmp++;
+      if (arr[j] <= pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]]; swp++;
+        renderBars(id, arr, { swapping: new Set([i, j]), pivot: hi, sorted });
+        updateStats(id, cmp, swp, Math.round(performance.now() - t0));
+        await sleep(getDelay());
+      }
+    }
+    [arr[i+1], arr[hi]] = [arr[hi], arr[i+1]]; swp++;
+    renderBars(id, arr, { swapping: new Set([i+1, hi]), sorted });
+    await sleep(getDelay());
+    return i+1;
+  }
+
+  async function introHelper(lo, hi, depth) {
+    if (stopRequested) return;
+    const size = hi - lo + 1;
+    if (size <= 1) {
+      if (lo >= 0 && lo < arr.length) sorted.add(lo);
+      return;
+    }
+    if (size <= THRESHOLD) {
+      await insertionRange(lo, hi);
+      for (let k = lo; k <= hi; k++) sorted.add(k);
+      renderBars(id, arr, { sorted });
+      return;
+    }
+    if (depth === 0) {
+      await heapSortRange(lo, hi);
+      for (let k = lo; k <= hi; k++) sorted.add(k);
+      renderBars(id, arr, { sorted });
+      return;
+    }
+    updatePhase('QuickSort');
+    const p = await introPartition(lo, hi);
+    if (p === -1) return;
+    sorted.add(p);
+    renderBars(id, arr, { sorted });
+    await introHelper(lo, p-1, depth-1);
+    await introHelper(p+1, hi, depth-1);
+  }
+
+  updatePhase('QuickSort');
+  await introHelper(0, arr.length-1, maxDepth);
+  const elapsed = Math.round(performance.now() - t0);
+  renderBars(id, arr, { sorted: allSorted(arr) });
+  updateStats(id, cmp, swp, elapsed);
+  return { comparisons: cmp, swaps: swp, time: elapsed };
+}
+
+// ═══════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════
+
+function resetAll() {
+  stopRequested = false; isRunning = false;
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStop').disabled = true;
+  document.getElementById('resultsSection').classList.remove('show');
+
+  const size = parseInt(document.getElementById('sizeSelect').value);
+  const order = document.getElementById('orderSelect').value;
+  baseArray = generateArray(size, order);
+
+  algorithms.forEach(algo => {
+    const arr = [...baseArray];
+    sorters[algo.id] = { array: arr };
+    renderBars(algo.id, arr);
+    updateStats(algo.id, 0, 0, 0);
+    setStatus(algo.id, '대기 중...', 'waiting');
+  });
+}
+
+async function startAll() {
+  if (isRunning) return;
+  isRunning = true; stopRequested = false;
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('btnStop').disabled = false;
+  document.getElementById('resultsSection').classList.remove('show');
+
+  const size = parseInt(document.getElementById('sizeSelect').value);
+  const order = document.getElementById('orderSelect').value;
+  baseArray = generateArray(size, order);
+
+  const sortFns = {
+    bubble: bubbleSort,
+    selection: selectionSort,
+    insertion: insertionSortFull,
+    heap: heapSort,
+    quick: quickSort,
+    intro: introSort,
+  };
+
+  const promises = algorithms.map(algo => {
+    const arr = [...baseArray];
+    sorters[algo.id] = { array: arr };
+    renderBars(algo.id, arr);
+    updateStats(algo.id, 0, 0, 0);
+    setStatus(algo.id, '정렬 중...', 'running');
+
+    return sortFns[algo.id](arr, algo.id).then(result => {
+      if (result && result.time >= 0) {
+        setStatus(algo.id, `완료! ${result.time}ms`, 'done');
+      } else {
+        setStatus(algo.id, '중지됨', 'waiting');
+      }
+      return { id: algo.id, name: algo.name, ...result };
+    });
+  });
+
+  const results = await Promise.all(promises);
+  isRunning = false;
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStop').disabled = true;
+  if (!stopRequested) showResults(results);
+}
+
+function stopAll() {
+  stopRequested = true;
+  document.getElementById('btnStop').disabled = true;
+}
+
+function showResults(results) {
+  const valid = results.filter(r => r && r.time >= 0);
+  valid.sort((a, b) => a.time - b.time);
+  const body = document.getElementById('resultsBody');
+  body.innerHTML = '';
+  valid.forEach((r, i) => {
+    const rank = i + 1;
+    const rc = rank <= 3 ? `rank-${rank}` : 'rank-other';
+    body.innerHTML += `<tr>
+      <td><span class="rank-badge ${rc}">${rank}</span></td>
+      <td>${r.name}</td>
+      <td>${r.comparisons.toLocaleString()}</td>
+      <td>${r.swaps.toLocaleString()}</td>
+      <td style="color:var(--accent-yellow);font-weight:600">${r.time}ms</td>
+    </tr>`;
+  });
+  document.getElementById('resultsSection').classList.add('show');
+}
+
+document.getElementById('speedRange').addEventListener('input', e => {
+  document.getElementById('speedVal').textContent = e.target.value;
+});
+
+buildPanels();
+resetAll();
+</script>
+</body>
+</html>
