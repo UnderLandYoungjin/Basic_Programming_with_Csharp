@@ -1,16 +1,23 @@
+
+
+
+# WPF 실습 가이드 — 미니 계산기 만들기
 <img width="301" height="489" alt="image" src="https://github.com/user-attachments/assets/e7636fa5-e8fc-4f4c-8514-2eb9346c43af" />
 
 
 <img width="1446" height="763" alt="image" src="https://github.com/user-attachments/assets/37d8b170-70c5-4530-aae7-0ec3e7615da6" />
 <img width="1428" height="751" alt="image" src="https://github.com/user-attachments/assets/bce57981-5d9d-432b-88b5-15f46b080018" />
-
-
-# WPF 실습 가이드 — 미니 계산기 만들기
-
 > **과정명:** C# WPF 프로그래밍 입문  
 > **실습 목표:** WPF 프로젝트 생성 → 파일 분할 설계 → 빌드 → 인스톨러 배포까지 전체 흐름 경험  
 > **소요 시간:** 약 60~90분  
 > **개발 환경:** Visual Studio 2022/2026, .NET 8 이상, Windows 10/11
+
+# WPF 프로그램 패키징 및 배포
+ 
+## 참고 자료
+ 
+[WPF로 프로그램 개발후 팩키징. setup파일로 배포하기 위한 툴 : 네이버 카페](https://cafe.naver.com/f-e/cafes/30977017/articles/819?boardtype=L&menuid=55&referrerAllArticles=false)
+ 
 
 ---
 
