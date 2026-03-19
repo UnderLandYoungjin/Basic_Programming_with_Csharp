@@ -30,7 +30,14 @@ C# sort정의 .NET Array.Sort / List.Sort는 Introsort 기반이다.
 https://learn.microsoft.com/ko-kr/dotnet/api/system.array.sort?view=net-8.0
 
 ---
-##InsertionSortVisualizer
+## InsertionSortVisualizer
+
+
+
+
+https://github.com/user-attachments/assets/1fa8d5f8-01b0-45ae-961c-25024e37cd2f
+
+
 
 
 ### WPF 코드 MainWindow.xaml
