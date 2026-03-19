@@ -30,6 +30,532 @@ C# sort정의 .NET Array.Sort / List.Sort는 Introsort 기반이다.
 https://learn.microsoft.com/ko-kr/dotnet/api/system.array.sort?view=net-8.0
 
 ---
+##InsertionSortVisualizer
+
+
+
+
+```xaml
+<Window x:Class="InsertionSortVisualizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="삽입 정렬 시각화 (Insertion Sort Visualizer)" 
+        Height="650" Width="920"
+        MinHeight="500" MinWidth="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E2E">
+
+    <Window.Resources>
+        <Style x:Key="BtnStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 제목 -->
+        <TextBlock Grid.Row="0" Text="삽입 정렬 시각화 (Insertion Sort)" 
+                   FontSize="28" FontWeight="Bold" Foreground="#CDD6F4"
+                   HorizontalAlignment="Center" Margin="0,0,0,5"/>
+
+        <!-- 상태 메시지 -->
+        <TextBlock Grid.Row="1" x:Name="txtStatus" 
+                   Text="▶ 시작 버튼을 눌러주세요" 
+                   FontSize="16" Foreground="#A6ADC8"
+                   HorizontalAlignment="Center" Margin="0,0,0,5"/>
+
+        <!-- 카운터 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+            <TextBlock x:Name="txtCompareCount" Text="비교: 0회" 
+                       Foreground="#89B4FA" FontSize="14" FontWeight="Bold" Margin="15,0"/>
+            <TextBlock x:Name="txtShiftCount" Text="이동: 0회" 
+                       Foreground="#FAB387" FontSize="14" FontWeight="Bold" Margin="15,0"/>
+        </StackPanel>
+
+        <!-- 막대 그래프 영역 -->
+        <Border Grid.Row="3" Background="#181825" CornerRadius="12" Padding="20">
+            <Canvas x:Name="canvas" SizeChanged="Canvas_SizeChanged"/>
+        </Border>
+
+        <!-- 범례 -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,8">
+            <StackPanel Orientation="Horizontal" Margin="10,0">
+                <Border Width="16" Height="16" CornerRadius="3" Background="#89B4FA" Margin="0,0,6,0"/>
+                <TextBlock Text="정렬 완료 구간" Foreground="#A6ADC8" FontSize="13"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="10,0">
+                <Border Width="16" Height="16" CornerRadius="3" Background="#F38BA8" Margin="0,0,6,0"/>
+                <TextBlock Text="Key (삽입 대상)" Foreground="#A6ADC8" FontSize="13"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="10,0">
+                <Border Width="16" Height="16" CornerRadius="3" Background="#FAB387" Margin="0,0,6,0"/>
+                <TextBlock Text="비교 중" Foreground="#A6ADC8" FontSize="13"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="10,0">
+                <Border Width="16" Height="16" CornerRadius="3" Background="#CBA6F7" Margin="0,0,6,0"/>
+                <TextBlock Text="이동(밀기)" Foreground="#A6ADC8" FontSize="13"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="10,0">
+                <Border Width="16" Height="16" CornerRadius="3" Background="#A6E3A1" Margin="0,0,6,0"/>
+                <TextBlock Text="전체 정렬 완료" Foreground="#A6ADC8" FontSize="13"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 버튼 영역 -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
+            <Button x:Name="btnStart" Content="▶ 정렬 시작" 
+                    Background="#89B4FA" Style="{StaticResource BtnStyle}"
+                    Click="BtnStart_Click" Margin="5,0"/>
+            <Button x:Name="btnPause" Content="⏸ 일시정지" 
+                    Background="#FAB387" Style="{StaticResource BtnStyle}"
+                    Click="BtnPause_Click" Margin="5,0" IsEnabled="False"/>
+            <Button x:Name="btnReset" Content="↻ 초기화" 
+                    Background="#F38BA8" Style="{StaticResource BtnStyle}"
+                    Click="BtnReset_Click" Margin="5,0"/>
+
+            <TextBlock Text="  속도:" Foreground="#A6ADC8" VerticalAlignment="Center" 
+                       FontSize="14" Margin="15,0,5,0"/>
+            <Slider x:Name="sliderSpeed" Width="120" Minimum="100" Maximum="2000" Value="700"
+                    VerticalAlignment="Center" IsDirectionReversed="True"/>
+            <TextBlock x:Name="txtSpeed" Text="700ms" Foreground="#A6ADC8" 
+                       VerticalAlignment="Center" FontSize="13" Margin="5,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>
+```
+
+### MainWindow.xaml.cs코드
+```csharp
+using System;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
+namespace InsertionSortVisualizer
+{
+    public partial class MainWindow : Window
+    {
+        // ── 데이터 ──
+        private int[] arr;       // 실제 정렬 배열
+        private int[] display;   // 화면 표시용 배열 (밀기 중간 상태 포함)
+        private Rectangle[] bars;
+        private TextBlock[] labels;
+
+        // ── 상태 ──
+        private bool isSorting = false;
+        private bool isPaused = false;
+        private int compareCount = 0;
+        private int shiftCount = 0;
+
+        // ── 레이아웃 ──
+        private double barGap = 8;
+        private double barWidth;
+        private double maxBarHeight;
+        private double canvasW;
+        private double canvasH;
+
+        // ── 하이라이트 상태 ──
+        private int hlKey = -1;       // Key 위치 (빨강)
+        private int hlCompare = -1;   // 비교 중 (주황)
+        private int hlShift = -1;     // 밀기 대상 (보라)
+        private int hlEmpty = -1;     // Key가 빠져나간 빈 칸
+        private int sortedUpTo = -1;  // 정렬 완료 구간
+
+        // ── 색상 (Catppuccin Mocha) ──
+        private static readonly SolidColorBrush CSorted = Br("#89B4FA");
+        private static readonly SolidColorBrush CUnsorted = Br("#45475A");
+        private static readonly SolidColorBrush CKey = Br("#F38BA8");
+        private static readonly SolidColorBrush CCompare = Br("#FAB387");
+        private static readonly SolidColorBrush CShift = Br("#CBA6F7");
+        private static readonly SolidColorBrush CDone = Br("#A6E3A1");
+        private static readonly SolidColorBrush CEmpty = Br("#313244");
+        private static readonly SolidColorBrush CText = Br("#CDD6F4");
+        private static readonly SolidColorBrush CTextDim = Br("#585B70");
+
+        private static SolidColorBrush Br(string hex)
+        {
+            var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
+            b.Freeze();
+            return b;
+        }
+
+        // =====================================================================
+        public MainWindow()
+        {
+            InitializeComponent();
+            sliderSpeed.ValueChanged += (s, e) => txtSpeed.Text = $"{(int)sliderSpeed.Value}ms";
+            Loaded += (s, e) => ResetArray();
+        }
+
+        // =====================================================================
+        // 초기화
+        // =====================================================================
+        private void ResetArray()
+        {
+            arr = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            Random rng = new Random();
+            for (int i = arr.Length - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                (arr[i], arr[j]) = (arr[j], arr[i]);
+            }
+            display = (int[])arr.Clone();
+
+            compareCount = 0;
+            shiftCount = 0;
+            UpdateCounters();
+            txtStatus.Text = "▶ 시작 버튼을 눌러주세요";
+
+            ClearHighlights();
+            sortedUpTo = 0; // 첫 원소는 정렬됨
+            Redraw();
+        }
+
+        private void ClearHighlights()
+        {
+            hlKey = -1;
+            hlCompare = -1;
+            hlShift = -1;
+            hlEmpty = -1;
+        }
+
+        // =====================================================================
+        // 레이아웃
+        // =====================================================================
+        private void CalcLayout()
+        {
+            canvasW = canvas.ActualWidth > 0 ? canvas.ActualWidth : 820;
+            canvasH = canvas.ActualHeight > 0 ? canvas.ActualHeight : 380;
+            barWidth = (canvasW - barGap * (arr.Length + 1)) / arr.Length;
+            maxBarHeight = canvasH - 45;
+        }
+
+        private double GetBarHeight(int value)
+        {
+            return Math.Max(20, (value + 1) * (maxBarHeight / 10.5));
+        }
+
+        private double GetLeftX(int index)
+        {
+            return barGap + index * (barWidth + barGap);
+        }
+
+        private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (arr != null && !isSorting)
+                Redraw();
+        }
+
+        // =====================================================================
+        // 화면 그리기 (display 배열 기준)
+        // =====================================================================
+        private void Redraw()
+        {
+            canvas.Children.Clear();
+            CalcLayout();
+            bars = new Rectangle[display.Length];
+            labels = new TextBlock[display.Length];
+
+            for (int i = 0; i < display.Length; i++)
+            {
+                double leftX = GetLeftX(i);
+                bool isEmpty = (i == hlEmpty);
+                int val = display[i];
+                double barH = isEmpty ? 0 : GetBarHeight(val);
+
+                // 색상 결정
+                SolidColorBrush fill;
+                if (isEmpty)
+                    fill = CEmpty;
+                else if (i == hlKey)
+                    fill = CKey;
+                else if (i == hlShift)
+                    fill = CShift;
+                else if (i == hlCompare)
+                    fill = CCompare;
+                else if (i <= sortedUpTo)
+                    fill = CSorted;
+                else
+                    fill = CUnsorted;
+
+                var rect = new Rectangle
+                {
+                    Width = barWidth,
+                    Height = isEmpty ? 8 : barH,
+                    Fill = fill,
+                    RadiusX = 6,
+                    RadiusY = 6
+                };
+                Canvas.SetLeft(rect, leftX);
+                Canvas.SetTop(rect, canvasH - 40 - (isEmpty ? 8 : barH));
+                canvas.Children.Add(rect);
+                bars[i] = rect;
+
+                var tb = new TextBlock
+                {
+                    Text = isEmpty ? "" : val.ToString(),
+                    FontSize = 18,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = isEmpty ? CTextDim : CText,
+                    TextAlignment = TextAlignment.Center,
+                    Width = barWidth
+                };
+                Canvas.SetLeft(tb, leftX);
+                Canvas.SetTop(tb, canvasH - 32);
+                canvas.Children.Add(tb);
+                labels[i] = tb;
+            }
+
+            // Key 값을 상단에 별도 표시 (뽑아든 카드 느낌)
+            if (hlKey >= 0 && hlEmpty >= 0)
+            {
+                int keyVal = display[hlKey];
+                double keyH = GetBarHeight(keyVal);
+                double keyLeft = GetLeftX(hlKey);
+
+                // Key 막대를 위로 살짝 띄움
+                var keyRect = new Rectangle
+                {
+                    Width = barWidth,
+                    Height = keyH,
+                    Fill = CKey,
+                    RadiusX = 6,
+                    RadiusY = 6,
+                    Opacity = 0.5
+                };
+                Canvas.SetLeft(keyRect, keyLeft);
+                Canvas.SetTop(keyRect, 5);
+                canvas.Children.Add(keyRect);
+
+                var keyTb = new TextBlock
+                {
+                    Text = $"Key={keyVal}",
+                    FontSize = 14,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = CKey,
+                    TextAlignment = TextAlignment.Center,
+                    Width = barWidth + 20
+                };
+                Canvas.SetLeft(keyTb, keyLeft - 10);
+                Canvas.SetTop(keyTb, keyH + 10);
+                canvas.Children.Add(keyTb);
+            }
+        }
+
+        private void UpdateCounters()
+        {
+            txtCompareCount.Text = $"비교: {compareCount}회";
+            txtShiftCount.Text = $"이동: {shiftCount}회";
+        }
+
+        // =====================================================================
+        // 딜레이
+        // =====================================================================
+        private int DelayMs => (int)sliderSpeed.Value;
+
+        private async Task Wait(int ms)
+        {
+            while (isPaused) await Task.Delay(50);
+            await Task.Delay(ms);
+        }
+
+        // =====================================================================
+        // 삽입 정렬 (비동기 시각화)
+        // =====================================================================
+        private async Task InsertionSort()
+        {
+            int n = arr.Length;
+
+            for (int i = 1; i < n; i++)
+            {
+                int key = arr[i];
+
+                // display 배열도 동기화
+                display = (int[])arr.Clone();
+
+                // ── 1) Key 선택: i 위치에서 뽑아냄 ──
+                ClearHighlights();
+                sortedUpTo = i - 1;
+                hlKey = i;
+                hlEmpty = i;
+                Redraw();
+                txtStatus.Text = $"Key = {key} (arr[{i}])  →  삽입할 위치를 찾는 중...";
+                await Wait(DelayMs);
+
+                int j = i - 1;
+
+                while (j >= 0)
+                {
+                    compareCount++;
+                    UpdateCounters();
+
+                    bool needShift = arr[j] > key;
+
+                    // ── 2) 비교 표시 ──
+                    ClearHighlights();
+                    hlCompare = j;
+                    hlEmpty = j + 1; // 빈 칸은 항상 밀려난 자리
+                    // display에서 빈 칸 반영: j+1에는 아직 key가 들어가지 않은 상태
+                    display = (int[])arr.Clone();
+                    // 밀기가 진행된 상태 반영: arr[i]의 원래 값은 이미 덮어씌워졌을 수 있음
+                    // → display에서 빈 칸 위치의 값을 key로 표시하되 빈 칸 처리
+                    display[j + 1] = key; // 비교 시점에서는 아직 여기에 있다고 표시
+                    hlEmpty = -1; // 비교 단계에서는 빈 칸 안 보여줌
+
+                    // Key가 현재 비교 위치 옆(j+1)에 있다고 표시
+                    hlKey = j + 1;
+                    sortedUpTo = i - 1;
+                    Redraw();
+
+                    txtStatus.Text = $"비교: arr[{j}]={arr[j]}  >  Key={key}  ?  " +
+                                     $"{(needShift ? "YES → 오른쪽으로 밀기" : "NO → 여기 뒤에 삽입")}";
+                    await Wait(DelayMs);
+
+                    if (needShift)
+                    {
+                        shiftCount++;
+                        UpdateCounters();
+
+                        // ── 3) 밀기 시각화 ──
+                        int shiftedVal = arr[j];
+                        arr[j + 1] = arr[j]; // 실제 밀기
+
+                        display = (int[])arr.Clone();
+                        display[j] = key; // j 위치에 Key가 임시로 있다고 표시
+
+                        ClearHighlights();
+                        hlShift = j + 1; // 밀려간 대상
+                        hlKey = j;       // Key가 한 칸 왼쪽으로 이동
+                        hlEmpty = -1;
+                        sortedUpTo = i - 1;
+                        Redraw();
+
+                        txtStatus.Text = $"이동: {shiftedVal} → arr[{j + 1}]로 밀기";
+                        await Wait(DelayMs / 2);
+
+                        j--;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                // ── 4) Key 삽입 ──
+                int insertPos = j + 1;
+                arr[insertPos] = key;
+                display = (int[])arr.Clone();
+
+                ClearHighlights();
+                hlKey = insertPos;
+                sortedUpTo = i;
+                Redraw();
+
+                txtStatus.Text = $"삽입: Key={key} → arr[{insertPos}]에 배치 완료";
+                await Wait(DelayMs);
+
+                // 정렬 구간 갱신
+                ClearHighlights();
+                sortedUpTo = i;
+                Redraw();
+            }
+        }
+
+        // =====================================================================
+        // 버튼
+        // =====================================================================
+        private async void BtnStart_Click(object sender, RoutedEventArgs e)
+        {
+            if (isSorting) return;
+            isSorting = true;
+            isPaused = false;
+            btnStart.IsEnabled = false;
+            btnPause.IsEnabled = true;
+            btnReset.IsEnabled = false;
+
+            CalcLayout();
+            await InsertionSort();
+
+            // 완료 연출
+            for (int i = 0; i < bars.Length; i++)
+            {
+                bars[i].Fill = CDone;
+                await Task.Delay(80);
+            }
+
+            txtStatus.Text = $"✔ 정렬 완료!  (비교 {compareCount}회, 이동 {shiftCount}회)";
+            isSorting = false;
+            isPaused = false;
+            btnPause.IsEnabled = false;
+            btnPause.Content = "⏸ 일시정지";
+            btnReset.IsEnabled = true;
+        }
+
+        private void BtnPause_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isSorting) return;
+            isPaused = !isPaused;
+            btnPause.Content = isPaused ? "▶ 재개" : "⏸ 일시정지";
+            if (isPaused)
+                txtStatus.Text = "⏸ 일시정지 중...  (재개 버튼을 누르세요)";
+        }
+
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
+        {
+            if (isSorting) return;
+            btnStart.IsEnabled = true;
+            btnPause.IsEnabled = false;
+            btnPause.Content = "⏸ 일시정지";
+            ResetArray();
+        }
+    }
+}
+```
+
+---
+
+
+
+
+
+
+
+
+
+
 ## QuickSortVisualizer
 
 
