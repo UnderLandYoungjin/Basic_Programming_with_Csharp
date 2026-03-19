@@ -1,6 +1,11 @@
 ## QuickSortVisualizer
 
-# WPF 코드 MainWindow.xaml
+
+https://github.com/user-attachments/assets/474ab039-bf91-4388-ae8e-f0b633bff754
+
+
+### WPF 코드 MainWindow.xaml
+
 ```xaml
 <Window x:Class="QuickSortVisualizer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -117,7 +122,7 @@
 </Window>
 ```
 
-# MainWindow.xaml.cs코드
+### MainWindow.xaml.cs코드
 
 ```csharp
 using System;
@@ -530,7 +535,7 @@ namespace QuickSortVisualizer
 https://github.com/user-attachments/assets/47bf7f6e-49ff-4a3e-bfb6-48dc163033ba
 
 
-# WPF 코드 MainWindow.xaml
+### WPF 코드 MainWindow.xaml
 ```xaml
 <Window x:Class="HeapSortVisualizer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -672,7 +677,7 @@ https://github.com/user-attachments/assets/47bf7f6e-49ff-4a3e-bfb6-48dc163033ba
 </Window>
 ```
 
-# MainWindow.xaml.cs코드
+### MainWindow.xaml.cs코드
 
 ```csharp
 using System;
