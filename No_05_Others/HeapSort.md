@@ -1200,3 +1200,44 @@ namespace HeapSortVisualizer
     }
 }
 ```
+
+
+## Bubble Sort ex(C# Console)
+
+```csharp
+namespace ConsoleApp17
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            // 정렬할 배열 (0~9까지 숫자를 랜덤 순서로 배치)
+            int[] arr = { 7, 3, 9, 0, 5, 1, 8, 4, 2, 6 };
+            // 현재 배열 상태 출력 (정렬 전 확인)
+            Console.WriteLine("정렬 전: " + string.Join(", ", arr));
+            // 바깥 반복문: 전체 반복 횟수 (한 바퀴 돌 때마다 가장 큰 값이 뒤로 이동)
+            for (int i = 0; i < arr.Length - 1; i++)
+            {
+                // 안쪽 반복문: 앞에서부터 인접한 값들을 비교
+                // (뒤쪽은 이미 정렬되었기 때문에 -i 만큼 범위를 줄임)
+                for (int j = 0; j < arr.Length - 1 - i; j++)
+                {
+                    // 현재 값이 다음 값보다 크면 (순서가 잘못된 경우)
+                    if (arr[j] > arr[j + 1])
+                    {
+                        // 두 값을 서로 교환 (swap)
+                        // 1. 임시 변수(temp)에 현재 값을 잠깐 저장
+                        int temp = arr[j];
+                        // 2. 오른쪽 값을 왼쪽으로 이동
+                        arr[j] = arr[j + 1];
+                        // 3. 임시 변수에 저장해둔 값을 오른쪽으로 이동
+                        arr[j + 1] = temp;
+                    }
+                }
+            }
+            // 정렬 완료 후 배열 상태 출력
+            Console.WriteLine("정렬 후: " + string.Join(", ", arr));
+        }
+    }
+}
+```
