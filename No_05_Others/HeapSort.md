@@ -2,9 +2,19 @@
 
 ---
 
-C#의 정렬 알고리즘은 .net4까지는 퀵 정렬 기반 이며 . net4.5 부터는 힙정렬,삽입정렬을 적절히 혼용한다.
+C# sort정의 .NET Array.Sort / List.Sort는 Introsort 기반이다.
 
-기본적으로 퀵 정렬이되 허용 깊이가 2Xlogn 을 넘어 가면 힙,삽입 정렬로 바뀐다.
+1. 기본: QuickSort
+2. 재귀 깊이 > 2 × log₂(N) → HeapSort로 전환
+3. 작은 파티션 (≈16 이하) → InsertionSort 사용
+
+쉽게 말해 C#의 정렬은 Introsort를 사용한다.
+
+기본적으로 QuickSort를 사용하지만,
+재귀 깊이가 너무 깊어지면 HeapSort로 바뀌고,
+데이터가 작아지면 InsertionSort를 사용한다.
+
+   
 ```
 정상 깊이 ≈ log₂(1000) ≈ 10
 허용 깊이 = 2 × 10 = 20
