@@ -1,4 +1,11 @@
-```XAML
+##HeapSortVisualizer
+
+
+https://github.com/user-attachments/assets/47bf7f6e-49ff-4a3e-bfb6-48dc163033ba
+
+
+WPF 코드 MainWindow.xaml
+```xaml
 <Window x:Class="HeapSortVisualizer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -137,5 +144,8 @@
         </StackPanel>
     </Grid>
 </Window>
-
 ```
+
+MainWindow.xaml.cs코드
+
+```csharp
