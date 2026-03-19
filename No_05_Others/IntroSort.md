@@ -1,4 +1,4 @@
-## C#의 정렬 알고리즘은 기본적으로 Intro Sort(Quick Sort와 Heap Sort를 적절히 혼용)를 사용함
+## C#의 정렬 알고리즘은 기본적으로 Intro Sort(Quick Sort와 Heap Sort, Insertion Sort를 적절히 혼용)를 사용함
 
 ---
 
