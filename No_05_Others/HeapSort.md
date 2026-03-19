@@ -1,3 +1,8 @@
+## C#의 정렬 알고리즘은 기본적으로 Intro Sort(Quick Sort와 Heap Sort를 적절히 혼용)를 사용함
+자세한 내용은 공식 문서에서 확인하는 것이 가장 좋음
+https://learn.microsoft.com/ko-kr/dotnet/api/system.array.sort?view=net-8.0
+
+
 ## QuickSortVisualizer
 
 
