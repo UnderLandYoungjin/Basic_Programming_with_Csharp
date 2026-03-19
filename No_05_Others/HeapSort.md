@@ -8,10 +8,13 @@ C# sort정의 .NET Array.Sort / List.Sort는 Introsort 기반이다.
 2. 재귀 깊이 > 2 × log₂(N) → HeapSort로 전환
 3. 작은 파티션 (≈16 이하) → InsertionSort 사용
 
-쉽게 말해 C#의 정렬은 Introsort를 사용한다.
+ 
+ 정리하면 C#의 정렬은 Introsort를 사용한다.
 
 기본적으로 QuickSort를 사용하지만,
+
 재귀 깊이가 너무 깊어지면 HeapSort로 바뀌고,
+
 데이터가 작아지면 InsertionSort를 사용한다.
 
    
