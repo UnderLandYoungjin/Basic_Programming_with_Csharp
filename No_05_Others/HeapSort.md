@@ -1,4 +1,4 @@
-##HeapSortVisualizer
+##HeapSortVisualizer##
 
 
 https://github.com/user-attachments/assets/47bf7f6e-49ff-4a3e-bfb6-48dc163033ba
