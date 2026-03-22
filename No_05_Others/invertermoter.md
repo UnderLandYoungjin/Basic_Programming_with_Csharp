@@ -6,3 +6,6 @@
 
 
 인버터의 DRV는 3번, 인버터의 주파수 FRQ는 6번이  -<-------------485 통신 쓴다.
+
+
+<img width="1906" height="889" alt="image" src="https://github.com/user-attachments/assets/c7078f85-286f-4882-b590-19ecfe9cd474" />
