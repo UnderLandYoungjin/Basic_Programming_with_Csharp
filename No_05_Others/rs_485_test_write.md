@@ -1,5 +1,6 @@
 # RS485 Modbus RTU 데이터 수신 모니터
-
+[네이버 카페 바로가기](https://cafe.naver.com/underfusion?iframe_url_utf8=%2FArticleRead.nhn%253Fclubid%3D30977017%2526articleid%3D821%2526menuid%3D50%2526boardtype%3DL)
+ 
 ## 1. 목적
 
 LS XGB PLC에서 RS485 통신으로 전송하는 데이터를 PC에서 수신하여 정상적으로 데이터가 오고 있는지 확인하기 위한 모니터링 도구이다.
