@@ -1,34 +1,174 @@
-# WPF RS485 Modbus RTU 수신 모니터 (수정판)
+# WPF RS485 Modbus RTU 수신 모니터 (최종)
 
-## NuGet 패키지
 
-**System.IO.Ports** 1개만 설치하면 됩니다.
+## 1. 목적
+
+LS XGB PLC에서 RS485 통신(P2P)으로 전송하는 데이터를 PC에서 수신하여 정상적으로 데이터가 오고 있는지 확인하기 위한 WPF 모니터링 도구이다.
+
+PLC가 인버터(LS G100)에 보내는 데이터를 USB-RS485 컨버터를 통해 PC에서 가로채어 확인하는 용도로, 본격적인 제어가 아닌 **데이터 수신 확인용**이다.
+
+
+## 2. 시스템 구성
 
 ```
-도구 → NuGet 패키지 관리자 → 패키지 관리자 콘솔
+PLC (XGB)  ──RS485──  USB-RS485 컨버터  ──USB──  PC (WPF C#)
+```
+
+| 구성 요소 | 설명 |
+|-----------|------|
+| PLC | LS XGB, 채널2 P2P 통신으로 1초 주기 데이터 전송 |
+| 통신 규격 | RS485, 모드버스 RTU 클라이언트(마스터) |
+| 컨버터 | USB-RS485 (COM4로 인식) |
+| PC 소프트웨어 | .NET 10 WPF + System.IO.Ports |
+
+
+## 3. 통신 설정
+
+| 항목 | 설정값 |
+|------|--------|
+| COM 포트 | COM4 |
+| Baud Rate | 9600 bps |
+| Data Bit | 8 bit |
+| Parity | None |
+| Stop Bit | 1 |
+| 프레임 크기 | 9 bytes |
+| 동기화 바이트(SLAVE) | 0x00 |
+
+
+## 4. PLC 통신 주소 (LS G100 기준)
+
+LS G100 인버터 매뉴얼(7.5 통신 호환 공통 영역 파라미터) 기준 주소 맵:
+
+| 통신 번지 | 파라미터 | 스케일 | 단위 | R/W |
+|-----------|----------|--------|------|-----|
+| 0h0004 | Reserved | - | - | R/W |
+| 0h0005 | 목표 주파수 | 0.01 | Hz | R/W |
+| 0h0006 | 운전 지령(옵션) | - | - | R/W |
+
+### 운전 지령(0h0006) 비트 할당
+
+| 비트 | 기능 |
+|------|------|
+| B0 | 정지(S) |
+| B1 | 정방향 운전(F) |
+| B2 | 역방향 운전(R) |
+| B3 | Trip Reset |
+| B4 | 프리 런 정지 |
+
+### PLC D 레지스터 → 운전 지령 값 예시
+
+| D 레지스터 값 | 의미 |
+|--------------|------|
+| 1 (0x0001) | 정지 |
+| 2 (0x0002) | 정방향 운전 |
+| 4 (0x0004) | 역방향 운전 |
+
+
+## 5. PLC P2P 통신 설정
+
+| 항목 | 설정값 |
+|------|--------|
+| 채널 | 2 (RS485) |
+| 모드 | P2P 사용 |
+| 설정 드라이버 | 모드버스 RTU 클라이언트 |
+| P2P 기능 | WRITE |
+| 기동 조건 | _TIS |
+| 방식 | 1. 개별 |
+| 데이터 타입 | WORD |
+| 변수 개수 | 1 |
+| 상대국번 | 1 |
+| 변수 설정 | READ1:D00000, SAVE1:0x40005 |
+
+
+## 6. 프로젝트 환경
+
+### 개발 환경
+
+| 항목 | 버전 |
+|------|------|
+| Visual Studio | 2026 |
+| .NET | 10 |
+| 프로젝트 템플릿 | WPF 애플리케이션 (.NET) |
+
+### NuGet 패키지
+
+```
 Install-Package System.IO.Ports
 ```
 
+이 1개만 설치하면 된다. CommunityToolkit 등 추가 패키지는 사용하지 않는다.
 
-## 프로젝트 구조
+
+## 7. 프로젝트 구조
 
 ```
 RS485Monitor/
-├── MainWindow.xaml
-├── MainWindow.xaml.cs
+├── MainWindow.xaml           ← UI (Catppuccin Mocha 테마)
+├── MainWindow.xaml.cs        ← 코드비하인드 (자동스크롤, 버튼 색상)
 ├── Models/
-│   └── FrameData.cs
+│   └── FrameData.cs          ← 수신 프레임 데이터 모델
 ├── ViewModels/
-│   ├── BaseViewModel.cs
-│   └── MainViewModel.cs
+│   ├── BaseViewModel.cs      ← INotifyPropertyChanged 기본 구현
+│   └── MainViewModel.cs      ← MVVM 메인 로직 + RelayCommand
 └── Services/
-    └── SerialService.cs
+    └── SerialService.cs      ← 시리얼 통신 (열기/읽기/닫기)
 ```
+
+
+## 8. 핵심 동작 흐름
+
+1. UI에서 통신 파라미터(COM, BAUD, SLAVE 등) 설정 후 연결 버튼 클릭
+2. `SerialService.Open()`으로 시리얼 포트 열기 (버퍼 비우기 포함)
+3. 백그라운드 스레드에서 `ReceiveLoop()` 실행
+4. `ReadFrame()`에서 동기화 바이트(SLAVE)를 찾은 후 프레임 크기만큼 읽기
+5. 수신 데이터를 HEX, Modbus RTU 파싱 결과로 DataGrid에 표시
+6. 이전 프레임과 비교하여 데이터 변화 시 노란색 강조
+7. 연결 해제 시 CancellationToken으로 루프 종료
+
+
+## 9. 트러블슈팅 기록
+
+### 프레임 쪼개짐 현상
+
+초기 Python 버전에서 `ser.in_waiting`으로 버퍼에 있는 만큼만 읽었더니, 9바이트 프레임이 1바이트 + 8바이트로 쪼개져서 파싱이 깨지는 현상이 발생했다. PLC에서 1초 주기로 데이터를 전송하도록 수정한 후, 정확히 프레임 크기만큼 읽는 방식으로 해결했다.
+
+### 프레임 동기화 문제
+
+프레임 크기만큼 읽어도 시작점이 프레임 중간이면 매번 다른 데이터로 파싱되는 문제가 있었다. 동기화 바이트(프레임 첫 바이트)를 찾아서 정렬하는 로직을 추가하여 해결했다.
+
+### 동기화 바이트 확인
+
+PLC 설정에서 상대국번이 1이므로 슬레이브 ID 0x01로 동기화를 시도했으나, 실제 수신 데이터에 0x01이 없었다. raw 데이터 확인 결과 프레임이 `00`으로 시작하는 것을 확인하고, 동기화 바이트를 **0x00**으로 설정하여 해결했다. 이는 P2P 통신 특성상 표준 Modbus RTU 프레임과 다른 구조로 전송되기 때문이다.
+
+### 연결 해제 시 예외 발생
+
+연결 해제 시 `OperationCanceledException`이 발생했다. `SerialService.ReadFrame()`의 catch를 `catch (Exception)`으로 변경하고, `ReceiveLoop()` 전체를 try-catch로 감싸서 해결했다.
+
+### 데이터가 안 들어올 때 확인 순서
+
+1. USB-RS485 컨버터 배선 (A+/B- 연결 확인)
+2. COM 포트 번호 (장치관리자에서 확인)
+3. 통신 속도 (PLC와 동일한지 확인: 9600/19200)
+4. PLC 통신 설정 (P2P 모드, 슬레이브 주소 등)
+5. SLAVE(동기화 바이트) 값이 실제 프레임 시작 바이트와 일치하는지 확인
+
+
+## 10. 참고 사항
+
+- 본 프로그램은 데이터 수신 확인 전용이며, 인버터 제어 기능은 포함하지 않는다.
+- LS 인버터의 Modbus 주소는 PLC 종류에 따라 +1 오프셋이 필요할 수 있다.
+- PLC에서 워드(D 레지스터)로 데이터를 전송하며, 비트 단위 제어가 필요한 운전 지령(0h0006)도 D 레지스터에 비트 조합 값을 넣어 워드 단위로 전송한다.
+- SLAVE 값을 0으로 설정하면 0x00 동기화, 0이 아닌 값이면 해당 값으로 동기화한다.
+- DataGrid는 최대 500개 프레임까지 유지하며 초과 시 오래된 것부터 삭제된다.
 
 
 ---
 
-## Models/FrameData.cs
+
+## 11. 전체 소스 코드
+
+
+### Models/FrameData.cs
 
 ```csharp
 namespace RS485Monitor.Models
@@ -51,9 +191,7 @@ namespace RS485Monitor.Models
 ```
 
 
----
-
-## ViewModels/BaseViewModel.cs
+### ViewModels/BaseViewModel.cs
 
 ```csharp
 using System.ComponentModel;
@@ -82,9 +220,7 @@ namespace RS485Monitor.ViewModels
 ```
 
 
----
-
-## Services/SerialService.cs
+### Services/SerialService.cs
 
 ```csharp
 using System;
@@ -110,17 +246,27 @@ namespace RS485Monitor.Services
                 ReadTimeout = 5000
             };
             _serialPort.Open();
+            _serialPort.DiscardInBuffer();
         }
 
-        public byte[]? ReadFrame(int frameSize)
+        public byte[]? ReadFrame(int frameSize, byte slaveId)
         {
             if (_serialPort == null || !_serialPort.IsOpen)
                 return null;
 
             try
             {
+                // 1단계: 슬레이브 주소(프레임 시작) 찾기
+                while (true)
+                {
+                    int b = _serialPort.ReadByte();
+                    if (b == slaveId) break;
+                }
+
+                // 2단계: 나머지 바이트 읽기
                 byte[] buffer = new byte[frameSize];
-                int totalRead = 0;
+                buffer[0] = slaveId;
+                int totalRead = 1;
 
                 while (totalRead < frameSize)
                 {
@@ -157,9 +303,7 @@ namespace RS485Monitor.Services
 ```
 
 
----
-
-## ViewModels/MainViewModel.cs
+### ViewModels/MainViewModel.cs
 
 ```csharp
 using System;
@@ -174,7 +318,6 @@ using RS485Monitor.Services;
 
 namespace RS485Monitor.ViewModels
 {
-    // 간단한 RelayCommand 구현
     public class RelayCommand : ICommand
     {
         private readonly Action _execute;
@@ -244,6 +387,13 @@ namespace RS485Monitor.ViewModels
         {
             get => _frameSize;
             set => SetProperty(ref _frameSize, value);
+        }
+
+        private byte _slaveId = 0;
+        public byte SlaveId
+        {
+            get => _slaveId;
+            set => SetProperty(ref _slaveId, value);
         }
 
         // ===== 상태 프로퍼티 =====
@@ -332,7 +482,7 @@ namespace RS485Monitor.ViewModels
 
                 _serial.Open(SelectedPort, BaudRate, DataBits, parity, stopBits);
                 IsConnected = true;
-                StatusText = $"[연결 성공] {SelectedPort} / {BaudRate}bps / {DataBits}{SelectedParity[0]}{SelectedStopBits}";
+                StatusText = $"[연결 성공] {SelectedPort} / {BaudRate}bps / {DataBits}{SelectedParity[0]}{SelectedStopBits} / Slave:{SlaveId}";
                 _frameCount = 0;
                 _prevFrame = null;
 
@@ -356,47 +506,53 @@ namespace RS485Monitor.ViewModels
 
         private void ReceiveLoop(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                var frame = _serial.ReadFrame(FrameSize);
-                if (frame == null) continue;
-
-                _frameCount++;
-                var data = ParseFrame(frame, _frameCount);
-
-                // 이전 프레임과 비교
-                if (_prevFrame != null)
+                while (!token.IsCancellationRequested)
                 {
-                    bool changed = false;
-                    if (_prevFrame.Length != frame.Length)
+                    var frame = _serial.ReadFrame(FrameSize, SlaveId);
+                    if (frame == null) continue;
+
+                    _frameCount++;
+                    var data = ParseFrame(frame, _frameCount);
+
+                    // 이전 프레임과 비교
+                    if (_prevFrame != null)
                     {
-                        changed = true;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < frame.Length; i++)
+                        bool changed = false;
+                        if (_prevFrame.Length != frame.Length)
                         {
-                            if (frame[i] != _prevFrame[i])
+                            changed = true;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < frame.Length; i++)
                             {
-                                changed = true;
-                                break;
+                                if (frame[i] != _prevFrame[i])
+                                {
+                                    changed = true;
+                                    break;
+                                }
                             }
                         }
+                        data.IsChanged = changed;
                     }
-                    data.IsChanged = changed;
+
+                    _prevFrame = (byte[])frame.Clone();
+
+                    Application.Current?.Dispatcher.Invoke(() =>
+                    {
+                        Frames.Add(data);
+                        TotalFrames = _frameCount;
+
+                        while (Frames.Count > 500)
+                            Frames.RemoveAt(0);
+                    });
                 }
-
-                _prevFrame = (byte[])frame.Clone();
-
-                Application.Current?.Dispatcher.Invoke(() =>
-                {
-                    Frames.Add(data);
-                    TotalFrames = _frameCount;
-
-                    // 최대 500개까지만 유지
-                    while (Frames.Count > 500)
-                        Frames.RemoveAt(0);
-                });
+            }
+            catch (Exception)
+            {
+                // 연결 해제 시 정상 종료
             }
         }
 
@@ -437,9 +593,7 @@ namespace RS485Monitor.ViewModels
 ```
 
 
----
-
-## MainWindow.xaml
+### MainWindow.xaml
 
 ```xml
 <Window x:Class="RS485Monitor.MainWindow"
@@ -447,8 +601,8 @@ namespace RS485Monitor.ViewModels
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:RS485Monitor.ViewModels"
         Title="RS485 Modbus RTU 수신 모니터"
-        Width="950" Height="650"
-        MinWidth="800" MinHeight="500"
+        Width="1000" Height="650"
+        MinWidth="850" MinHeight="500"
         Background="#1E1E2E"
         WindowStartupLocation="CenterScreen">
 
@@ -466,9 +620,6 @@ namespace RS485Monitor.ViewModels
         <SolidColorBrush x:Key="AccentBlue" Color="#89B4FA"/>
         <SolidColorBrush x:Key="AccentYellow" Color="#F9E2AF"/>
         <SolidColorBrush x:Key="AccentPeach" Color="#FAB387"/>
-
-        <!-- Bool to Visibility -->
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </Window.Resources>
 
     <Grid Margin="16">
@@ -537,22 +688,28 @@ namespace RS485Monitor.ViewModels
 
                     <TextBlock Text="FRAME" Foreground="{StaticResource TextSub}"
                                VerticalAlignment="Center" Width="48" FontSize="12"/>
-                    <TextBox Width="40"
+                    <TextBox Width="40" Margin="0,0,16,0"
                              Background="#45475A" Foreground="#CDD6F4"
                              BorderThickness="0" Padding="8,5" FontSize="13"
                              CaretBrush="#CDD6F4"
                              Text="{Binding FrameSize, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="SLAVE" Foreground="{StaticResource TextSub}"
+                               VerticalAlignment="Center" Width="48" FontSize="12"/>
+                    <TextBox Width="40"
+                             Background="#45475A" Foreground="#CDD6F4"
+                             BorderThickness="0" Padding="8,5" FontSize="13"
+                             CaretBrush="#CDD6F4"
+                             Text="{Binding SlaveId, UpdateSourceTrigger=PropertyChanged}"/>
                 </WrapPanel>
 
                 <!-- 2행: 버튼 -->
                 <StackPanel Orientation="Horizontal">
-                    <!-- 연결 버튼 -->
                     <Button Width="120" Padding="16,8" FontWeight="SemiBold" FontSize="13"
                             BorderThickness="0" Cursor="Hand"
                             Command="{Binding ToggleConnectionCommand}"
                             x:Name="BtnConnect"/>
 
-                    <!-- 로그 지우기 버튼 -->
                     <Button Content="로그 지우기" Margin="8,0,0,0"
                             Padding="16,8" FontWeight="SemiBold" FontSize="13"
                             Background="{StaticResource AccentPeach}" Foreground="#1E1E2E"
@@ -652,9 +809,7 @@ namespace RS485Monitor.ViewModels
 ```
 
 
----
-
-## MainWindow.xaml.cs
+### MainWindow.xaml.cs
 
 ```csharp
 using System.Collections.Specialized;
@@ -673,10 +828,8 @@ namespace RS485Monitor
             InitializeComponent();
             _vm = (MainViewModel)DataContext;
 
-            // 연결 버튼 초기 색상
             UpdateConnectButton(false);
 
-            // 연결 상태 변경 시 버튼 색상 업데이트
             _vm.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(MainViewModel.IsConnected))
@@ -685,7 +838,6 @@ namespace RS485Monitor
                 }
             };
 
-            // DataGrid 자동 스크롤
             ((INotifyCollectionChanged)DataGridLog.Items).CollectionChanged += (s, e) =>
             {
                 if (DataGridLog.Items.Count > 0)
