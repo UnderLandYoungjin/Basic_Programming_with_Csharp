@@ -1,4 +1,6 @@
 # PC → PLC Modbus RTU 통신 구축 정리
+<img width="1246" height="1166" alt="image" src="https://github.com/user-attachments/assets/25795f4c-75e0-4098-b37e-1de325babff3" />
+<img width="274" height="197" alt="image" src="https://github.com/user-attachments/assets/ea445499-e5ad-4953-b88f-931fceb0666a" />
 
 ## 1. 시스템 구성
 
