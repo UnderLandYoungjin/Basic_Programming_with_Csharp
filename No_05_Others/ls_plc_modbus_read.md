@@ -1,4 +1,8 @@
 # PC → PLC Modbus RTU 통신 구축 정리
+
+[네이버 카페 바로가기](https://cafe.naver.com/underfusion?iframe_url_utf8=%2FArticleRead.nhn%253Fclubid%3D30977017%2526articleid%3D821%2526menuid%3D50%2526boardtype%3DL)
+ 
+
 <img width="1246" height="1166" alt="image" src="https://github.com/user-attachments/assets/25795f4c-75e0-4098-b37e-1de325babff3" />
 <img width="274" height="197" alt="image" src="https://github.com/user-attachments/assets/ea445499-e5ad-4953-b88f-931fceb0666a" />
 
