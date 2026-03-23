@@ -131,7 +131,7 @@ namespace RS485Monitor.Services
 
                 return buffer;
             }
-            catch (TimeoutException)
+            catch (Exception)
             {
                 return null;
             }
