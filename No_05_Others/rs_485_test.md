@@ -121,3 +121,101 @@ python rs485_monitor_v3.py
 - 본 코드는 데이터 수신 확인 전용이며, 인버터 제어 기능은 포함하지 않는다.
 - LS 인버터의 Modbus 주소는 PLC 종류에 따라 +1 오프셋이 필요할 수 있다.
 - PLC에서 워드(D 레지스터)로 데이터를 전송하며, 비트 단위 제어가 필요한 운전 지령(0h0006)도 D 레지스터에 비트 조합 값을 넣어 워드 단위로 전송한다.
+
+
+
+```python
+"""
+RS485 데이터 수신 모니터 (프레임 단위 수집 버전)
+- PLC(XGB)에서 1초마다 보내는 데이터를 PC에서 확인
+- USB-RS485 컨버터 사용
+- pip install pyserial
+"""
+
+import serial
+
+# ============ 설정 ============
+PORT = "COM4"
+BAUDRATE = 9600
+PARITY = "N"
+STOPBITS = 1
+BYTESIZE = 8
+FRAME_SIZE = 9          # 예상 프레임 크기 (바이트)
+# ==============================
+
+def read_frame(ser):
+    """프레임 크기만큼 읽어서 반환"""
+    data = ser.read(FRAME_SIZE)
+    if not data:
+        return None
+    return bytes(data)
+
+
+def parse_and_print(raw, count):
+    """수신된 프레임을 파싱하여 출력"""
+    hex_str = " ".join(f"{b:02X}" for b in raw)
+    print(f"#{count:04d} ({len(raw)}bytes) HEX: {hex_str}")
+
+    if len(raw) >= 8:
+        slave_id = raw[0]
+        func_code = raw[1]
+        reg_addr = (raw[2] << 8) | raw[3]
+        reg_value = (raw[4] << 8) | raw[5]
+        crc_recv = (raw[-1] << 8) | raw[-2]
+        print(f"      슬레이브: {slave_id}, "
+              f"기능코드: 0x{func_code:02X}, "
+              f"레지스터: 0x{reg_addr:04X}, "
+              f"값: {reg_value} (0x{reg_value:04X}), "
+              f"CRC: 0x{crc_recv:04X}")
+
+    return raw
+
+
+def main():
+    try:
+        ser = serial.Serial(
+            port=PORT,
+            baudrate=BAUDRATE,
+            parity=PARITY,
+            stopbits=STOPBITS,
+            bytesize=BYTESIZE,
+            timeout=5
+        )
+        print(f"[연결 성공] {PORT} / {BAUDRATE}bps / {BYTESIZE}{PARITY}{STOPBITS}")
+        print(f"수신 대기중... (Ctrl+C로 종료)\n")
+        print("-" * 70)
+
+        count = 0
+        prev_frame = None
+
+        while True:
+            frame = read_frame(ser)
+
+            if frame is None:
+                continue
+
+            count += 1
+
+            if prev_frame is not None and frame != prev_frame:
+                print("  *** 데이터 변화 감지! ***")
+
+            prev_frame = parse_and_print(frame, count)
+
+            if len(frame) != FRAME_SIZE:
+                print(f"  ⚠ 예상 {FRAME_SIZE}bytes인데 {len(frame)}bytes 수신됨")
+
+            print()
+
+    except serial.SerialException as e:
+        print(f"[에러] 시리얼 포트 오류: {e}")
+        print("→ COM 포트 번호 확인 / 다른 프로그램에서 사용중인지 확인")
+    except KeyboardInterrupt:
+        print(f"\n\n총 {count}개 프레임 수신. 종료합니다.")
+    finally:
+        if 'ser' in locals() and ser.is_open:
+            ser.close()
+            print("포트 닫힘.")
+
+if __name__ == "__main__":
+    main()
+```
