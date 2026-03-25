@@ -1,3 +1,5 @@
+
+```
 namespace array
 {
     internal class Program
@@ -16,3 +18,4 @@ namespace array
         }
     }
 }
+```
