@@ -1,4 +1,4 @@
-# 개발환경 구축 + WPF 구조 이해 (XAML, 이벤트 기반)
+# 🟣 개발환경 구축 + WPF 구조 이해 (XAML, 이벤트 기반)
 
 ## 📌 개요
 이번 강의에서는 C# WPF 개발을 위한 **개발환경을 구축**하고,
@@ -35,7 +35,7 @@ WPF 프로그램의 핵심 구조인 **XAML + 이벤트 기반 동작 방식**�
 1. Visual Studio 실행
 2. **"새 프로젝트 만들기"** 클릭
 3. 검색창에 `WPF` 입력 → **WPF 앱 (.NET)** 선택
-4. 프로젝트 이름 입력 (예: `WpfHelloApp`)
+4. 프로젝트 이름 입력: `WpfHelloApp`
 5. 프레임워크 **.NET 8** 선택 후 **만들기**
 
 ---
@@ -48,8 +48,8 @@ WPF 프로그램의 핵심 구조인 **XAML + 이벤트 기반 동작 방식**�
 WpfHelloApp/
 ├── App.xaml              ← 프로그램 시작 설정 (시작 창 지정)
 ├── App.xaml.cs           ← App 코드비하인드
-├── MainWindow.xaml       ← 화면(UI) 정의
-└── MainWindow.xaml.cs    ← 동작(로직) 코드
+├── MainWindow.xaml       ← 화면(UI) 정의  ← ✏️ 우리가 주로 편집하는 파일
+└── MainWindow.xaml.cs    ← 동작(로직) 코드 ← ✏️ 우리가 주로 편집하는 파일
 ```
 
 | 파일 | 설명 |
@@ -58,11 +58,20 @@ WpfHelloApp/
 | `MainWindow.xaml` | 화면(UI) 정의 — 버튼, 텍스트 등 배치 |
 | `MainWindow.xaml.cs` | 동작(로직) 코드 — 이벤트 처리 담당 |
 
+> 💡 **XAML 파일과 .cs 파일은 항상 세트입니다.**
+> `MainWindow.xaml` 에서 화면을 만들고, `MainWindow.xaml.cs` 에서 그 화면의 동작을 작성합니다.
+
 ---
 
 ## 💻 첫 번째 WPF 프로그램
 
-### MainWindow.xaml
+> 🎯 **목표:** 버튼을 클릭하면 `"Hello, WPF!"` 팝업이 나타나는 프로그램
+
+---
+
+### 📄 파일 1 — `MainWindow.xaml` (화면 정의)
+
+> 이 파일에서 **버튼을 화면에 배치**합니다.
 
 ```xml
 <!-- Window: 이 파일이 하나의 '창'임을 선언 -->
@@ -99,10 +108,12 @@ WpfHelloApp/
 
 ---
 
-### MainWindow.xaml.cs
+### 📄 파일 2 — `MainWindow.xaml.cs` (동작 정의)
+
+> 이 파일에서 **버튼을 클릭했을 때 일어날 일**을 작성합니다.
 
 ```csharp
-using System;                       // 기본 시스템 기능 (Console, Exception 등) 사용 선언
+using System;                       // 기본 시스템 기능 사용 선언
 using System.Windows;               // WPF의 Window, MessageBox 등을 사용하기 위한 선언
 
 namespace WpfHelloApp               // 프로젝트 이름과 동일한 네임스페이스 (XAML x:Class와 일치)
@@ -117,12 +128,13 @@ namespace WpfHelloApp               // 프로젝트 이름과 동일한 네임�
             InitializeComponent();  // XAML에 선언된 모든 UI 요소를 메모리에 생성 (반드시 필요!)
         }
 
-        // 버튼 클릭 이벤트 핸들러 — XAML의 Click="btnHello_Click"과 이름이 반드시 일치해야 함
+        // 버튼 클릭 이벤트 핸들러
+        // ⚠️ 이 메서드 이름(btnHello_Click)은 XAML의 Click="btnHello_Click"과 반드시 일치해야 함
         // sender: 이벤트를 발생시킨 컨트롤 객체 (여기서는 btnHello 버튼)
         // e     : 이벤트 관련 추가 정보를 담는 객체
         private void btnHello_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Hello, World!");  // 화면에 팝업 메시지 창을 띄움
+            MessageBox.Show("Hello, WPF!");  // 화면에 팝업 메시지 창을 띄움
         }
     }
 }
@@ -130,9 +142,26 @@ namespace WpfHelloApp               // 프로젝트 이름과 동일한 네임�
 
 ---
 
+### 🔗 두 파일이 연결되는 방식
+
+```
+📄 MainWindow.xaml                       📄 MainWindow.xaml.cs
+─────────────────────                    ──────────────────────────────
+<Button                                  private void btnHello_Click(
+    Click="btnHello_Click"/>  ────────►      object sender,
+                                             RoutedEventArgs e)
+                                         {
+                                             MessageBox.Show("Hello, WPF!");
+                                         }
+
+  XAML에서 이름으로 연결 ──────────────► C#에서 같은 이름의 메서드 실행
+```
+
+---
+
 ### ▶️ 실행 결과
 
-**실행 직후** — 버튼이 있는 빈 창이 열림
+**실행 직후** — 버튼이 있는 창이 열림
 
 ```
 ┌──────────────────────────────┐
@@ -146,7 +175,7 @@ namespace WpfHelloApp               // 프로젝트 이름과 동일한 네임�
 └──────────────────────────────┘
 ```
 
-**버튼 클릭 후** — MessageBox 팝업이 나타남
+**버튼 클릭 후** — `MessageBox.Show("Hello, WPF!")` 실행 → 팝업 등장
 
 ```
 ┌──────────────────────────────┐
@@ -179,38 +208,21 @@ namespace WpfHelloApp               // 프로젝트 이름과 동일한 네임�
 ## 🧠 핵심 개념
 
 ### 1️⃣ XAML (UI 정의)
-
 화면을 코드가 아닌 **구조적(선언적)** 으로 표현하는 마크업 언어입니다.
 
-```xml
-<!-- 버튼 하나를 선언하는 것만으로 화면에 버튼이 나타남 -->
-<Button Content="클릭하세요" Width="120" Height="40"/>
-```
-
 ### 2️⃣ Code-Behind (동작)
-
 XAML과 짝을 이루는 C# 파일로, **이벤트 처리 및 로직**을 담당합니다.
-
-```csharp
-// 버튼이 클릭될 때 실행할 동작을 C#으로 작성
-private void btnHello_Click(object sender, RoutedEventArgs e)
-{
-    MessageBox.Show("Hello, WPF!");
-}
-```
 
 ### 3️⃣ 이벤트 기반 구조
 
-WPF는 **사용자의 행동**에 반응하는 이벤트 기반으로 동작합니다.
-
 ```
-👤 사용자 행동       →   🖱️ 버튼 클릭
+👤 사용자 행동   →   🖱️ 버튼 클릭
         ↓
-📢 이벤트 발생       →   Click 이벤트 트리거
+📢 이벤트 발생   →   Click 이벤트 트리거
         ↓
-⚙️ 코드 실행         →   btnHello_Click() 메서드 실행
+⚙️ 코드 실행     →   btnHello_Click() 메서드 실행
         ↓
-📦 결과 출력         →   MessageBox.Show("Hello, WPF!")
+📦 결과 출력     →   MessageBox.Show("Hello, WPF!")
 ```
 
 ---
@@ -227,83 +239,226 @@ WPF는 **사용자의 행동**에 반응하는 이벤트 기반으로 동작합�
 
 ## 🧪 예제
 
+---
+
 ### 예제 1 — 버튼 텍스트 변경
 
-`Content` 속성을 바꾸면 버튼에 표시되는 텍스트가 달라집니다.
+> 🎯 **목표:** `Content` 속성을 바꿔서 버튼 텍스트를 원하는 문구로 변경해봅니다.
+
+#### 📄 `MainWindow.xaml`
 
 ```xml
-<!-- Content 속성값을 원하는 텍스트로 변경 -->
-<Button Content="시작하기"
-        Width="120"
-        Height="40"/>
+<Window x:Class="WpfHelloApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="예제 1"
+        Height="200" Width="300">
+    <Grid>
+        <!-- Content 속성값을 원하는 텍스트로 변경 -->
+        <Button Name="btnStart"
+                Content="시작하기"
+                Width="120" Height="40"
+                Click="btnStart_Click"/>
+    </Grid>
+</Window>
 ```
 
-**실행 결과**
+#### 📄 `MainWindow.xaml.cs`
+
+```csharp
+using System.Windows;
+namespace WpfHelloApp
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();          // XAML 컨트롤 생성
+        }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("프로그램을 시작합니다!"); // 버튼 클릭 시 팝업 출력
+        }
+    }
+}
 ```
-┌──────────────────┐
-│                  │
-│  ┌────────────┐  │
-│  │  시작하기  │  │
-│  └────────────┘  │
-│                  │
-└──────────────────┘
+
+#### ▶️ 실행 결과
+
+```
+  실행 직후                        버튼 클릭 후
+┌───────────────────┐             ┌───────────────────┐
+│  예제 1     - □ X │             │  예제 1     - □ X │
+├───────────────────┤             ├───────────────────┤
+│                   │             │  ┌─────────────┐  │
+│  ┌─────────────┐  │    클릭     │  │  ℹ️        X│  │
+│  │  시작하기   │  │   ──────►   │  │             │  │
+│  └─────────────┘  │             │  │ 프로그램을  │  │
+│                   │             │  │ 시작합니다! │  │
+└───────────────────┘             │  │   [ 확인 ]  │  │
+                                  │  └─────────────┘  │
+                                  └───────────────────┘
 ```
 
 ---
 
 ### 예제 2 — 창 제목 변경
 
-`Title` 속성을 바꾸면 창 상단 제목 표시줄이 바뀝니다.
+> 🎯 **목표:** `Title` 속성을 바꿔서 창 상단 제목을 변경합니다.
+
+#### 📄 `MainWindow.xaml`
 
 ```xml
-<!-- Title 속성값을 원하는 제목으로 변경 -->
-<Window ...
-        Title="내 첫 번째 프로그램"
-        Height="200"
-        Width="300">
+<Window x:Class="WpfHelloApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="내 첫 번째 프로그램"   <!-- 이 부분을 원하는 제목으로 변경 -->
+        Height="200" Width="350">
+    <Grid>
+        <Button Name="btnTitle"
+                Content="제목 확인"
+                Width="120" Height="40"
+                Click="btnTitle_Click"/>
+    </Grid>
+</Window>
 ```
 
-**실행 결과**
+#### 📄 `MainWindow.xaml.cs`
+
+```csharp
+using System.Windows;
+namespace WpfHelloApp
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();              // XAML 컨트롤 생성
+        }
+
+        private void btnTitle_Click(object sender, RoutedEventArgs e)
+        {
+            // this.Title: 현재 창의 Title 속성 (XAML에서 설정한 값)
+            MessageBox.Show("현재 창 제목: " + this.Title);  // 창 제목을 팝업으로 출력
+        }
+    }
+}
 ```
-┌──────────────────────────────────┐
-│  내 첫 번째 프로그램        - □ X │
-├──────────────────────────────────┤
-│                                  │
-└──────────────────────────────────┘
+
+#### ▶️ 실행 결과
+
+```
+  실행 직후                           버튼 클릭 후
+┌──────────────────────────┐         ┌──────────────────────────┐
+│  내 첫 번째 프로그램 - □ X│         │  내 첫 번째 프로그램 - □ X│
+├──────────────────────────┤         ├──────────────────────────┤
+│                          │         │  ┌───────────────────┐   │
+│    ┌──────────────┐      │  클릭   │  │  ℹ️             X │   │
+│    │  제목 확인   │      │ ──────► │  │                   │   │
+│    └──────────────┘      │         │  │ 현재 창 제목:     │   │
+│                          │         │  │ 내 첫 번째 프로그램│  │
+└──────────────────────────┘         │  │     [ 확인 ]      │   │
+                                      │  └───────────────────┘   │
+                                      └──────────────────────────┘
 ```
 
 ---
 
-### 예제 3 — 버튼 여러 개 배치
+### 예제 3 — 버튼 2개 배치 + 각각 다른 동작
 
-`StackPanel`을 사용하면 컨트롤을 세로로 쌓아서 배치할 수 있습니다.
+> 🎯 **목표:** `StackPanel`로 버튼 2개를 세로로 배치하고, 각각 클릭 시 다른 메시지가 나오도록 만듭니다.
+
+#### 📄 `MainWindow.xaml`
 
 ```xml
-<!-- StackPanel: 자식 요소들을 위에서 아래로 순서대로 쌓아서 배치 -->
-<StackPanel VerticalAlignment="Center"
-            HorizontalAlignment="Center">
+<Window x:Class="WpfHelloApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="버튼 2개"
+        Height="220" Width="300">
 
-    <!-- Margin="0,0,0,5": 버튼 아래 5px 여백 -->
-    <Button Content="1번 버튼" Width="120" Height="35" Margin="0,0,0,5"/>
+    <!-- StackPanel: 자식 요소들을 위에서 아래로 순서대로 쌓아서 배치 -->
+    <!-- VerticalAlignment="Center": 창의 세로 가운데에 배치 -->
+    <!-- HorizontalAlignment="Center": 창의 가로 가운데에 배치 -->
+    <StackPanel VerticalAlignment="Center"
+                HorizontalAlignment="Center">
 
-    <!-- 두 번째 버튼: 첫 번째 버튼 아래에 자동 배치됨 -->
-    <Button Content="2번 버튼" Width="120" Height="35"/>
+        <!-- 1번 버튼: 클릭 시 btnOne_Click 실행 -->
+        <!-- Margin="0,0,0,10": 아래쪽에 10px 여백 (두 버튼 사이 간격) -->
+        <Button Name="btnOne"
+                Content="1번 버튼"
+                Width="120" Height="40"
+                Margin="0,0,0,10"
+                Click="btnOne_Click"/>
 
-</StackPanel>
+        <!-- 2번 버튼: 클릭 시 btnTwo_Click 실행 -->
+        <Button Name="btnTwo"
+                Content="2번 버튼"
+                Width="120" Height="40"
+                Click="btnTwo_Click"/>
+
+    </StackPanel>
+
+</Window>
 ```
 
-**실행 결과**
+#### 📄 `MainWindow.xaml.cs`
+
+```csharp
+using System.Windows;
+namespace WpfHelloApp
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();              // XAML 컨트롤 생성
+        }
+
+        // 1번 버튼 클릭 시 실행 — XAML의 Click="btnOne_Click"과 연결
+        private void btnOne_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("1번 버튼을 클릭했습니다!");  // 1번 버튼 전용 메시지
+        }
+
+        // 2번 버튼 클릭 시 실행 — XAML의 Click="btnTwo_Click"과 연결
+        private void btnTwo_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("2번 버튼을 클릭했습니다!");  // 2번 버튼 전용 메시지
+        }
+    }
+}
 ```
-┌──────────────────────┐
-│                      │
-│    ┌────────────┐    │
-│    │  1번 버튼  │    │
-│    └────────────┘    │
-│    ┌────────────┐    │
-│    │  2번 버튼  │    │
-│    └────────────┘    │
-│                      │
-└──────────────────────┘
+
+#### 🔗 두 파일이 연결되는 방식
+
+```
+📄 MainWindow.xaml                    📄 MainWindow.xaml.cs
+──────────────────────────            ──────────────────────────────────────
+<Button                               private void btnOne_Click(...)
+    Click="btnOne_Click"/>  ────────► { MessageBox.Show("1번 버튼..."); }
+
+<Button                               private void btnTwo_Click(...)
+    Click="btnTwo_Click"/>  ────────► { MessageBox.Show("2번 버튼..."); }
+```
+
+#### ▶️ 실행 결과
+
+```
+  실행 직후              1번 버튼 클릭 후          2번 버튼 클릭 후
+┌──────────────┐        ┌──────────────┐          ┌──────────────┐
+│ 버튼 2개 - □X│        │ 버튼 2개 - □X│          │ 버튼 2개 - □X│
+├──────────────┤        ├──────────────┤          ├──────────────┤
+│              │        │ ┌──────────┐ │          │ ┌──────────┐ │
+│ ┌──────────┐ │        │ │ ℹ️      X│ │          │ │ ℹ️      X│ │
+│ │ 1번 버튼 │ │  1번   │ │          │ │          │ │          │ │
+│ └──────────┘ │ 클릭►  │ │1번 버튼을│ │  2번     │ │2번 버튼을│ │
+│ ┌──────────┐ │        │ │클릭했습니│ │ 클릭►    │ │클릭했습니│ │
+│ │ 2번 버튼 │ │        │ │    다!   │ │          │ │    다!   │ │
+│ └──────────┘ │        │ │ [ 확인 ] │ │          │ │ [ 확인 ] │ │
+│              │        │ └──────────┘ │          │ └──────────┘ │
+└──────────────┘        └──────────────┘          └──────────────┘
 ```
 
 ---
@@ -401,13 +556,33 @@ WPF의 이벤트 기반 구조를 순서대로 설명하세요.
 
 ### 문제 5
 
-`MessageBox.Show()`를 호출하면 화면에 어떤 결과가 나타나나요?
-또한 아래 빈칸을 채워 `"WPF 완료!"` 메시지를 출력하도록 코드를 완성하세요.
+아래 코드는 버튼 3개를 만드는 코드입니다.
+빈칸을 채워서 각 버튼 클릭 시 `"빨강"`, `"파랑"`, `"초록"` 메시지가 나오도록 완성하세요.
+
+#### 📄 `MainWindow.xaml`
+
+```xml
+<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+    <Button Content="빨강" Width="100" Height="35" Margin="0,0,0,5" Click="________"/>
+    <Button Content="파랑" Width="100" Height="35" Margin="0,0,0,5" Click="________"/>
+    <Button Content="초록" Width="100" Height="35"                   Click="________"/>
+</StackPanel>
+```
+
+#### 📄 `MainWindow.xaml.cs`
 
 ```csharp
-private void btnDone_Click(object sender, RoutedEventArgs e)
+private void ________(object sender, RoutedEventArgs e)
 {
-    MessageBox.________("WPF 완료!");
+    MessageBox.Show("________");
+}
+private void ________(object sender, RoutedEventArgs e)
+{
+    MessageBox.Show("________");
+}
+private void ________(object sender, RoutedEventArgs e)
+{
+    MessageBox.Show("________");
 }
 ```
 
@@ -415,25 +590,53 @@ private void btnDone_Click(object sender, RoutedEventArgs e)
 <details>
 <summary>정답 보기 (클릭)</summary>
 
-`MessageBox.Show()`는 화면 중앙에 **팝업 메시지 창**을 띄웁니다.
-확인 버튼을 누르기 전까지 다른 조작이 차단됩니다.
+#### 📄 `MainWindow.xaml`
+
+```xml
+<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+    <Button Content="빨강" Width="100" Height="35" Margin="0,0,0,5" Click="btnRed_Click"/>
+    <Button Content="파랑" Width="100" Height="35" Margin="0,0,0,5" Click="btnBlue_Click"/>
+    <Button Content="초록" Width="100" Height="35"                   Click="btnGreen_Click"/>
+</StackPanel>
+```
+
+#### 📄 `MainWindow.xaml.cs`
 
 ```csharp
-private void btnDone_Click(object sender, RoutedEventArgs e)
+// 빨강 버튼 클릭 시 실행 — XAML Click="btnRed_Click"과 연결
+private void btnRed_Click(object sender, RoutedEventArgs e)
 {
-    MessageBox.Show("WPF 완료!");  // 팝업 메시지 창에 "WPF 완료!" 출력
+    MessageBox.Show("빨강");    // "빨강" 팝업 출력
+}
+// 파랑 버튼 클릭 시 실행 — XAML Click="btnBlue_Click"과 연결
+private void btnBlue_Click(object sender, RoutedEventArgs e)
+{
+    MessageBox.Show("파랑");    // "파랑" 팝업 출력
+}
+// 초록 버튼 클릭 시 실행 — XAML Click="btnGreen_Click"과 연결
+private void btnGreen_Click(object sender, RoutedEventArgs e)
+{
+    MessageBox.Show("초록");    // "초록" 팝업 출력
 }
 ```
 
-**실행 결과**
+#### ▶️ 실행 결과
+
 ```
-┌─────────────────────┐
-│  ℹ️               X │
-│                     │
-│     WPF 완료!       │
-│                     │
-│      [ 확인 ]       │
-└─────────────────────┘
+  실행 직후            빨강 클릭 후           파랑 클릭 후
+┌────────────┐        ┌────────────┐         ┌────────────┐
+│  앱  - □ X │        │  앱  - □ X │         │  앱  - □ X │
+├────────────┤        ├────────────┤         ├────────────┤
+│ ┌────────┐ │        │ ┌────────┐ │         │ ┌────────┐ │
+│ │  빨강  │ │  빨강  │ │ ℹ️    X│ │   파랑  │ │ ℹ️    X│ │
+│ └────────┘ │  클릭► │ │        │ │  클릭►  │ │        │ │
+│ ┌────────┐ │        │ │  빨강  │ │         │ │  파랑  │ │
+│ │  파랑  │ │        │ │[  확인]│ │         │ │[  확인]│ │
+│ └────────┘ │        │ └────────┘ │         │ └────────┘ │
+│ ┌────────┐ │        └────────────┘         └────────────┘
+│ │  초록  │ │
+│ └────────┘ │
+└────────────┘
 ```
 
 </details>
