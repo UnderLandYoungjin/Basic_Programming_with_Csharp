@@ -14,6 +14,23 @@ WPF에서 **레이아웃(Layout)** 이란 컨트롤(버튼, 텍스트 등)을 �
 
 ---
 
+## ⚠️ 시작 전 주의사항 — 프로젝트 이름 확인
+
+> 이 강의의 모든 예제는 **1강에서 만든 `WpfHelloApp` 프로젝트를 그대로 사용**합니다.
+> 코드 안의 `namespace WpfHelloApp` 이 **본인 프로젝트 이름과 반드시 일치**해야 합니다.
+>
+> ✅ 프로젝트 이름 확인 방법: Visual Studio 상단 `솔루션 탐색기` → 프로젝트 폴더 이름 확인
+
+```
+솔루션 탐색기
+└── WpfHelloApp          ← 이 이름을 namespace에 그대로 사용
+    ├── App.xaml
+    ├── MainWindow.xaml
+    └── MainWindow.xaml.cs
+```
+
+---
+
 ## 1️⃣ Grid — 행과 열로 나누는 레이아웃
 
 `Grid`는 화면을 **표(행 × 열)** 처럼 나눠서 각 칸에 컨트롤을 배치합니다.
@@ -37,10 +54,10 @@ WPF에서 가장 많이 사용하는 레이아웃입니다.
 > 🎯 **목표:** 2행 × 2열 Grid를 만들고 각 칸에 버튼을 배치합니다.
 > 각 버튼을 클릭하면 어느 위치의 버튼인지 메시지가 나타납니다.
 
-#### 📄 `MainWindow.xaml`
+#### 📄 `MainWindow.xaml` — 전체 코드로 교체
 
 ```xml
-<Window x:Class="WpfLayoutApp.MainWindow"
+<Window x:Class="WpfHelloApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Grid 예제" Height="250" Width="350">
@@ -91,11 +108,14 @@ WPF에서 가장 많이 사용하는 레이아웃입니다.
 </Window>
 ```
 
-#### 📄 `MainWindow.xaml.cs`
+#### 📄 `MainWindow.xaml.cs` — 전체 코드로 교체
 
 ```csharp
 using System.Windows;
-namespace WpfLayoutApp
+
+// ⚠️ namespace 이름이 본인 프로젝트 이름과 일치하는지 반드시 확인!
+// 솔루션 탐색기에서 프로젝트 폴더 이름을 확인하세요.
+namespace WpfHelloApp
 {
     public partial class MainWindow : Window
     {
@@ -104,25 +124,25 @@ namespace WpfLayoutApp
             InitializeComponent();      // XAML 컨트롤 생성
         }
 
-        // 0행 0열 버튼 클릭 시 실행
+        // 0행 0열 버튼 클릭 시 실행 — XAML Click="btn00_Click" 과 연결
         private void btn00_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("왼쪽 위 버튼 (0행 0열)");
         }
 
-        // 0행 1열 버튼 클릭 시 실행
+        // 0행 1열 버튼 클릭 시 실행 — XAML Click="btn01_Click" 과 연결
         private void btn01_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("오른쪽 위 버튼 (0행 1열)");
         }
 
-        // 1행 0열 버튼 클릭 시 실행
+        // 1행 0열 버튼 클릭 시 실행 — XAML Click="btn10_Click" 과 연결
         private void btn10_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("왼쪽 아래 버튼 (1행 0열)");
         }
 
-        // 1행 1열 버튼 클릭 시 실행
+        // 1행 1열 버튼 클릭 시 실행 — XAML Click="btn11_Click" 과 연결
         private void btn11_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("오른쪽 아래 버튼 (1행 1열)");
@@ -173,18 +193,16 @@ namespace WpfLayoutApp
 ### 💡 Grid 크기 지정 방법 3가지
 
 ```xml
-<Grid>
-    <Grid.RowDefinitions>
-        <RowDefinition Height="100"/>  <!-- 고정: 항상 100px -->
-        <RowDefinition Height="Auto"/> <!-- 자동: 내용 크기에 맞게 조절 -->
-        <RowDefinition Height="*"/>    <!-- 비율: 나머지 공간 전부 차지 -->
-    </Grid.RowDefinitions>
-</Grid>
+<Grid.RowDefinitions>
+    <RowDefinition Height="100"/>  <!-- 고정: 항상 100px -->
+    <RowDefinition Height="Auto"/> <!-- 자동: 내용 크기에 맞게 조절 -->
+    <RowDefinition Height="*"/>    <!-- 비율: 나머지 공간 전부 차지 -->
+</Grid.RowDefinitions>
 ```
 
 ```
 ┌──────────────────────┐
-│  항상 100px (고정)    │  ← Height="100"
+│   항상 100px (고정)   │  ← Height="100"
 ├──────────────────────┤
 │  내용만큼 (자동)      │  ← Height="Auto"
 ├──────────────────────┤
@@ -214,11 +232,12 @@ namespace WpfLayoutApp
 
 > 🎯 **목표:** 세로 StackPanel로 메뉴 버튼 3개를 만들고,
 > 각 버튼 클릭 시 해당 메뉴 이름이 메시지로 나타납니다.
+> 종료 버튼 클릭 시 창이 닫힙니다.
 
-#### 📄 `MainWindow.xaml`
+#### 📄 `MainWindow.xaml` — 전체 코드로 교체
 
 ```xml
-<Window x:Class="WpfLayoutApp.MainWindow"
+<Window x:Class="WpfHelloApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="StackPanel 예제" Height="250" Width="250">
@@ -232,7 +251,7 @@ namespace WpfLayoutApp
                 HorizontalAlignment="Center">
 
         <!-- 각 버튼은 위에서 아래 순서로 자동 배치됨 -->
-        <!-- Margin="0,0,0,8": 버튼 아래 8px 여백 (버튼 간 간격) -->
+        <!-- Margin="0,0,0,8": 버튼 아래쪽에 8px 여백 (버튼 간 간격) -->
         <Button Content="📁 파일 열기"
                 Width="150" Height="40"
                 Margin="0,0,0,8"
@@ -252,11 +271,12 @@ namespace WpfLayoutApp
 </Window>
 ```
 
-#### 📄 `MainWindow.xaml.cs`
+#### 📄 `MainWindow.xaml.cs` — 전체 코드로 교체
 
 ```csharp
 using System.Windows;
-namespace WpfLayoutApp
+
+namespace WpfHelloApp
 {
     public partial class MainWindow : Window
     {
@@ -265,19 +285,19 @@ namespace WpfLayoutApp
             InitializeComponent();      // XAML 컨트롤 생성
         }
 
-        // "파일 열기" 버튼 클릭 시 실행
+        // "파일 열기" 버튼 클릭 시 실행 — XAML Click="btnFile_Click" 과 연결
         private void btnFile_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("파일 열기 메뉴를 선택했습니다.");
         }
 
-        // "저장" 버튼 클릭 시 실행
+        // "저장" 버튼 클릭 시 실행 — XAML Click="btnSave_Click" 과 연결
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("저장 메뉴를 선택했습니다.");
         }
 
-        // "종료" 버튼 클릭 시 실행
+        // "종료" 버튼 클릭 시 실행 — XAML Click="btnExit_Click" 과 연결
         // this.Close(): 현재 창을 닫아서 프로그램을 종료함
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
@@ -291,22 +311,20 @@ namespace WpfLayoutApp
 
 ```
   실행 직후                  파일 열기 클릭 후
-┌─────────────────────┐     ┌─────────────────────┐
-│ StackPanel 예제 - □X│     │ StackPanel 예제 - □X│
-├─────────────────────┤     ├─────────────────────┤
-│                     │     │  ┌───────────────┐  │
-│  ┌───────────────┐  │     │  │ ℹ️          X │  │
-│  │  📁 파일 열기 │  │ 클릭 │  │               │  │
-│  └───────────────┘  │ ──► │  │ 파일 열기 메뉴│  │
-│  ┌───────────────┐  │     │  │ 를 선택했습니 │  │
-│  │    💾 저장    │  │     │  │     다.       │  │
-│  └───────────────┘  │     │  │   [ 확인 ]   │  │
-│  ┌───────────────┐  │     │  └───────────────┘  │
-│  │    ❌ 종료    │  │     └─────────────────────┘
-│  └───────────────┘  │
+┌─────────────────────┐     ┌─────────────────────────┐
+│ StackPanel 예제 - □X│     │ StackPanel 예제     - □X│
+├─────────────────────┤     ├─────────────────────────┤
+│                     │     │  ┌───────────────────┐  │
+│  ┌───────────────┐  │     │  │ ℹ️              X │  │
+│  │  📁 파일 열기 │  │ 클릭 │  │                   │  │
+│  └───────────────┘  │ ──► │  │ 파일 열기 메뉴를  │  │
+│  ┌───────────────┐  │     │  │ 선택했습니다.     │  │
+│  │    💾 저장    │  │     │  │     [ 확인 ]      │  │
+│  └───────────────┘  │     │  └───────────────────┘  │
+│  ┌───────────────┐  │     └─────────────────────────┘
+│  │    ❌ 종료    │  │
+│  └───────────────┘  │      ❌ 종료 클릭 시 → 창이 닫히며 프로그램 종료
 └─────────────────────┘
-         ↑
-    ❌ 종료 클릭 시 → 창이 닫히며 프로그램 종료
 ```
 
 ---
@@ -316,23 +334,60 @@ namespace WpfLayoutApp
 `Orientation="Horizontal"` 로 바꾸면 버튼이 **왼쪽에서 오른쪽**으로 나열됩니다.
 
 ```xml
-<!-- Orientation="Horizontal": 왼쪽에서 오른쪽으로 나열 -->
-<StackPanel Orientation="Horizontal"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center">
+<Window x:Class="WpfHelloApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="가로 StackPanel" Height="150" Width="300">
 
-    <!-- Margin="0,0,8,0": 버튼 오른쪽 8px 여백 (버튼 간 간격) -->
-    <Button Content="이전" Width="80" Height="35" Margin="0,0,8,0"/>
-    <Button Content="다음" Width="80" Height="35"/>
+    <!-- Orientation="Horizontal": 왼쪽에서 오른쪽으로 나열 -->
+    <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
 
-</StackPanel>
+        <!-- Margin="0,0,8,0": 버튼 오른쪽 8px 여백 (버튼 간 간격) -->
+        <Button Content="이전" Width="80" Height="35"
+                Margin="0,0,8,0"
+                Click="btnPrev_Click"/>
+
+        <Button Content="다음" Width="80" Height="35"
+                Click="btnNext_Click"/>
+
+    </StackPanel>
+
+</Window>
+```
+
+```csharp
+using System.Windows;
+namespace WpfHelloApp
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void btnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("이전 버튼 클릭");
+        }
+
+        private void btnNext_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("다음 버튼 클릭");
+        }
+    }
+}
 ```
 
 ```
 ┌───────────────────────────┐
+│  가로 StackPanel      - □X│
+├───────────────────────────┤
 │                           │
 │    ┌──────┐  ┌──────┐     │
-│    │  이전 │  │  다음 │    │
+│    │  이전 │  │  다음 │   │
 │    └──────┘  └──────┘     │
 │                           │
 └───────────────────────────┘
@@ -359,19 +414,19 @@ namespace WpfLayoutApp
 
 ### 💻 예제 3 — DockPanel로 앱 기본 틀 만들기
 
-> 🎯 **목표:** 상단 메뉴바 + 하단 상태바 + 중앙 본문 버튼으로 구성된
+> 🎯 **목표:** 상단 메뉴바 + 하단 상태바 + 좌측 사이드바 + 중앙 본문으로 구성된
 > 앱의 기본 화면 틀을 만듭니다. 각 영역 버튼 클릭 시 위치를 알려줍니다.
 
-#### 📄 `MainWindow.xaml`
+#### 📄 `MainWindow.xaml` — 전체 코드로 교체
 
 ```xml
-<Window x:Class="WpfLayoutApp.MainWindow"
+<Window x:Class="WpfHelloApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="DockPanel 예제" Height="300" Width="400">
 
     <!-- DockPanel: 가장자리에 컨트롤을 붙이는 레이아웃 -->
-    <!-- LastChildFill="True": 마지막 자식이 남은 공간을 모두 채움 -->
+    <!-- LastChildFill="True": 마지막 자식이 남은 중앙 공간을 모두 채움 -->
     <DockPanel LastChildFill="True">
 
         <!-- DockPanel.Dock="Top": 창 상단에 붙임 → 메뉴바 역할 -->
@@ -392,7 +447,7 @@ namespace WpfLayoutApp
                 Width="80"
                 Click="btnLeft_Click"/>
 
-        <!-- 마지막 자식: Dock 지정 없어도 남은 중앙 공간을 전부 채움 -->
+        <!-- Dock 지정 없는 마지막 자식: 남은 중앙 공간을 전부 채움 -->
         <!-- LastChildFill="True" 덕분에 자동으로 중앙 영역을 가득 채움 -->
         <Button Content="⬜ 중앙 본문 영역"
                 Click="btnCenter_Click"/>
@@ -402,11 +457,12 @@ namespace WpfLayoutApp
 </Window>
 ```
 
-#### 📄 `MainWindow.xaml.cs`
+#### 📄 `MainWindow.xaml.cs` — 전체 코드로 교체
 
 ```csharp
 using System.Windows;
-namespace WpfLayoutApp
+
+namespace WpfHelloApp
 {
     public partial class MainWindow : Window
     {
@@ -415,25 +471,25 @@ namespace WpfLayoutApp
             InitializeComponent();      // XAML 컨트롤 생성
         }
 
-        // 상단 메뉴바 버튼 클릭 시 실행
+        // 상단 메뉴바 버튼 클릭 시 실행 — XAML Click="btnTop_Click" 과 연결
         private void btnTop_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("상단 메뉴바 영역입니다.");
         }
 
-        // 하단 상태바 버튼 클릭 시 실행
+        // 하단 상태바 버튼 클릭 시 실행 — XAML Click="btnBottom_Click" 과 연결
         private void btnBottom_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("하단 상태바 영역입니다.");
         }
 
-        // 왼쪽 사이드바 버튼 클릭 시 실행
+        // 왼쪽 사이드바 버튼 클릭 시 실행 — XAML Click="btnLeft_Click" 과 연결
         private void btnLeft_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("왼쪽 사이드바 영역입니다.");
         }
 
-        // 중앙 본문 버튼 클릭 시 실행
+        // 중앙 본문 버튼 클릭 시 실행 — XAML Click="btnCenter_Click" 과 연결
         private void btnCenter_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("중앙 본문 영역입니다.");
@@ -453,7 +509,7 @@ namespace WpfLayoutApp
 │  └────────────────────────────────┘  │
 │  ┌───────┐ ┌─────────────────────┐  │
 │  │       │ │                     │  │
-│  │ ◀왼쪽│ │   ⬜ 중앙 본문 영역  │  │  ← 마지막 자식 (남은 공간 전부)
+│  │ ◀왼쪽 │ │   ⬜ 중앙 본문 영역  │  │  ← 마지막 자식 (남은 공간 전부)
 │  │       │ │                     │  │
 │  └───────┘ └─────────────────────┘  │  ← DockPanel.Dock="Left"
 │  ┌────────────────────────────────┐  │
@@ -470,28 +526,29 @@ namespace WpfLayoutApp
 
 ### 💻 예제 4 — 입력 폼 만들기
 
-> 🎯 **목표:** Grid로 전체 구조를 나누고, 하단에 StackPanel로 버튼 2개(확인/취소)를 가로로 배치합니다.
-> 확인 클릭 시 "저장되었습니다!", 취소 클릭 시 창이 닫힙니다.
+> 🎯 **목표:** Grid로 전체 구조를 나누고, 하단에 StackPanel로 확인/취소 버튼을
+> 가로로 배치합니다. 확인 클릭 시 "저장되었습니다!", 취소 클릭 시 창이 닫힙니다.
 
-#### 📄 `MainWindow.xaml`
+#### 📄 `MainWindow.xaml` — 전체 코드로 교체
 
 ```xml
-<Window x:Class="WpfLayoutApp.MainWindow"
+<Window x:Class="WpfHelloApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="입력 폼" Height="220" Width="350">
 
-    <!-- 바깥 구조: Grid 2행으로 나눔 (위: 입력 영역 / 아래: 버튼 영역) -->
+    <!-- 바깥 구조: Grid 2행으로 나눔 -->
     <Grid Margin="10">
 
         <Grid.RowDefinitions>
-            <!-- 0행: 남은 공간 전부 (입력 영역) -->
+            <!-- 0행: 남은 공간 전부 차지 (본문 영역) -->
             <RowDefinition Height="*"/>
             <!-- 1행: 내용 크기에 맞게 자동 (버튼 영역) -->
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 0행: 안내 텍스트 (TextBlock: 읽기 전용 텍스트 표시 컨트롤) -->
+        <!-- 0행: 안내 텍스트 -->
+        <!-- TextBlock: 읽기 전용 텍스트를 표시하는 컨트롤 -->
         <!-- VerticalAlignment="Center": 셀 안에서 세로 가운데 정렬 -->
         <!-- HorizontalAlignment="Center": 셀 안에서 가로 가운데 정렬 -->
         <TextBlock Grid.Row="0"
@@ -500,7 +557,8 @@ namespace WpfLayoutApp
                    HorizontalAlignment="Center"
                    FontSize="14"/>
 
-        <!-- 1행: StackPanel로 버튼 2개를 가로로 배치 -->
+        <!-- 1행: Grid.Row="1" 로 1번 행에 배치 -->
+        <!-- StackPanel로 버튼 2개를 가로로 배치 -->
         <!-- Orientation="Horizontal": 왼쪽에서 오른쪽으로 나열 -->
         <!-- HorizontalAlignment="Right": 버튼 묶음을 오른쪽 정렬 -->
         <StackPanel Grid.Row="1"
@@ -508,7 +566,7 @@ namespace WpfLayoutApp
                     HorizontalAlignment="Right"
                     Margin="0,10,0,0">
 
-            <!-- 확인 버튼: 오른쪽에 8px 여백으로 취소 버튼과 간격 확보 -->
+            <!-- 확인 버튼: Margin 오른쪽 8px로 취소 버튼과 간격 확보 -->
             <Button Content="✔ 확인"
                     Width="90" Height="35"
                     Margin="0,0,8,0"
@@ -526,11 +584,12 @@ namespace WpfLayoutApp
 </Window>
 ```
 
-#### 📄 `MainWindow.xaml.cs`
+#### 📄 `MainWindow.xaml.cs` — 전체 코드로 교체
 
 ```csharp
 using System.Windows;
-namespace WpfLayoutApp
+
+namespace WpfHelloApp
 {
     public partial class MainWindow : Window
     {
@@ -539,17 +598,17 @@ namespace WpfLayoutApp
             InitializeComponent();      // XAML 컨트롤 생성
         }
 
-        // 확인 버튼 클릭 시 실행
+        // 확인 버튼 클릭 시 실행 — XAML Click="btnOk_Click" 과 연결
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("저장되었습니다!");  // 저장 완료 메시지 출력
         }
 
-        // 취소 버튼 클릭 시 실행
+        // 취소 버튼 클릭 시 실행 — XAML Click="btnCancel_Click" 과 연결
         // this.Close(): 현재 창을 닫아서 프로그램을 종료함
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();               // 창 닫기
+            this.Close();               // 창 닫기 → 프로그램 종료
         }
     }
 }
@@ -566,9 +625,9 @@ namespace WpfLayoutApp
 │  여기에 입력 컨트롤이      │      │  │  ℹ️              X  │  │
 │  들어갑니다.              │ 클릭 │  │                     │  │
 │                           │ ───► │  │   저장되었습니다!   │  │
-│           ┌────┐  ┌────┐  │      │  │                     │  │
-│           │ 확인│  │ 취소│ │      │  │       [ 확인 ]      │  │
-│           └────┘  └────┘  │      │  └─────────────────────┘  │
+│              ┌────┐┌────┐ │      │  │                     │  │
+│              │ 확인││ 취소│ │      │  │       [ 확인 ]      │  │
+│              └────┘└────┘ │      │  └─────────────────────┘  │
 └───────────────────────────┘      └───────────────────────────┘
 
                                     취소 클릭 후 → 창이 닫히며 종료
@@ -584,6 +643,7 @@ namespace WpfLayoutApp
 - 레이아웃 패널은 **중첩해서** 사용할 수 있습니다 (Grid 안에 StackPanel 등).
 - `Margin="좌,상,우,하"` 로 컨트롤 간 여백을 조절합니다.
 - `Grid.Row`, `Grid.Column` 은 **0부터** 시작합니다.
+- **`namespace` 이름은 반드시 본인 프로젝트 이름과 일치**해야 합니다.
 
 ---
 
@@ -688,39 +748,56 @@ Grid에서 행과 열 번호는 몇 번부터 시작하나요?
 
 ### 문제 5
 
-아래는 3×1 Grid를 만드는 코드입니다.
+아래는 3행 Grid에 버튼을 배치하는 코드입니다.
 빈칸을 채워 각 행에 버튼을 배치하고, 클릭 시 행 번호 메시지가 나오도록 완성하세요.
 
 #### 📄 `MainWindow.xaml`
 
 ```xml
-<Grid>
-    <Grid.RowDefinitions>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
+<Window x:Class="WpfHelloApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="문제 5" Height="250" Width="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-    <Button Grid.Row="__" Content="0번 행 버튼" Margin="10" Click="btn0_Click"/>
-    <Button Grid.Row="__" Content="1번 행 버튼" Margin="10" Click="btn1_Click"/>
-    <Button Grid.Row="__" Content="2번 행 버튼" Margin="10" Click="btn2_Click"/>
-</Grid>
+        <Button Grid.Row="__" Content="0번 행 버튼" Margin="10" Click="btn0_Click"/>
+        <Button Grid.Row="__" Content="1번 행 버튼" Margin="10" Click="btn1_Click"/>
+        <Button Grid.Row="__" Content="2번 행 버튼" Margin="10" Click="btn2_Click"/>
+    </Grid>
+</Window>
 ```
 
 #### 📄 `MainWindow.xaml.cs`
 
 ```csharp
-private void btn0_Click(object sender, RoutedEventArgs e)
+using System.Windows;
+namespace WpfHelloApp
 {
-    MessageBox.Show("________");
-}
-private void btn1_Click(object sender, RoutedEventArgs e)
-{
-    MessageBox.Show("________");
-}
-private void btn2_Click(object sender, RoutedEventArgs e)
-{
-    MessageBox.Show("________");
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void btn0_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("________");
+        }
+        private void btn1_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("________");
+        }
+        private void btn2_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("________");
+        }
+    }
 }
 ```
 
@@ -741,15 +818,15 @@ private void btn2_Click(object sender, RoutedEventArgs e)
 ```csharp
 private void btn0_Click(object sender, RoutedEventArgs e)
 {
-    MessageBox.Show("0번 행 버튼을 클릭했습니다.");
+    MessageBox.Show("0번 행 버튼을 클릭했습니다.");  // 0행 버튼 전용 메시지
 }
 private void btn1_Click(object sender, RoutedEventArgs e)
 {
-    MessageBox.Show("1번 행 버튼을 클릭했습니다.");
+    MessageBox.Show("1번 행 버튼을 클릭했습니다.");  // 1행 버튼 전용 메시지
 }
 private void btn2_Click(object sender, RoutedEventArgs e)
 {
-    MessageBox.Show("2번 행 버튼을 클릭했습니다.");
+    MessageBox.Show("2번 행 버튼을 클릭했습니다.");  // 2행 버튼 전용 메시지
 }
 ```
 
@@ -757,19 +834,19 @@ private void btn2_Click(object sender, RoutedEventArgs e)
 
 ```
   실행 직후                  1번 행 클릭 후
-┌──────────────────┐        ┌──────────────────┐
-│  앱         - □X │        │  앱         - □X │
-├──────────────────┤        ├──────────────────┤
-│ ┌──────────────┐ │        │ ┌──────────────┐ │
-│ │ 0번 행 버튼  │ │        │ │ 0번 행 버튼  │ │
-│ └──────────────┘ │        │ └──────────────┘ │
-│ ┌──────────────┐ │  클릭  │ ┌─────────────┐  │
-│ │ 1번 행 버튼  │ │ ─────► │ │ ℹ️        X │  │
-│ └──────────────┘ │        │ │1번 행 버튼을│  │
-│ ┌──────────────┐ │        │ │클릭했습니다 │  │
-│ │ 2번 행 버튼  │ │        │ │  [ 확인 ]  │  │
-│ └──────────────┘ │        │ └─────────────┘  │
-└──────────────────┘        └──────────────────┘
+┌──────────────────┐        ┌──────────────────────┐
+│ 문제 5      - □X │        │ 문제 5          - □X │
+├──────────────────┤        ├──────────────────────┤
+│ ┌──────────────┐ │        │ ┌────────────────┐   │
+│ │ 0번 행 버튼  │ │        │ │ ℹ️           X │   │
+│ └──────────────┘ │  클릭  │ │                │   │
+│ ┌──────────────┐ │ ─────► │ │ 1번 행 버튼을  │   │
+│ │ 1번 행 버튼  │ │        │ │ 클릭했습니다.  │   │
+│ └──────────────┘ │        │ │   [ 확인 ]     │   │
+│ ┌──────────────┐ │        │ └────────────────┘   │
+│ │ 2번 행 버튼  │ │        └──────────────────────┘
+│ └──────────────┘ │
+└──────────────────┘
 ```
 
 </details>
