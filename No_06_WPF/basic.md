@@ -122,7 +122,7 @@ namespace WpfHelloApp               // 프로젝트 이름과 동일한 네임�
         // e     : 이벤트 관련 추가 정보를 담는 객체
         private void btnHello_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Hello, WPF!");  // 화면에 팝업 메시지 창을 띄움
+            MessageBox.Show("Hello, World!");  // 화면에 팝업 메시지 창을 띄움
         }
     }
 }
