@@ -6,7 +6,7 @@ dotnet add package System.IO.Ports
 
 ---
 
-# WPF와 Arduino 시리얼 통신 기초 강의안
+# WPF와 Arduino 시리얼 통신 
 
 ## 1. 강의 목표
 
