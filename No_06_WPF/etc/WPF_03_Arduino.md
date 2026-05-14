@@ -6,38 +6,44 @@ dotnet add package System.IO.Ports
 
 ---
 
-# WPF와 Arduino 시리얼 통신 
+# WPF와 Arduino 시리얼 통신 기초
 
-## 1. 강의 목표
+## 1. 이번 실습에서 할 내용
 
-이 강의에서는 **WPF 프로그램에서 버튼을 클릭하면 Arduino의 LED가 켜지고 꺼지는 구조**를 실습한다.
+WPF 프로그램에서 버튼을 누르면 Arduino의 LED가 켜지고 꺼지도록 만든다.
 
-실습을 완료하면 다음 내용을 이해할 수 있다.
+실습에서 확인할 흐름은 다음과 같다.
 
-| 학습 항목 | 내용 |
-|---|---|
-| WPF | Windows 데스크톱 프로그램 화면 구성 |
-| Arduino | 외부 장치 제어 |
-| Serial 통신 | PC와 Arduino 간 USB 통신 |
-| C# `SerialPort` | WPF에서 COM 포트로 데이터 전송 |
-| 이벤트 처리 | 버튼 클릭 시 Arduino에 명령 전송 |
+```text
+WPF 버튼 클릭
+→ PC에서 Arduino로 값 전송
+→ Arduino가 값 확인
+→ LED ON / OFF
+```
 
 ---
 
-## 2. 전체 동작 구조
+## 2. 전체 구조
+
+WPF와 Arduino는 USB 케이블로 연결되어 있지만, 실제 통신은 COM 포트를 통한 Serial 통신으로 이루어진다.
 
 ```text
-사용자가 WPF 버튼 클릭
-        ↓
-C# 코드에서 SerialPort.Write("1") 또는 SerialPort.Write("0") 실행
-        ↓
-USB 케이블을 통해 Arduino로 문자 전송
-        ↓
-Arduino가 Serial.read()로 문자 수신
-        ↓
-수신 값이 '1'이면 LED ON
-수신 값이 '0'이면 LED OFF
+WPF 프로그램
+    ↓
+SerialPort.Write("1")
+또는
+SerialPort.Write("0")
+    ↓
+USB Serial 통신
+    ↓
+Arduino Serial.read()
+    ↓
+digitalWrite()
+    ↓
+LED 제어
 ```
+
+WPF는 명령을 보내는 쪽이고, Arduino는 받은 명령에 따라 실제 LED를 제어하는 쪽이다.
 
 ---
 
@@ -45,53 +51,53 @@ Arduino가 Serial.read()로 문자 수신
 
 | 준비물 | 설명 |
 |---|---|
-| Windows PC | WPF 실행용 |
-| Visual Studio | WPF 프로젝트 개발용 |
-| .NET SDK | WPF 프로젝트 빌드용 |
-| Arduino Uno 또는 호환 보드 | LED 제어용 |
+| Windows PC | WPF 프로그램 실행 |
+| Visual Studio | WPF 프로젝트 작성 |
+| .NET SDK | WPF 프로젝트 생성 및 빌드 |
+| Arduino Uno 또는 호환 보드 | LED 제어 |
 | USB 케이블 | PC와 Arduino 연결 |
-| Arduino IDE | Arduino 코드 업로드용 |
+| Arduino IDE | Arduino 코드 업로드 |
 
 ---
 
-## 4. 사용하는 기술과 이유
+## 4. 사용하는 기술
 
-### 4.1 WPF를 사용하는 이유
+### WPF
 
-WPF는 Windows 데스크톱 애플리케이션을 만들기 위한 Microsoft의 UI 프레임워크이다.
+WPF는 Windows 데스크톱 프로그램을 만들기 위한 UI 프레임워크이다.
 
-이번 예제에서는 버튼, 텍스트 표시, 이벤트 처리를 쉽게 구성할 수 있기 때문에 WPF를 사용한다.
+이번 실습에서는 버튼과 상태 표시 문구를 가진 간단한 프로그램을 만든다.
 
-### 4.2 Arduino를 사용하는 이유
+### Arduino
 
-Arduino는 센서, LED, 모터 같은 외부 장치를 제어하기 쉬운 마이크로컨트롤러 보드이다.
+Arduino는 외부 장치를 제어하기 위한 마이크로컨트롤러 보드이다.
 
-이번 예제에서는 PC 프로그램이 실제 하드웨어를 제어하는 구조를 이해하기 위해 Arduino를 사용한다.
+이번 실습에서는 Arduino의 13번 핀에 연결된 LED를 제어한다. Arduino Uno 기준으로 13번 핀은 보드 내장 LED와 연결되어 있어 별도 LED 없이도 테스트할 수 있다.
 
-### 4.3 Serial 통신을 사용하는 이유
+### Serial 통신
 
-PC와 Arduino는 USB 케이블로 연결되지만, 내부적으로는 COM 포트를 통한 Serial 통신 방식으로 데이터를 주고받는다.
+PC와 Arduino는 USB로 연결되지만, 프로그램에서는 COM 포트를 통해 데이터를 주고받는다.
 
-WPF에서 `"1"` 또는 `"0"`이라는 간단한 문자를 보내고, Arduino가 그 문자를 해석해서 LED를 제어한다.
+이번 실습에서는 WPF에서 Arduino로 문자 하나를 보낸다.
 
-### 4.4 `System.IO.Ports`를 사용하는 이유
+| WPF에서 보내는 값 | Arduino 동작 |
+|---|---|
+| `"1"` | LED 켜기 |
+| `"0"` | LED 끄기 |
 
-C#에서 COM 포트를 제어하려면 `SerialPort` 클래스를 사용한다.
+### `System.IO.Ports`
 
-`SerialPort` 클래스는 `System.IO.Ports` 패키지에 들어 있다.
+C#에서 COM 포트를 사용하려면 `SerialPort` 클래스를 사용한다.
 
-.NET Core, .NET 6, .NET 7, .NET 8, .NET 10 계열 WPF 프로젝트에서는 기본 포함이 아닐 수 있으므로 별도로 설치해야 한다.
+`SerialPort`는 `System.IO.Ports` 패키지에 들어 있으므로, 프로젝트에 패키지를 추가해야 한다.
 
 ---
 
 ## 5. Arduino 코드
 
-### 무엇을 위한 파일인가?
+### 파일 역할
 
-이 파일은 Arduino가 PC에서 들어오는 Serial 명령을 받아 LED를 켜고 끄는 역할을 한다.
-
-- PC에서 `'1'`을 보내면 LED ON
-- PC에서 `'0'`을 보내면 LED OFF
+PC에서 들어오는 Serial 값을 읽고, 값에 따라 LED를 켜거나 끈다.
 
 ```cpp
 // 파일 경로: ArduinoLedControl/ArduinoLedControl.ino
@@ -118,14 +124,14 @@ void loop()
         // Serial 통신으로 들어온 문자 하나를 읽습니다.
         char command = Serial.read();
 
-        // 읽은 문자가 '1'인지 확인합니다.
+        // 읽은 문자가 '1'이면 LED를 켭니다.
         if (command == '1')
         {
             // LED 핀에 HIGH 신호를 보내 LED를 켭니다.
             digitalWrite(LED_PIN, HIGH);
         }
 
-        // 읽은 문자가 '0'인지 확인합니다.
+        // 읽은 문자가 '0'이면 LED를 끕니다.
         else if (command == '0')
         {
             // LED 핀에 LOW 신호를 보내 LED를 끕니다.
@@ -137,11 +143,11 @@ void loop()
 
 ---
 
-## 6. WPF 프로젝트 생성
+## 6. WPF 프로젝트 만들기
 
 ### 실행 위치
 
-Windows의 **Developer PowerShell**, **CMD**, 또는 **PowerShell**에서 실행한다.
+Windows의 **CMD**, **PowerShell**, 또는 **Developer PowerShell**에서 실행한다.
 
 ```powershell
 dotnet new wpf -n ArduinoWpfLedControl
@@ -152,12 +158,12 @@ cd ArduinoWpfLedControl
 
 | 명령어 | 설명 |
 |---|---|
-| `dotnet new wpf -n ArduinoWpfLedControl` | `ArduinoWpfLedControl`이라는 이름의 WPF 프로젝트 생성 |
+| `dotnet new wpf -n ArduinoWpfLedControl` | WPF 프로젝트 생성 |
 | `cd ArduinoWpfLedControl` | 생성된 프로젝트 폴더로 이동 |
 
 ---
 
-## 7. `System.IO.Ports` 패키지 설치
+## 7. `System.IO.Ports` 패키지 추가
 
 ### 실행 위치
 
@@ -167,44 +173,41 @@ cd ArduinoWpfLedControl
 dotnet add package System.IO.Ports
 ```
 
-### 왜 이 명령을 사용하는가?
+이 패키지를 추가해야 C# 코드에서 아래 기능을 사용할 수 있다.
 
-WPF에서 Arduino와 Serial 통신을 하려면 C#의 `SerialPort` 클래스가 필요하다.
-
-이 클래스는 `System.IO.Ports` 패키지에 들어 있으므로, 프로젝트에 NuGet 패키지로 추가해야 한다.
-
-### 주의할 점
-
-Visual Studio에는 비슷해 보이는 콘솔이 두 종류 있다.
-
-| 콘솔 | 사용할 명령 |
-|---|---|
-| Developer PowerShell | `dotnet add package System.IO.Ports` |
-| NuGet 패키지 관리자 콘솔 | `Install-Package System.IO.Ports` |
-
-Developer PowerShell에서 `Install-Package System.IO.Ports`를 실행하면 PowerShell의 다른 패키지 관리 명령으로 해석될 수 있다.  
-따라서 Developer PowerShell에서는 반드시 아래 명령을 사용한다.
-
-```powershell
-dotnet add package System.IO.Ports
+```csharp
+using System.IO.Ports;
 ```
+
+```csharp
+SerialPort serialPort = new SerialPort();
+```
+
+### 콘솔 종류에 따른 명령어 차이
+
+Visual Studio 관련 콘솔은 헷갈릴 수 있다.
+
+| 실행 위치 | 명령 |
+|---|---|
+| CMD / PowerShell / Developer PowerShell | `dotnet add package System.IO.Ports` |
+| Visual Studio NuGet 패키지 관리자 콘솔 | `Install-Package System.IO.Ports` |
+
+일반 PowerShell이나 Developer PowerShell에서는 `dotnet add package System.IO.Ports`를 쓰는 것이 안전하다.
 
 ---
 
-## 8. WPF 화면 코드: `MainWindow.xaml`
+## 8. WPF 화면 코드
 
-### 무엇을 위한 파일인가?
+### 파일 역할
 
-이 파일은 WPF 프로그램의 화면을 정의한다.
+버튼과 상태 표시 문구를 배치한다.
 
-화면에는 다음 4개 요소가 있다.
-
-| 요소 | 역할 |
+| 화면 요소 | 역할 |
 |---|---|
-| `TextBlock` | 현재 상태 표시 |
-| `Arduino 연결` 버튼 | COM 포트 연결 |
-| `LED 켜기` 버튼 | Arduino로 `"1"` 전송 |
-| `LED 끄기` 버튼 | Arduino로 `"0"` 전송 |
+| 상태 표시 문구 | Arduino 연결 상태와 LED 상태 표시 |
+| Arduino 연결 버튼 | COM 포트 열기 |
+| LED 켜기 버튼 | Arduino로 `"1"` 전송 |
+| LED 끄기 버튼 | Arduino로 `"0"` 전송 |
 
 ```xml
 <!-- 파일 경로: ArduinoWpfLedControl/MainWindow.xaml -->
@@ -250,19 +253,17 @@ dotnet add package System.IO.Ports
 
 ---
 
-## 9. WPF C# 코드: `MainWindow.xaml.cs`
+## 9. WPF C# 코드
 
-### 무엇을 위한 파일인가?
+### 파일 역할
 
-이 파일은 WPF 화면의 버튼 클릭 동작을 처리한다.
+버튼을 눌렀을 때 실행될 동작을 작성한다.
 
-핵심 기능은 다음과 같다.
-
-| 함수 | 역할 |
+| 함수 | 동작 |
 |---|---|
-| `ConnectButton_Click` | Arduino COM 포트 연결 |
-| `LedOnButton_Click` | Arduino로 `"1"` 전송 |
-| `LedOffButton_Click` | Arduino로 `"0"` 전송 |
+| `ConnectButton_Click` | Arduino와 연결 |
+| `LedOnButton_Click` | LED 켜기 명령 전송 |
+| `LedOffButton_Click` | LED 끄기 명령 전송 |
 | `OnClosed` | 프로그램 종료 시 Serial 포트 닫기 |
 
 ```csharp
@@ -387,7 +388,7 @@ namespace ArduinoWpfLedControl
 
 ---
 
-## 10. COM 포트 확인 방법
+## 10. COM 포트 확인
 
 Arduino IDE에서 다음 메뉴를 확인한다.
 
@@ -395,25 +396,25 @@ Arduino IDE에서 다음 메뉴를 확인한다.
 도구 → 포트
 ```
 
-예를 들어 Arduino가 `COM5`로 표시되면 WPF 코드의 아래 부분을 수정한다.
+예를 들어 Arduino가 `COM5`로 잡혀 있으면 WPF 코드도 아래처럼 수정한다.
 
 ```csharp
 serialPort.PortName = "COM5";
 ```
 
-기본 예제에서는 아래처럼 되어 있다.
+예제 코드에는 `COM3`으로 되어 있다.
 
 ```csharp
 serialPort.PortName = "COM3";
 ```
 
-본인의 PC 환경에 맞게 반드시 수정해야 한다.
+본인 PC에서 잡힌 포트 번호로 바꿔야 한다.
 
 ---
 
 ## 11. 실행 순서
 
-### 11.1 Arduino 코드 업로드
+### Arduino 쪽
 
 1. Arduino IDE 실행
 2. Arduino 보드 연결
@@ -421,36 +422,31 @@ serialPort.PortName = "COM3";
 4. 보드와 포트 선택
 5. 업로드 실행
 
-### 11.2 WPF 프로그램 실행
+### WPF 쪽
 
-1. Visual Studio에서 WPF 프로젝트 열기
-2. `System.IO.Ports` 패키지 설치 확인
+1. WPF 프로젝트 생성
+2. `System.IO.Ports` 패키지 추가
 3. `MainWindow.xaml` 작성
 4. `MainWindow.xaml.cs` 작성
-5. Arduino IDE의 Serial Monitor 닫기
-6. WPF 실행
-7. `Arduino 연결` 버튼 클릭
-8. `LED 켜기`, `LED 끄기` 버튼 클릭
+5. COM 포트 번호 확인
+6. Arduino IDE의 Serial Monitor 닫기
+7. WPF 실행
+8. `Arduino 연결` 버튼 클릭
+9. `LED 켜기`, `LED 끄기` 버튼 클릭
 
 ---
 
-## 12. 중요한 주의사항
+## 12. 주의할 점
 
-### 12.1 Serial Monitor를 닫아야 하는 이유
+### Serial Monitor는 닫아야 한다
 
-Arduino IDE의 Serial Monitor가 열려 있으면 해당 COM 포트를 이미 Arduino IDE가 사용 중인 상태가 된다.
+Arduino IDE의 Serial Monitor가 열려 있으면 해당 COM 포트를 Arduino IDE가 이미 사용 중인 상태가 된다.
 
-이 경우 WPF 프로그램에서 같은 COM 포트를 열 수 없다.
+그러면 WPF 프로그램에서 같은 COM 포트를 열 수 없다.
 
-따라서 WPF 프로그램을 실행하기 전에는 Arduino IDE의 Serial Monitor를 반드시 닫아야 한다.
+WPF 실행 전에는 Arduino IDE의 Serial Monitor를 닫는다.
 
-### 12.2 COM 포트 번호는 PC마다 다르다
-
-강의 예제에서는 `COM3`을 사용하지만, 실제 PC에서는 `COM4`, `COM5`, `COM6` 등으로 다를 수 있다.
-
-반드시 Arduino IDE에서 포트 번호를 확인한 뒤 코드에 반영해야 한다.
-
-### 12.3 BaudRate는 Arduino와 WPF가 같아야 한다
+### BaudRate를 맞춰야 한다
 
 Arduino 코드:
 
@@ -464,21 +460,23 @@ WPF 코드:
 serialPort.BaudRate = 9600;
 ```
 
-두 값이 다르면 통신이 정상적으로 되지 않는다.
+두 값이 같아야 정상적으로 통신할 수 있다.
+
+### COM 포트 번호는 PC마다 다르다
+
+강의실 PC마다 Arduino가 잡히는 COM 번호가 다를 수 있다.
+
+`COM3`으로 되지 않으면 Arduino IDE 또는 장치 관리자에서 포트 번호를 확인한다.
 
 ---
 
-## 13. 자주 발생하는 오류와 해결 방법
+## 13. 자주 발생하는 오류
 
-### 13.1 `SerialPort`에 빨간 밑줄이 생기는 경우
-
-#### 원인
+### `SerialPort`에 빨간 밑줄이 생기는 경우
 
 `System.IO.Ports` 패키지가 설치되지 않았을 가능성이 높다.
 
-#### 해결
-
-프로젝트 폴더에서 아래 명령을 실행한다.
+프로젝트 폴더에서 실행한다.
 
 ```powershell
 dotnet add package System.IO.Ports
@@ -486,15 +484,9 @@ dotnet add package System.IO.Ports
 
 ---
 
-### 13.2 `Install-Package System.IO.Ports`가 실패하는 경우
+### `Install-Package System.IO.Ports`가 실패하는 경우
 
-#### 원인
-
-Developer PowerShell에서 `Install-Package`를 실행했기 때문이다.
-
-Developer PowerShell의 `Install-Package`는 Visual Studio NuGet 패키지 관리자 콘솔의 명령과 다르게 동작할 수 있다.
-
-#### 해결
+Developer PowerShell에서 `Install-Package`를 실행하면 의도한 NuGet 설치 명령으로 동작하지 않을 수 있다.
 
 Developer PowerShell에서는 아래 명령을 사용한다.
 
@@ -502,13 +494,7 @@ Developer PowerShell에서는 아래 명령을 사용한다.
 dotnet add package System.IO.Ports
 ```
 
-또는 Visual Studio 메뉴에서 다음 경로로 들어간다.
-
-```text
-도구 → NuGet 패키지 관리자 → 패키지 관리자 콘솔
-```
-
-그 콘솔에서는 아래 명령을 사용할 수 있다.
+Visual Studio의 NuGet 패키지 관리자 콘솔에서는 아래 명령을 사용할 수 있다.
 
 ```powershell
 Install-Package System.IO.Ports
@@ -516,13 +502,9 @@ Install-Package System.IO.Ports
 
 ---
 
-### 13.3 `InitializeComponent()`에 빨간 밑줄이 생기는 경우
+### `InitializeComponent()`에 빨간 밑줄이 생기는 경우
 
-#### 원인
-
-`MainWindow.xaml`의 `x:Class`와 `MainWindow.xaml.cs`의 namespace 또는 class 이름이 맞지 않을 수 있다.
-
-#### 확인할 부분
+`MainWindow.xaml`의 `x:Class`와 `MainWindow.xaml.cs`의 namespace/class 이름이 맞지 않을 수 있다.
 
 `MainWindow.xaml`:
 
@@ -538,17 +520,15 @@ namespace ArduinoWpfLedControl
     public partial class MainWindow : Window
 ```
 
-두 파일의 이름이 반드시 일치해야 한다.
+프로젝트 이름을 다르게 만들었다면 `ArduinoWpfLedControl` 부분도 프로젝트 이름에 맞게 수정해야 한다.
 
 ---
 
-### 13.4 `IComponentConnector.Connect`가 두 번 이상 구현되었다는 오류
+### `IComponentConnector.Connect`가 두 번 이상 구현되었다는 오류
 
-#### 원인
+같은 `MainWindow.xaml` 또는 `App.xaml`이 프로젝트에 두 번 포함된 경우에 발생할 수 있다.
 
-같은 `MainWindow.xaml` 또는 `App.xaml`이 프로젝트에 두 번 포함되었을 가능성이 높다.
-
-예를 들어 프로젝트 안에 다시 같은 이름의 프로젝트 폴더가 들어 있으면 문제가 발생할 수 있다.
+대표적으로 프로젝트 폴더 안에 같은 프로젝트 폴더가 한 번 더 들어간 경우다.
 
 문제 구조 예시:
 
@@ -567,11 +547,9 @@ ArduinoWpfLedControl
 │  └─ ArduinoWpfLedControl.csproj
 ```
 
-#### 해결
+중복된 안쪽 폴더를 삭제하거나 프로젝트에서 제외한 뒤, `bin`, `obj` 폴더를 지우고 다시 빌드한다.
 
-중복된 안쪽 폴더를 프로젝트에서 제외하거나 삭제한다.
-
-그 다음 `bin`, `obj` 폴더를 삭제하고 다시 빌드한다.
+PowerShell:
 
 ```powershell
 Remove-Item -Recurse -Force .\bin
@@ -580,7 +558,7 @@ dotnet clean
 dotnet build
 ```
 
-CMD에서는 아래 명령을 사용할 수 있다.
+CMD:
 
 ```cmd
 rmdir /s /q bin
@@ -591,71 +569,63 @@ dotnet build
 
 ---
 
-### 13.5 COM 포트 연결 실패
+### Arduino 연결 실패
 
-#### 원인 후보
+다음 항목을 확인한다.
 
-| 원인 | 설명 |
+| 확인 항목 | 설명 |
 |---|---|
-| COM 번호 오류 | 코드의 `COM3`이 실제 Arduino 포트와 다름 |
-| Serial Monitor 열림 | Arduino IDE가 포트를 이미 사용 중 |
-| USB 케이블 문제 | 충전 전용 케이블일 수 있음 |
-| 드라이버 문제 | CH340 계열 보드는 드라이버가 필요할 수 있음 |
-| 보드 연결 해제 | Arduino가 PC에 연결되어 있지 않음 |
-
-#### 해결
-
-1. Arduino IDE에서 포트 번호 확인
-2. Serial Monitor 닫기
-3. USB 케이블 교체
-4. 장치 관리자에서 COM 포트 확인
-5. WPF 코드의 `PortName` 수정
+| COM 번호 | 코드의 `COM3`이 실제 Arduino 포트와 같은지 확인 |
+| Serial Monitor | Arduino IDE의 Serial Monitor가 열려 있는지 확인 |
+| USB 케이블 | 충전 전용 케이블인지 확인 |
+| 드라이버 | CH340 계열 보드는 드라이버가 필요할 수 있음 |
+| 보드 선택 | Arduino IDE에서 보드 종류가 맞는지 확인 |
 
 ---
 
-## 14. 외부 LED 연결 방법
+## 14. 외부 LED를 사용하는 경우
 
-Arduino 내장 LED 대신 외부 LED를 사용할 수 있다.
+Arduino 내장 LED 대신 외부 LED를 사용할 수도 있다.
 
 ```text
 Arduino D13 ─ 220Ω 저항 ─ LED 긴 다리(+)
 LED 짧은 다리(-) ─ Arduino GND
 ```
 
-LED는 극성이 있다.
+LED는 방향이 있다.
 
-| LED 다리 | 의미 |
+| LED 다리 | 연결 |
 |---|---|
-| 긴 다리 | + |
-| 짧은 다리 | - |
+| 긴 다리 | + 쪽 |
+| 짧은 다리 | GND 쪽 |
 
-저항 없이 LED를 직접 연결하면 LED 또는 Arduino 핀에 무리가 갈 수 있으므로 220Ω 정도의 저항을 사용하는 것이 안전하다.
+저항 없이 LED를 직접 연결하는 것은 피한다.
 
 ---
 
-## 15. 수업용 설명 포인트
+## 15. 실습 중 설명할 내용
 
-### 15.1 가장 중요한 개념
+이번 구조에서 중요한 점은 WPF가 LED를 직접 켜는 것이 아니라는 점이다.
 
-이 예제에서 가장 중요한 것은 **PC 프로그램이 하드웨어를 직접 제어하는 것이 아니라, 명령을 보내고 Arduino가 그 명령을 해석한다는 점**이다.
+WPF는 Arduino에 값을 보낸다.
 
-즉 WPF는 명령을 보내는 역할이고, Arduino는 실제 하드웨어를 제어하는 역할이다.
+Arduino는 그 값을 읽고 LED 핀을 제어한다.
 
 ```text
-WPF = 명령을 보내는 쪽
-Arduino = 명령을 받아 실제 장치를 제어하는 쪽
+WPF: "1" 보냄
+Arduino: '1'을 읽음
+Arduino: LED 핀 HIGH
+LED: 켜짐
 ```
 
-### 15.2 왜 문자열 `"1"`, `"0"`을 쓰는가?
+```text
+WPF: "0" 보냄
+Arduino: '0'을 읽음
+Arduino: LED 핀 LOW
+LED: 꺼짐
+```
 
-처음 배우는 단계에서는 가장 단순한 프로토콜이 좋다.
-
-| 전송 문자 | 의미 |
-|---|---|
-| `"1"` | LED 켜기 |
-| `"0"` | LED 끄기 |
-
-실무에서는 다음처럼 더 명확한 명령을 사용하기도 한다.
+처음에는 `"1"`, `"0"`처럼 단순한 값을 사용하지만, 나중에는 아래처럼 명령어를 더 명확하게 만들 수 있다.
 
 ```text
 LED_ON
@@ -666,71 +636,41 @@ MOTOR_STOP
 
 ---
 
-## 16. 확장 아이디어
+## 16. 확장 방향
 
-이 예제를 이해한 뒤에는 다음 기능으로 확장할 수 있다.
+기본 동작이 되면 다음 기능을 추가할 수 있다.
 
 | 확장 기능 | 설명 |
 |---|---|
-| COM 포트 자동 검색 | PC에 연결된 COM 포트 목록을 ComboBox에 표시 |
-| 연결 해제 버튼 | Serial 포트 명시적 닫기 |
-| Arduino 응답 표시 | Arduino에서 `OK`를 보내고 WPF가 표시 |
-| 센서값 읽기 | Arduino의 온도, 조도, 거리 센서값을 WPF에 표시 |
-| 모터 제어 | 버튼으로 DC 모터 또는 서보모터 제어 |
-| 장비 제어 UI | 실제 자동화 장비의 간단한 HMI 구조로 확장 |
+| COM 포트 목록 표시 | PC에 연결된 포트를 ComboBox에 표시 |
+| 연결 해제 버튼 | 사용자가 직접 포트를 닫을 수 있게 구성 |
+| Arduino 응답 받기 | Arduino에서 `OK`를 보내고 WPF에서 표시 |
+| 센서값 표시 | Arduino 센서값을 WPF 화면에 표시 |
+| 모터 제어 | 버튼으로 모터 시작/정지 제어 |
+| 간단한 장비 제어 화면 | 실제 HMI 형태로 확장 |
 
 ---
 
-## 17. 강의 마무리 요약
-
-이번 실습의 핵심은 다음과 같다.
-
-| 핵심 | 설명 |
-|---|---|
-| WPF 버튼 | 사용자의 입력을 받음 |
-| `SerialPort` | PC에서 Arduino로 데이터 전송 |
-| COM 포트 | PC와 Arduino가 연결되는 통신 경로 |
-| Arduino `Serial.read()` | PC에서 받은 문자를 읽음 |
-| `digitalWrite()` | LED를 실제로 켜거나 끔 |
-
-최종 흐름은 다음과 같다.
-
-```text
-버튼 클릭
-→ SerialPort.Write("1")
-→ Arduino Serial.read()
-→ digitalWrite(13, HIGH)
-→ LED 켜짐
-```
-
-```text
-버튼 클릭
-→ SerialPort.Write("0")
-→ Arduino Serial.read()
-→ digitalWrite(13, LOW)
-→ LED 꺼짐
-```
-
----
-
-## 18. 실습 체크리스트
+## 17. 실습 체크리스트
 
 | 확인 항목 | 완료 |
 |---|---|
-| Arduino 코드 업로드 완료 | □ |
-| Arduino IDE Serial Monitor 닫음 | □ |
-| WPF 프로젝트 생성 완료 | □ |
-| `System.IO.Ports` 패키지 설치 완료 | □ |
-| COM 포트 번호 확인 완료 | □ |
-| WPF 코드의 `PortName` 수정 완료 | □ |
-| WPF 실행 완료 | □ |
-| Arduino 연결 버튼 동작 확인 | □ |
-| LED 켜기 버튼 동작 확인 | □ |
-| LED 끄기 버튼 동작 확인 | □ |
+| Arduino 코드 업로드 | □ |
+| Arduino IDE Serial Monitor 닫기 | □ |
+| WPF 프로젝트 생성 | □ |
+| `System.IO.Ports` 패키지 설치 | □ |
+| COM 포트 번호 확인 | □ |
+| WPF 코드의 `PortName` 수정 | □ |
+| WPF 실행 | □ |
+| Arduino 연결 버튼 확인 | □ |
+| LED 켜기 버튼 확인 | □ |
+| LED 끄기 버튼 확인 | □ |
 
 ---
 
-## 19. 참고용 최종 파일 구조
+## 18. 파일 구조
+
+WPF 프로젝트 폴더 예시:
 
 ```text
 ArduinoWpfLedControl
@@ -743,7 +683,7 @@ ArduinoWpfLedControl
 └─ obj
 ```
 
-Arduino 스케치 파일은 별도 폴더에 둘 수 있다.
+Arduino 스케치 폴더 예시:
 
 ```text
 ArduinoLedControl
@@ -752,6 +692,17 @@ ArduinoLedControl
 
 ---
 
-## 20. 강사용 한 줄 설명
+## 19. 정리
 
-> 이 예제는 WPF가 Serial 통신으로 Arduino에 간단한 문자 명령을 보내고, Arduino가 그 명령을 해석하여 LED를 제어하는 가장 기본적인 PC-하드웨어 연동 실습이다.
+이번 실습에서는 WPF에서 버튼을 누르면 Arduino로 값이 전송되고, Arduino는 받은 값에 따라 LED를 켜고 끄도록 구성했다.
+
+흐름은 단순하다.
+
+```text
+버튼 클릭
+→ 값 전송
+→ Arduino 수신
+→ LED 제어
+```
+
+WPF와 Arduino를 연결할 때는 COM 포트 번호, BaudRate, Serial Monitor 점유 여부를 먼저 확인해야 한다.
