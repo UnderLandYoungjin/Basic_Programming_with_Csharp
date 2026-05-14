@@ -43,7 +43,7 @@ digitalWrite()
 LED 제어
 ```
 
-WPF는 명령을 보내는 쪽이고, Arduino는 받은 명령에 따라 실제 LED를 제어하는 쪽이다.
+WPF는 값을 보내고, Arduino는 그 값을 받아서 실제 핀을 제어한다.
 
 ---
 
@@ -60,19 +60,9 @@ WPF는 명령을 보내는 쪽이고, Arduino는 받은 명령에 따라 실제 
 
 ---
 
-## 4. 사용하는 기술
+## 4. 통신 방식 확인
 
-### WPF
-
-WPF는 Windows 데스크톱 프로그램을 만들기 위한 UI 프레임워크이다.
-
-이번 실습에서는 버튼과 상태 표시 문구를 가진 간단한 프로그램을 만든다.
-
-### Arduino
-
-Arduino는 외부 장치를 제어하기 위한 마이크로컨트롤러 보드이다.
-
-이번 실습에서는 Arduino의 13번 핀에 연결된 LED를 제어한다. Arduino Uno 기준으로 13번 핀은 보드 내장 LED와 연결되어 있어 별도 LED 없이도 테스트할 수 있다.
+이번 실습에서 중요한 부분은 WPF 화면 자체보다 PC와 Arduino가 데이터를 주고받는 방식이다.
 
 ### Serial 통신
 
@@ -196,7 +186,86 @@ Visual Studio 관련 콘솔은 헷갈릴 수 있다.
 
 ---
 
-## 8. WPF 화면 코드
+---
+
+## 8. Visual Studio에서 프로젝트 열기
+
+CMD나 PowerShell에서 현재 프로젝트 폴더를 Visual Studio로 바로 열 수 있다.
+
+현재 폴더에 `.csproj` 파일이 있는 경우에는 아래처럼 실행한다.
+
+```cmd
+start "" "ArduinoWpfLedControl.csproj"
+```
+
+솔루션 파일 `.sln`을 만든 경우에는 아래처럼 실행한다.
+
+```cmd
+start "" "ArduinoWpfLedControl.sln"
+```
+
+### 왜 `start ""`를 사용하는가?
+
+Windows CMD의 `start` 명령은 첫 번째 따옴표 문자열을 실행할 파일이 아니라 **창 제목**으로 해석한다.
+
+따라서 파일명을 따옴표로 감싸서 실행할 때는 앞에 빈 제목 `""`를 넣어주는 것이 안전하다.
+
+```cmd
+start "" "ArduinoWpfLedControl.csproj"
+```
+
+위 명령에서 각 부분의 의미는 다음과 같다.
+
+| 부분 | 의미 |
+|---|---|
+| `start` | Windows에서 파일 또는 프로그램 실행 |
+| `""` | CMD가 사용할 빈 창 제목 |
+| `"ArduinoWpfLedControl.csproj"` | Visual Studio로 열 프로젝트 파일 |
+
+현재 폴더에 있는 프로젝트 파일명이 다르면 실제 파일명에 맞게 바꿔야 한다.
+
+예를 들어 프로젝트 파일명이 `Arduiono.csproj`라면 아래처럼 실행한다.
+
+```cmd
+start "" "Arduiono.csproj"
+```
+
+### `.sln` 파일이 없을 때
+
+`dotnet new wpf`로 프로젝트만 만든 경우에는 `.sln` 파일이 없을 수 있다. 이 경우에도 `.csproj` 파일을 Visual Studio로 바로 열 수 있다.
+
+```cmd
+start "" "ArduinoWpfLedControl.csproj"
+```
+
+강의용으로 솔루션 파일까지 만들고 싶다면 다음 명령을 실행한다.
+
+```cmd
+dotnet new sln -n ArduinoWpfLedControl
+dotnet sln ArduinoWpfLedControl.sln add ArduinoWpfLedControl.csproj
+start "" "ArduinoWpfLedControl.sln"
+```
+
+### `devenv` 명령이 안 되는 경우
+
+일반 CMD에서 아래 명령이 안 될 수 있다.
+
+```cmd
+devenv
+```
+
+이 경우 Visual Studio가 설치되지 않은 것이 아니라, 일반 CMD가 `devenv.exe`의 경로를 모르는 상태일 가능성이 높다.
+
+Visual Studio를 명령어로 직접 실행하려면 **Developer Command Prompt for Visual Studio** 또는 **Developer PowerShell for Visual Studio**에서 실행한다.
+
+```cmd
+devenv ArduinoWpfLedControl.csproj
+```
+
+일반 CMD에서는 `start "" "프로젝트파일.csproj"` 방식이 더 간단하다.
+
+
+## 9. WPF 화면 코드
 
 ### 파일 역할
 
@@ -253,7 +322,7 @@ Visual Studio 관련 콘솔은 헷갈릴 수 있다.
 
 ---
 
-## 9. WPF C# 코드
+## 10. WPF C# 코드
 
 ### 파일 역할
 
@@ -388,7 +457,7 @@ namespace ArduinoWpfLedControl
 
 ---
 
-## 10. COM 포트 확인
+## 11. COM 포트 확인
 
 Arduino IDE에서 다음 메뉴를 확인한다.
 
@@ -412,7 +481,7 @@ serialPort.PortName = "COM3";
 
 ---
 
-## 11. 실행 순서
+## 12. 실행 순서
 
 ### Arduino 쪽
 
@@ -426,17 +495,18 @@ serialPort.PortName = "COM3";
 
 1. WPF 프로젝트 생성
 2. `System.IO.Ports` 패키지 추가
-3. `MainWindow.xaml` 작성
-4. `MainWindow.xaml.cs` 작성
-5. COM 포트 번호 확인
-6. Arduino IDE의 Serial Monitor 닫기
-7. WPF 실행
-8. `Arduino 연결` 버튼 클릭
-9. `LED 켜기`, `LED 끄기` 버튼 클릭
+3. `start "" "ArduinoWpfLedControl.csproj"`로 Visual Studio 열기
+4. `MainWindow.xaml` 작성
+5. `MainWindow.xaml.cs` 작성
+6. COM 포트 번호 확인
+7. Arduino IDE의 Serial Monitor 닫기
+8. WPF 실행
+9. `Arduino 연결` 버튼 클릭
+10. `LED 켜기`, `LED 끄기` 버튼 클릭
 
 ---
 
-## 12. 주의할 점
+## 13. 주의할 점
 
 ### Serial Monitor는 닫아야 한다
 
@@ -470,7 +540,7 @@ serialPort.BaudRate = 9600;
 
 ---
 
-## 13. 자주 발생하는 오류
+## 14. 자주 발생하는 오류
 
 ### `SerialPort`에 빨간 밑줄이 생기는 경우
 
@@ -583,7 +653,7 @@ dotnet build
 
 ---
 
-## 14. 외부 LED를 사용하는 경우
+## 15. 외부 LED를 사용하는 경우
 
 Arduino 내장 LED 대신 외부 LED를 사용할 수도 있다.
 
@@ -603,13 +673,13 @@ LED는 방향이 있다.
 
 ---
 
-## 15. 실습 중 설명할 내용
+## 16. 실습 중 설명할 내용
 
-이번 구조에서 중요한 점은 WPF가 LED를 직접 켜는 것이 아니라는 점이다.
+WPF가 LED를 직접 켜는 게 아니다.
 
-WPF는 Arduino에 값을 보낸다.
+WPF는 `"1"` 또는 `"0"`이라는 문자만 보낸다. 그 문자를 받은 Arduino가 13번 핀에 `HIGH` 또는 `LOW`를 출력해서 LED가 켜지거나 꺼진다.
 
-Arduino는 그 값을 읽고 LED 핀을 제어한다.
+역할을 나누면 다음과 같다.
 
 ```text
 WPF: "1" 보냄
@@ -636,7 +706,7 @@ MOTOR_STOP
 
 ---
 
-## 16. 확장 방향
+## 17. 확장 방향
 
 기본 동작이 되면 다음 기능을 추가할 수 있다.
 
@@ -651,7 +721,7 @@ MOTOR_STOP
 
 ---
 
-## 17. 실습 체크리스트
+## 18. 실습 체크리스트
 
 | 확인 항목 | 완료 |
 |---|---|
@@ -668,7 +738,7 @@ MOTOR_STOP
 
 ---
 
-## 18. 파일 구조
+## 19. 파일 구조
 
 WPF 프로젝트 폴더 예시:
 
@@ -689,20 +759,3 @@ Arduino 스케치 폴더 예시:
 ArduinoLedControl
 └─ ArduinoLedControl.ino
 ```
-
----
-
-## 19. 정리
-
-이번 실습에서는 WPF에서 버튼을 누르면 Arduino로 값이 전송되고, Arduino는 받은 값에 따라 LED를 켜고 끄도록 구성했다.
-
-흐름은 단순하다.
-
-```text
-버튼 클릭
-→ 값 전송
-→ Arduino 수신
-→ LED 제어
-```
-
-WPF와 Arduino를 연결할 때는 COM 포트 번호, BaudRate, Serial Monitor 점유 여부를 먼저 확인해야 한다.
