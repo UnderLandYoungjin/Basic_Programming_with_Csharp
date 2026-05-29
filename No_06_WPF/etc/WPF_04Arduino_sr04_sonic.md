@@ -535,9 +535,12 @@ namespace SR04Monitor.ViewModels
         <!-- 게이지 (0~400cm) -->
         <StackPanel Grid.Row="2" Margin="0,0,0,12">
             <TextBlock Text="0 ~ 400cm 범위" Foreground="#A6ADC8" FontSize="12" Margin="0,0,0,4"/>
-            <ProgressBar Height="18" Minimum="0" Maximum="100"
-                         Value="{Binding DistancePercent}"
-                         Foreground="#94E2D5" Background="#45475A"/>
+            <ProgressBar Height="18"
+             Minimum="0"
+             Maximum="100"
+             Value="0"
+             Foreground="#94E2D5"
+             Background="#45475A"/>
         </StackPanel>
 
         <!-- 하단: 상태 / 원문 -->
