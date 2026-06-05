@@ -1,10 +1,8 @@
-# 도서 대여 관리 시스템 만들기 (C# WinForms + ADO.NET)
+# 도서 대여 관리 시스템 만들기 — 완전 초보용 상세 주석판
 
-> 이 문서는 기존 초안의 코드 원문을 유지하면서, 학생이 그대로 따라 만들 수 있도록 **파일별 역할, 코드 흐름, 핵심 문법, DB 동작 원리, 자주 나는 오류**를 보강한 상세 해설판이다.
->
-> 기준 구조는 `C# WinForms + ADO.NET + SQL Server`이다. ORM(Entity Framework 등)은 쓰지 않고, `SqlConnection`, `SqlCommand`, `SqlDataAdapter`, `SqlParameter`를 직접 사용한다.
 
----
+> 기준 파일: 사용자가 업로드한 도서 대여 관리 시스템 Markdown 초안을 바탕으로, 파일을 흐름 순서로 재배치하고 초보자용 문법·함수 설명을 추가한 판이다.
+
 
 ## 0. 전체 구조를 먼저 이해하기
 
@@ -97,92 +95,191 @@ MDI 기반 도서 대여점 관리 프로그램을 처음부터 끝까지 만든
 
 ---
 
-## 1. 만들 프로그램
-
-도서 대여점에서 쓰는 관리 프로그램이다. 메인 창(MDI) 안에 기능별 자식 창이 뜬다.
-
-| 화면 | 폼 클래스 | 하는 일 |
-|------|-----------|---------|
-| 메인 | `MainForm` | MDI 컨테이너, 메뉴로 각 창 열기 |
-| 도서 정보 | `BookForm` | 도서 등록/수정/삭제, 목록 |
-| 회원 정보 | `MemberForm` | 회원 등록/수정/삭제, RFID 카드 발급 |
-| 대여 관리 | `RentalForm` | 회원 검색(코드/이름/카드) → 도서 대여/반납 |
-| 정보 조회 | `QueryForm` | 도서 대여순위 / 회원 대여순위 / 대여중인 도서 |
-| 환경 설정 | `SettingForm` | 신간·구간 요금 설정, 목록/현황 엑셀(CSV) 출력 |
-
-핵심 동작은 이렇게 흘러간다.
-
-1. 도서와 회원을 먼저 등록한다.
-2. 대여 관리에서 회원을 찾고, 도서 코드를 입력하면
-   - 출판일 + 환경설정의 "전환 기간"으로 **신간/구간을 자동 판정**하고
-   - 그에 맞는 **대여료·대여기간·연체단가**를 자동으로 적용한다.
-3. 반납할 때 `DATEDIFF`로 **연체료를 계산**한다.
-
-> **바코드 / RFID 안내**
-> 바코드 스캐너는 키보드처럼 텍스트박스에 글자를 찍고 Enter를 누르는 장치다. 그래서 별도 코드가 필요 없다. 그냥 코드 입력칸에 스캔(ISBN/도서코드)하면 된다.
-> RFID 카드는 하드웨어가 있어야 하므로, 여기서는 카드번호를 만들어 DB에 저장하고 그 번호로 조회하는 방식으로 시뮬레이션한다.
 
 ---
 
-## 2. 개발 환경
 
-- Visual Studio 2019 이상
-- 프로젝트 형식: **Windows Forms App (.NET Framework)**
-  - .NET Framework는 `System.Data.SqlClient`가 기본 내장이라 NuGet이 필요 없다.
-  - .NET 6/7/8로 만들고 싶으면 NuGet에서 **`Microsoft.Data.SqlClient`** 를 받고, 코드의 `using System.Data.SqlClient;` 를 `using Microsoft.Data.SqlClient;` 로만 바꾸면 그대로 돌아간다.
-- SQL Server (LocalDB / Express / 일반 인스턴스 아무거나)
-- SSMS(SQL Server Management Studio) 또는 VS의 SQL Server 개체 탐색기
+
+# 1. 먼저 알아야 할 C# 문법 사전
+
+## 1-1. `=>`의 의미
+
+`=>`는 초보자가 가장 많이 헷갈리는 문법이다. 이 예제에서는 두 가지 의미로 나온다.
+
+### A. 버튼 클릭 이벤트에서 쓰는 람다식
+
+```csharp
+(s, e) => Save()
+```
+
+뜻은 “버튼이 클릭되면 `Save()` 함수를 실행하라”이다. 여기서 `s`는 이벤트를 발생시킨 객체, `e`는 이벤트 정보이다. 이름은 꼭 `s`, `e`일 필요는 없지만 WinForms에서 관습적으로 자주 쓴다.
+
+아래 두 코드는 같은 의미다.
+
+```csharp
+UI.Btn(this, "저장", 110, 165, (s, e) => Save());
+```
+
+```csharp
+Button btn = new Button();
+btn.Click += delegate(object s, EventArgs e)
+{
+    Save();
+};
+```
+
+### B. 한 줄 함수에서 쓰는 식 본문 문법
+
+```csharp
+public static int Count() => (int)DBManager.Scalar("SELECT COUNT(*) FROM Book");
+```
+
+이 코드는 아래와 같은 의미다.
+
+```csharp
+public static int Count()
+{
+    return (int)DBManager.Scalar("SELECT COUNT(*) FROM Book");
+}
+```
+
+즉, 함수가 한 줄짜리 `return`이면 `{ return ...; }` 대신 `=>`로 줄여 쓸 수 있다.
 
 ---
 
-## 3. 프로젝트 생성
+## 1-2. `var`
 
-1. Visual Studio → **새 프로젝트 만들기**
-2. **Windows Forms 앱(.NET Framework)**, C# 선택
-3. 프로젝트 이름: `BookRentalSystem`
-   - 아래 모든 코드의 네임스페이스가 `BookRentalSystem`이다. 이름을 다르게 했다면 각 파일 `namespace` 줄을 맞춰 줘야 한다.
-4. 만들어진 기본 `Form1.cs`는 삭제한다. (메인 폼은 직접 만든다)
+```csharp
+var dt = new DataTable();
+```
 
-이 실습은 **디자이너로 컨트롤을 끌어다 놓지 않고 코드로 UI를 구성**한다. 디자이너 파일에 묶이지 않아서 한 파일만 보면 화면이 다 보이고, 복사·붙여넣기로 따라 하기 좋기 때문이다.
+`var`는 “자료형을 자동으로 판단하라”는 뜻이다. 위 코드는 실제로 `DataTable dt = new DataTable();`과 같다. `var`는 아무 타입이나 되는 변수가 아니라, 컴파일 시점에 정확한 타입이 정해진다.
 
 ---
 
-## 4. 파일 구조
+## 1-3. `using` 블록
 
-프로젝트에 아래 `.cs` 파일들을 추가한다. (솔루션 탐색기 → 프로젝트 우클릭 → 추가 → 클래스)
-
-```
-BookRentalSystem/
-├── Program.cs          // 진입점
-├── DB.cs               // ADO.NET 헬퍼 + UI 헬퍼
-├── Models.cs           // Book, Member, Setting 모델
-├── DAO.cs              // DB 접근 계층 (Book/Member/Rental/Setting DAO)
-├── MainForm.cs         // MDI 메인
-├── BookForm.cs         // 도서 정보
-├── MemberForm.cs       // 회원 정보
-├── RentalForm.cs       // 대여 관리
-├── QueryForm.cs        // 정보 조회
-└── SettingForm.cs      // 환경 설정
+```csharp
+using (var con = new SqlConnection(ConnectionString))
+{
+    // DB 작업
+}
 ```
 
-계층은 이렇게 나뉜다.
-
-```
-[ Form들 (화면) ]
-        │  메서드 호출
-        ▼
-[ DAO (SQL 정의) ]
-        │  SQL + 파라미터
-        ▼
-[ DBManager (ADO.NET 실행) ]
-        │
-        ▼
-[ SQL Server ]
-```
-
-화면은 SQL을 직접 쓰지 않고 DAO만 부른다. DAO는 SQL을 만들어 DBManager에 넘긴다. DBManager는 연결·실행만 책임진다. 이렇게 나눠 두면 DB가 바뀌어도 DBManager만 손보면 된다.
+DB 연결, 파일, 네트워크 자원은 사용 후 반드시 정리해야 한다. `using` 블록은 블록이 끝날 때 자동으로 자원을 정리한다. 그래서 DB 연결 누수 가능성을 줄인다.
 
 ---
+
+## 1-4. `params`
+
+```csharp
+public static DataTable Query(string sql, params SqlParameter[] ps)
+```
+
+`params`는 파라미터를 0개, 1개, 여러 개 자유롭게 받을 수 있게 한다. 그래서 아래처럼 호출할 수 있다.
+
+```csharp
+DBManager.Query(sql);
+DBManager.Query(sql, new SqlParameter("@c", code));
+DBManager.Query(sql, new SqlParameter("@n", name), new SqlParameter("@g", grade));
+```
+
+---
+
+## 1-5. `? :` 삼항 연산자
+
+```csharp
+int fee = isNew ? s.NewRentFee : s.OldRentFee;
+```
+
+뜻은 “`isNew`가 참이면 `s.NewRentFee`, 거짓이면 `s.OldRentFee`를 사용하라”이다. 짧은 `if-else`라고 보면 된다.
+
+---
+
+## 1-6. `??` 널 병합 연산자
+
+```csharp
+(object)b.Category ?? DBNull.Value
+```
+
+왼쪽 값이 `null`이면 오른쪽 값을 사용한다. DB에는 C#의 `null`이 아니라 `DBNull.Value`를 넣어야 하므로 이 문법을 쓴다.
+
+---
+
+## 1-7. `new Book { ... }` 객체 초기화
+
+```csharp
+var b = new Book
+{
+    BookCode = tCode.Text.Trim(),
+    Title = tTitle.Text.Trim()
+};
+```
+
+객체를 만들면서 값을 바로 넣는 문법이다. 아래와 같다.
+
+```csharp
+var b = new Book();
+b.BookCode = tCode.Text.Trim();
+b.Title = tTitle.Text.Trim();
+```
+
+---
+
+## 1-8. `static`
+
+`static`은 객체를 만들지 않고 바로 사용할 수 있다는 뜻이다. 예를 들어 `DBManager.Query(sql)`처럼 `new DBManager()` 없이 호출한다. 이 예제에서는 공통 DB 기능과 DAO를 쉽게 쓰려고 `static`을 사용한다.
+
+---
+
+## 1-9. `try-catch`
+
+DB 저장, 삭제, 숫자 변환은 오류가 날 수 있다. `try-catch`는 오류가 나도 프로그램이 바로 종료되지 않게 막고, 사용자에게 메시지를 보여 주기 위해 사용한다.
+
+
+
+---
+
+
+
+# 2. 파일 흐름 순서
+
+이 문서는 기존 파일 순서를 그대로 두지 않고, 실제 프로그램이 이해되는 순서로 다시 배치했다.
+
+```text
+SQL Server 테이블 생성
+→ Program.cs
+→ MainForm.cs
+→ DB.cs
+→ Models.cs
+→ DAO.cs
+→ BookForm.cs
+→ MemberForm.cs
+→ RentalForm.cs
+→ QueryForm.cs
+→ SettingForm.cs
+→ 실행/오류 점검
+```
+
+핵심은 다음 흐름이다.
+
+```text
+화면(Form)
+  ↓ DAO 메서드 호출
+DAO.cs
+  ↓ DBManager.Query / Execute / Scalar 호출
+DB.cs
+  ↓ SqlConnection / SqlCommand 실행
+SQL Server
+```
+
+
+
+---
+
+
+# 3. SQL Server 데이터베이스 구축
+
 
 ## 5. 데이터베이스 구축
 
@@ -308,9 +405,217 @@ INSERT INTO Member VALUES (101,'홍길동','123456-1234567','일반','남자','0
 
 ---
 
-## 6. 코드
 
-여기부터는 파일별 전체 코드다. 위에서 만든 파일 이름에 그대로 붙여 넣으면 된다.
+---
+
+
+# 4. Program.cs
+
+
+
+## 초보자용 함수 설명
+
+| 함수/명령 | 하는 일 | 왜 필요한가 |
+|---|---|---|
+| `Main()` | 프로그램 시작 함수 | C#은 여기서 실행을 시작한다. |
+| `Application.EnableVisualStyles()` | 윈도우 기본 UI 스타일 적용 | 버튼, 체크박스 등이 기본 Windows 스타일로 보인다. |
+| `Application.Run(new MainForm())` | 메인 창 실행 | 이 줄이 없으면 화면이 뜨지 않는다. |
+
+`Program.cs`는 가장 먼저 실행되지만, 실제 업무 기능은 거의 없다. “어떤 창을 처음 띄울 것인가”를 정하는 파일이다.
+
+
+
+
+
+### 6-10. Program.cs — 진입점
+
+
+#### 이 파일의 목적
+
+`Program.cs`는 프로그램이 처음 시작되는 지점이다.  
+C# WinForms 프로젝트에서 가장 먼저 실행되는 `Main()` 메서드가 들어 있다.
+
+#### 실행 흐름
+
+```text
+Main()
+  ↓
+Application.EnableVisualStyles()
+  ↓
+Application.SetCompatibleTextRenderingDefault(false)
+  ↓
+Application.Run(new MainForm())
+  ↓
+MainForm 화면 표시
+```
+
+#### 핵심 코드 설명
+
+| 코드 | 의미 |
+|---|---|
+| `[STAThread]` | WinForms 같은 Windows UI 프로그램에 필요한 스레드 설정 |
+| `EnableVisualStyles()` | Windows 기본 테마 스타일 적용 |
+| `SetCompatibleTextRenderingDefault(false)` | 기본 텍스트 렌더링 방식 설정 |
+| `Application.Run(new MainForm())` | 메인 폼을 띄우고 메시지 루프 시작 |
+
+```csharp
+using System;
+using System.Windows.Forms;
+
+namespace BookRentalSystem
+{
+    static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
+    }
+}
+```
+
+---
+
+
+---
+
+
+# 5. MainForm.cs
+
+
+
+## 초보자용 함수 설명
+
+| 함수/명령 | 하는 일 | 왜 필요한가 |
+|---|---|---|
+| `MainForm()` | 메인 화면 생성자 | 메뉴와 MDI 부모 창을 만든다. |
+| `Open(Form f)` | 자식 화면 열기 | 같은 화면이 여러 개 중복으로 열리는 것을 막는다. |
+| `IsMdiContainer = true` | MDI 부모 설정 | 메인 화면 안에 여러 자식 창을 넣기 위해 필요하다. |
+| `MdiChildren` | 현재 열린 자식 창 목록 | 이미 열린 창인지 확인할 때 사용한다. |
+
+`(s, e) => Open(new BookForm())`은 “메뉴를 클릭하면 BookForm을 새로 만들어 Open 함수에 넘겨라”라는 뜻이다.
+
+
+
+
+
+### 6-4. MainForm.cs — MDI 메인
+
+
+#### 이 파일의 목적
+
+`MainForm.cs`는 프로그램의 메인 창이다.  
+메뉴를 만들고, 사용자가 메뉴를 클릭하면 각 기능별 자식 창을 연다.
+
+#### MDI란?
+
+MDI는 **Multiple Document Interface**의 약자다.  
+하나의 부모 창 안에 여러 자식 창을 띄우는 방식이다.
+
+```text
+MainForm
+ ├─ BookForm
+ ├─ MemberForm
+ ├─ RentalForm
+ ├─ QueryForm
+ └─ SettingForm
+```
+
+#### 이 예제에서 MDI를 쓰는 이유
+
+도서 관리, 회원 관리, 대여 관리 화면을 각각 독립된 창으로 만들되, 전체 프로그램은 하나의 메인 창에서 관리하기 위해서다.
+
+#### 핵심 코드
+
+| 코드 | 의미 |
+|---|---|
+| `IsMdiContainer = true` | 이 폼을 MDI 부모 창으로 설정 |
+| `MenuStrip` | 상단 메뉴바 생성 |
+| `ToolStripMenuItem` | 메뉴 항목 생성 |
+| `f.MdiParent = this` | 새 폼을 메인 폼의 자식 창으로 설정 |
+| `MdiChildren` | 현재 열려 있는 자식 창 목록 |
+
+```csharp
+using System;
+using System.Windows.Forms;
+
+namespace BookRentalSystem
+{
+    public class MainForm : Form
+    {
+        public MainForm()
+        {
+            Text = "도서 관리 프로그램";
+            IsMdiContainer = true;                 // 자식 창을 품는 컨테이너
+            WindowState = FormWindowState.Maximized;
+
+            var menu = new MenuStrip();
+
+            var mFile = new ToolStripMenuItem("파일");
+            mFile.DropDownItems.Add("종료", null, (s, e) => Close());
+
+            var mRent = new ToolStripMenuItem("도서 대여/반납");
+            mRent.DropDownItems.Add("대여 관리", null, (s, e) => Open(new RentalForm()));
+
+            var mBook = new ToolStripMenuItem("도서 관리");
+            mBook.DropDownItems.Add("도서 정보", null, (s, e) => Open(new BookForm()));
+
+            var mMember = new ToolStripMenuItem("회원 관리");
+            mMember.DropDownItems.Add("회원 정보", null, (s, e) => Open(new MemberForm()));
+
+            var mQuery = new ToolStripMenuItem("정보 조회");
+            mQuery.DropDownItems.Add("정보 조회", null, (s, e) => Open(new QueryForm()));
+
+            var mEnv = new ToolStripMenuItem("환경설정");
+            mEnv.DropDownItems.Add("환경 설정", null, (s, e) => Open(new SettingForm()));
+
+            menu.Items.AddRange(new ToolStripItem[] { mFile, mRent, mBook, mMember, mQuery, mEnv });
+            MainMenuStrip = menu;
+            Controls.Add(menu);
+        }
+
+        // 같은 종류 창이 이미 떠 있으면 새로 열지 않고 활성화만
+        void Open(Form f)
+        {
+            foreach (var c in MdiChildren)
+                if (c.GetType() == f.GetType()) { c.Activate(); f.Dispose(); return; }
+            f.MdiParent = this;
+            f.Show();
+        }
+    }
+}
+```
+
+`IsMdiContainer = true`로 두고, 자식 폼의 `MdiParent`를 이 폼으로 지정하면 메인 창 안쪽에 자식 창이 뜬다. `Open` 메서드는 같은 창을 두 번 열지 않게 막아 준다.
+
+
+---
+
+
+# 6. DB.cs
+
+
+
+## 초보자용 함수 설명
+
+| 함수 | 하는 일 | 사용되는 SQL |
+|---|---|---|
+| `Query()` | SELECT 결과를 표 형태로 가져온다. | `SELECT ...` |
+| `Execute()` | DB 내용을 변경한다. | `INSERT`, `UPDATE`, `DELETE` |
+| `Scalar()` | 값 하나만 가져온다. | `COUNT(*)`, `MAX(...)` |
+| `UI.Lbl()` | Label 생성 | 화면 글자 표시용 |
+| `UI.Txt()` | TextBox 생성 | 사용자 입력칸용 |
+| `UI.Btn()` | Button 생성 | 클릭 이벤트용 |
+| `UI.Prompt()` | 작은 입력창 표시 | RFID 카드번호 입력에 사용 |
+
+`SqlParameter`는 반드시 이해해야 한다. 문자열을 직접 이어 붙여 SQL을 만들면 SQL 인젝션 위험이 생긴다. 그래서 `@c`, `@n` 같은 자리표시자를 쓰고 값을 따로 전달한다.
+
+
+
+
 
 ### 6-1. DB.cs — ADO.NET 헬퍼 + UI 헬퍼
 
@@ -469,6 +774,28 @@ ADO.NET을 다룰 때 두 가지를 습관으로 들이는 게 좋다.
 - **`using` 블록**으로 `SqlConnection`/`SqlCommand`를 감싼다. 블록을 벗어나면 연결이 자동으로 닫히고 반환된다.
 - **파라미터(`@변수`)** 로 값을 넘긴다. 문자열을 `+`로 이어 붙여 SQL을 만들면 SQL 인젝션에 뚫린다.
 
+
+---
+
+
+# 7. Models.cs
+
+
+
+## 초보자용 클래스 설명
+
+| 클래스 | 의미 | DB 테이블 |
+|---|---|---|
+| `Book` | 도서 한 권 | `Book` |
+| `Member` | 회원 한 명 | `Member` |
+| `Setting` | 대여 설정 한 묶음 | `RentalSetting` |
+
+이 예제는 쉽게 보이도록 `public string BookCode;` 같은 필드 형태로 작성되어 있다. 실무에서는 보통 `public string BookCode { get; set; }` 같은 속성 형태를 더 많이 쓴다.
+
+
+
+
+
 ### 6-2. Models.cs — 데이터 모델
 
 
@@ -534,6 +861,69 @@ namespace BookRentalSystem
     }
 }
 ```
+
+
+---
+
+
+# 8. DAO.cs
+
+
+
+## 초보자용 함수 설명
+
+### BookDAO
+
+| 함수 | 하는 일 |
+|---|---|
+| `GetAll()` | 전체 도서 목록 조회 |
+| `Count()` | 전체 도서 수 조회 |
+| `Exists(code)` | 해당 도서코드 존재 여부 확인 |
+| `GetByCode(code)` | 도서코드로 도서 한 권 조회 |
+| `Insert(Book b)` | 새 도서 등록 |
+| `Update(Book b)` | 기존 도서 수정 |
+| `Delete(code)` | 도서 삭제 |
+| `Categories()` | 도서 분류 목록 조회 |
+| `P(Book b)` | Book 객체를 SqlParameter 배열로 변환 |
+
+### MemberDAO
+
+| 함수 | 하는 일 |
+|---|---|
+| `GetAll()` | 전체 회원 목록 조회 |
+| `Count()` | 전체 회원 수 조회 |
+| `Exists(no)` | 회원번호 존재 여부 확인 |
+| `GetByNo(no)` | 회원번호로 회원 조회 |
+| `GetByCard(card)` | RFID 카드번호로 회원 조회 |
+| `GetByName(name)` | 이름으로 회원 조회 |
+| `Insert(Member m)` | 새 회원 등록 |
+| `Update(Member m)` | 기존 회원 수정 |
+| `Delete(no)` | 회원 삭제 |
+| `IssueCard(no)` | 카드번호 생성 및 저장 |
+| `Map(dt)` | DataTable 첫 행을 Member 객체로 변환 |
+| `P(Member m)` | Member 객체를 SqlParameter 배열로 변환 |
+
+### RentalDAO
+
+| 함수 | 하는 일 |
+|---|---|
+| `IsActive(bookCode)` | 도서가 현재 대여중인지 확인 |
+| `GetActiveRaw(memberNo)` | 특정 회원의 대여중 도서 목록 조회 |
+| `Rent(...)` | 대여 내역 등록 |
+| `Return(...)` | 반납 처리 및 연체료 확정 |
+
+### SettingDAO
+
+| 함수 | 하는 일 |
+|---|---|
+| `Get()` | 현재 대여 설정값 조회 |
+| `Save(Setting s)` | 대여 설정값 저장 |
+
+DAO는 화면과 DB 사이의 중간 계층이다. 화면은 SQL을 몰라도 되고, DAO만 호출하면 된다.
+
+
+
+
 
 ### 6-3. DAO.cs — DB 접근 계층
 
@@ -809,94 +1199,30 @@ namespace BookRentalSystem
 
 `SELECT` 컬럼에 `AS 코드`처럼 한글 별칭을 준 이유가 있다. 이 `DataTable`을 그대로 `DataGridView.DataSource`에 넣으면 별칭이 **컬럼 헤더**가 되기 때문에, 그리드 컬럼을 따로 손볼 필요가 없다.
 
-### 6-4. MainForm.cs — MDI 메인
+
+---
 
 
-#### 이 파일의 목적
+# 9. BookForm.cs
 
-`MainForm.cs`는 프로그램의 메인 창이다.  
-메뉴를 만들고, 사용자가 메뉴를 클릭하면 각 기능별 자식 창을 연다.
 
-#### MDI란?
 
-MDI는 **Multiple Document Interface**의 약자다.  
-하나의 부모 창 안에 여러 자식 창을 띄우는 방식이다.
+## 초보자용 함수 설명
 
-```text
-MainForm
- ├─ BookForm
- ├─ MemberForm
- ├─ RentalForm
- ├─ QueryForm
- └─ SettingForm
-```
-
-#### 이 예제에서 MDI를 쓰는 이유
-
-도서 관리, 회원 관리, 대여 관리 화면을 각각 독립된 창으로 만들되, 전체 프로그램은 하나의 메인 창에서 관리하기 위해서다.
-
-#### 핵심 코드
-
-| 코드 | 의미 |
+| 함수 | 하는 일 |
 |---|---|
-| `IsMdiContainer = true` | 이 폼을 MDI 부모 창으로 설정 |
-| `MenuStrip` | 상단 메뉴바 생성 |
-| `ToolStripMenuItem` | 메뉴 항목 생성 |
-| `f.MdiParent = this` | 새 폼을 메인 폼의 자식 창으로 설정 |
-| `MdiChildren` | 현재 열려 있는 자식 창 목록 |
+| `BookForm()` | 도서 정보 화면과 버튼, 그리드 생성 |
+| `Load()` | DB에서 도서 목록과 도서 수를 다시 불러옴 |
+| `NewMode()` | 입력칸을 비워 새 도서 입력 상태로 만듦 |
+| `LoadRow(row)` | 그리드에서 클릭한 도서 정보를 입력칸에 채움 |
+| `Save()` | 도서코드가 있으면 수정, 없으면 신규 등록 |
+| `Delete()` | 선택한 도서 삭제 |
 
-```csharp
-using System;
-using System.Windows.Forms;
+`Save()`에서 `BookDAO.Exists()`를 먼저 호출하는 이유는 저장 버튼 하나로 INSERT와 UPDATE를 모두 처리하기 위해서다.
 
-namespace BookRentalSystem
-{
-    public class MainForm : Form
-    {
-        public MainForm()
-        {
-            Text = "도서 관리 프로그램";
-            IsMdiContainer = true;                 // 자식 창을 품는 컨테이너
-            WindowState = FormWindowState.Maximized;
 
-            var menu = new MenuStrip();
 
-            var mFile = new ToolStripMenuItem("파일");
-            mFile.DropDownItems.Add("종료", null, (s, e) => Close());
 
-            var mRent = new ToolStripMenuItem("도서 대여/반납");
-            mRent.DropDownItems.Add("대여 관리", null, (s, e) => Open(new RentalForm()));
-
-            var mBook = new ToolStripMenuItem("도서 관리");
-            mBook.DropDownItems.Add("도서 정보", null, (s, e) => Open(new BookForm()));
-
-            var mMember = new ToolStripMenuItem("회원 관리");
-            mMember.DropDownItems.Add("회원 정보", null, (s, e) => Open(new MemberForm()));
-
-            var mQuery = new ToolStripMenuItem("정보 조회");
-            mQuery.DropDownItems.Add("정보 조회", null, (s, e) => Open(new QueryForm()));
-
-            var mEnv = new ToolStripMenuItem("환경설정");
-            mEnv.DropDownItems.Add("환경 설정", null, (s, e) => Open(new SettingForm()));
-
-            menu.Items.AddRange(new ToolStripItem[] { mFile, mRent, mBook, mMember, mQuery, mEnv });
-            MainMenuStrip = menu;
-            Controls.Add(menu);
-        }
-
-        // 같은 종류 창이 이미 떠 있으면 새로 열지 않고 활성화만
-        void Open(Form f)
-        {
-            foreach (var c in MdiChildren)
-                if (c.GetType() == f.GetType()) { c.Activate(); f.Dispose(); return; }
-            f.MdiParent = this;
-            f.Show();
-        }
-    }
-}
-```
-
-`IsMdiContainer = true`로 두고, 자식 폼의 `MdiParent`를 이 폼으로 지정하면 메인 창 안쪽에 자식 창이 뜬다. `Open` 메서드는 같은 창을 두 번 열지 않게 막아 준다.
 
 ### 6-5. BookForm.cs — 도서 정보
 
@@ -1052,6 +1378,33 @@ namespace BookRentalSystem
     }
 }
 ```
+
+
+---
+
+
+# 10. MemberForm.cs
+
+
+
+## 초보자용 함수 설명
+
+| 함수 | 하는 일 |
+|---|---|
+| `MemberForm()` | 회원 정보 화면 생성 |
+| `Load()` | 전체 회원 목록 새로고침 |
+| `NewMode()` | 입력칸 초기화 |
+| `LoadRow(row)` | 그리드에서 클릭한 회원을 입력칸에 표시 |
+| `Read()` | 화면 입력값을 Member 객체로 변환 |
+| `Save()` | 회원 신규 등록 또는 수정 |
+| `Delete()` | 회원 삭제 |
+| `IssueCard()` | RFID 카드번호 발급 |
+
+`Read()`를 따로 만든 이유는 화면 입력값을 한곳에서 검증하고 `Member` 객체로 묶기 위해서다. 특히 회원번호는 숫자여야 하므로 `int.TryParse()`로 검사한다.
+
+
+
+
 
 ### 6-6. MemberForm.cs — 회원 정보
 
@@ -1227,6 +1580,40 @@ namespace BookRentalSystem
     }
 }
 ```
+
+
+---
+
+
+# 11. RentalForm.cs
+
+
+
+## 초보자용 함수 설명
+
+| 함수 | 하는 일 |
+|---|---|
+| `RentalForm()` | 대여 관리 화면 전체 생성 |
+| `ReadCard()` | RFID 카드번호로 회원 찾기 |
+| `Find()` | 회원번호 또는 이름으로 회원 찾기 |
+| `ShowMember(m)` | 선택된 회원 정보를 화면에 표시 |
+| `RegisterRental()` | 도서 대여 등록, 신간/구간 판정, 요금 계산 |
+| `LoadRentals()` | 현재 회원의 대여중 목록과 합계 표시 |
+| `ReturnBook()` | 선택한 도서 반납 처리 |
+
+가장 중요한 함수는 `RegisterRental()`이다. 이 함수 안에서 도서 존재 확인, 이미 대여중인지 확인, 신간/구간 판정, 대여료 계산, 반납예정일 계산, DB 저장이 모두 일어난다.
+
+신간 판정식:
+
+```csharp
+bool isNew = (DateTime.Today - b.PublishDate).TotalDays <= s.SwitchPeriod;
+```
+
+뜻: “오늘 날짜에서 출판일을 뺀 일수가 설정된 전환 기간 이하이면 신간이다.”
+
+
+
+
 
 ### 6-7. RentalForm.cs — 대여 관리
 
@@ -1518,6 +1905,29 @@ namespace BookRentalSystem
 
 신간/구간 판정은 `(오늘 − 출판일) ≤ 전환 기간`이면 신간으로 본다. 환경설정의 전환 기간(기본 14일)을 바꾸면 판정 기준이 바뀐다.
 
+
+---
+
+
+# 12. QueryForm.cs
+
+
+
+## 초보자용 함수 설명
+
+| 함수 | 하는 일 |
+|---|---|
+| `QueryForm()` | 조회 화면과 필터 생성 |
+| `Search()` | 선택된 라디오 버튼에 따라 SQL을 만들고 조회 |
+
+`Search()`는 조건에 따라 SQL 문자열을 조금씩 이어 붙인다. 분류가 `전체`이면 조건을 붙이지 않고, 특정 분류가 선택되면 `WHERE b.Category=@c`를 붙인다.
+
+대여 순위는 `GROUP BY`와 `COUNT(*)`로 계산한다.
+
+
+
+
+
 ### 6-8. QueryForm.cs — 정보 조회
 
 
@@ -1648,6 +2058,31 @@ namespace BookRentalSystem
     }
 }
 ```
+
+
+---
+
+
+# 13. SettingForm.cs
+
+
+
+## 초보자용 함수 설명
+
+| 함수 | 하는 일 |
+|---|---|
+| `SettingForm()` | 설정 화면 생성 |
+| `LoadSetting()` | DB 설정값을 화면에 표시 |
+| `SaveSetting()` | 화면 설정값을 DB에 저장 |
+| `ExportBookList()` | 도서 목록 CSV 저장 |
+| `ExportRentalStatus()` | 대여 현황 CSV 저장 |
+| `ToCsv(dt, name)` | DataTable을 CSV 파일로 저장 |
+
+`new UTF8Encoding(true)`는 CSV 파일을 엑셀에서 열 때 한글이 깨질 가능성을 줄이기 위해 BOM을 포함해 저장하는 설정이다.
+
+
+
+
 
 ### 6-9. SettingForm.cs — 환경 설정
 
@@ -1797,57 +2232,12 @@ namespace BookRentalSystem
 
 CSV는 외부 라이브러리 없이 바로 엑셀에서 열린다. `UTF8Encoding(true)`로 BOM을 넣어야 한글이 안 깨진다. 진짜 `.xlsx` 형식이 필요하면 NuGet에서 **ClosedXML**을 받아 `ToCsv` 부분만 교체하면 된다.
 
-### 6-10. Program.cs — 진입점
-
-
-#### 이 파일의 목적
-
-`Program.cs`는 프로그램이 처음 시작되는 지점이다.  
-C# WinForms 프로젝트에서 가장 먼저 실행되는 `Main()` 메서드가 들어 있다.
-
-#### 실행 흐름
-
-```text
-Main()
-  ↓
-Application.EnableVisualStyles()
-  ↓
-Application.SetCompatibleTextRenderingDefault(false)
-  ↓
-Application.Run(new MainForm())
-  ↓
-MainForm 화면 표시
-```
-
-#### 핵심 코드 설명
-
-| 코드 | 의미 |
-|---|---|
-| `[STAThread]` | WinForms 같은 Windows UI 프로그램에 필요한 스레드 설정 |
-| `EnableVisualStyles()` | Windows 기본 테마 스타일 적용 |
-| `SetCompatibleTextRenderingDefault(false)` | 기본 텍스트 렌더링 방식 설정 |
-| `Application.Run(new MainForm())` | 메인 폼을 띄우고 메시지 루프 시작 |
-
-```csharp
-using System;
-using System.Windows.Forms;
-
-namespace BookRentalSystem
-{
-    static class Program
-    {
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
-        }
-    }
-}
-```
 
 ---
+
+
+# 14. 실행 순서와 트러블슈팅
+
 
 ## 7. 실행 순서
 
@@ -1864,242 +2254,18 @@ namespace BookRentalSystem
 
 ---
 
-## 8. 자주 막히는 곳 (트러블슈팅)
-
-| 증상 | 원인 / 해결 |
-|------|-------------|
-| 연결 오류 (`A network-related...`) | `ConnectionString`의 `Server=` 가 실제 인스턴스와 다름. LocalDB면 `(localdb)\MSSQLLocalDB`, Express면 `.\SQLEXPRESS`. |
-| `Login failed for user` | 윈도우 인증이면 `Integrated Security=True`, SQL 계정이면 `User Id=...;Password=...`. |
-| 한글이 네모/물음표 | 폼 `Font`를 맑은 고딕으로. DB 컬럼은 `NVARCHAR`인지 확인(이미 그렇게 설계함). |
-| 도서/회원 삭제 시 오류 | `Rental`이 외래키로 참조 중. 대여 이력이 있으면 삭제가 막힌다(정상 동작). |
-| `Microsoft.Data.SqlClient` 없음 | .NET 6+로 만든 경우. NuGet 설치 후 `using` 변경. .NET Framework면 불필요. |
-| 그리드 컬럼명 못 찾음 | DAO의 `AS 별칭`과 폼의 `Cells["코드"]` 같은 이름이 일치해야 한다. |
-
----
-
-## 9. 더 해 볼 것 (확장 과제)
-
-- 신간/구간 판정 기준을 **출판일이 아니라 입고일**로 바꾸기 → `Book`에 `StockDate` 컬럼 추가 후 그걸로 판정.
-- 회원 등급별로 대여 가능 권수에 제한 두기 (예: 일반 3권, 학생 5권).
-- CSV 대신 **ClosedXML로 실제 .xlsx 출력**.
-- 대여/반납을 **트랜잭션**으로 묶어 중간 실패 시 롤백 처리.
-- 연체료 합계를 회원별로 집계하는 조회 추가.
-
-비디오 버전과 비교해 보면, 바뀐 건 테이블·컬럼·라벨 같은 도메인 어휘뿐이고 `Query`/`Execute`/`Scalar` 세 패턴과 계층 구조는 그대로다. 도메인이 달라져도 같은 골격으로 옮겨 간다는 걸 학생들이 두 예제로 직접 확인하게 만드는 구성이다.
 
 
----
+# 15. 최종 핵심 요약
 
-## 10. 파일별 코드 실행 관계 상세 정리
-
-### 10-1. 도서 저장 버튼을 눌렀을 때
+이 프로그램은 “화면이 SQL을 직접 실행하지 않고 DAO를 통해 DB에 접근한다”는 구조를 배우는 예제다. 초보자는 다음 세 줄을 계속 추적하면 된다.
 
 ```text
-BookForm.Save()
-  ↓
-Book 객체 생성
-  ↓
-BookDAO.Exists(bookCode)
-  ↓
-있으면 BookDAO.Update(book)
-없으면 BookDAO.Insert(book)
-  ↓
-DBManager.Execute(sql, parameters)
-  ↓
-SQL Server Book 테이블 반영
-  ↓
-BookForm.Load()
-  ↓
-DataGridView 새로고침
+버튼 클릭 → Form의 함수 실행 → DAO 함수 호출 → DBManager가 SQL 실행
 ```
 
-### 10-2. 회원 저장 버튼을 눌렀을 때
+각 파일을 읽는 최적 순서는 다음과 같다.
 
 ```text
-MemberForm.Save()
-  ↓
-MemberForm.Read()
-  ↓
-Member 객체 생성
-  ↓
-MemberDAO.Exists(memberNo)
-  ↓
-Insert 또는 Update
-  ↓
-DBManager.Execute()
-  ↓
-Member 테이블 반영
+SQL → Program.cs → MainForm.cs → DB.cs → Models.cs → DAO.cs → BookForm.cs → MemberForm.cs → RentalForm.cs → QueryForm.cs → SettingForm.cs
 ```
-
-### 10-3. 도서 대여 등록 버튼을 눌렀을 때
-
-```text
-RentalForm.RegisterRental()
-  ↓
-현재 선택 회원 확인
-  ↓
-BookDAO.GetByCode(bookCode)
-  ↓
-RentalDAO.IsActive(bookCode)
-  ↓
-SettingDAO.Get()
-  ↓
-신간/구간 판정
-  ↓
-대여료, 대여기간, 연체단가 결정
-  ↓
-RentalDAO.Rent()
-  ↓
-Rental 테이블 INSERT
-```
-
-### 10-4. 도서 반납 버튼을 눌렀을 때
-
-```text
-RentalForm.ReturnBook()
-  ↓
-선택한 RentalId 확인
-  ↓
-RentalDAO.Return(rentalId, today)
-  ↓
-Rental 테이블 UPDATE
-  ↓
-IsReturned = 1
-ReturnDate = 오늘
-OverdueFee = 연체일수 × 연체단가
-```
-
----
-
-## 11. 초보자가 자주 헷갈리는 용어 정리
-
-| 용어 | 쉬운 설명 |
-|---|---|
-| 클래스 | 설계도. 예: `Book`이라는 도서 설계도 |
-| 객체 | 설계도로 만든 실제 데이터. 예: `new Book()` |
-| 메서드 | 클래스 안에 있는 기능 |
-| 필드 | 객체가 가지고 있는 값 |
-| 이벤트 | 버튼 클릭, 키 입력처럼 사용자가 일으키는 동작 |
-| 핸들러 | 이벤트가 발생했을 때 실행되는 코드 |
-| DAO | DB 작업을 담당하는 클래스 |
-| ADO.NET | C#에서 DB에 직접 접속하는 기본 기술 |
-| DataTable | SELECT 결과를 표 형태로 담는 객체 |
-| DataGridView | DataTable을 화면에 표로 보여주는 컨트롤 |
-| ConnectionString | DB 접속 주소와 인증 정보 |
-| SQL Parameter | SQL에 값을 안전하게 넣는 방식 |
-| Primary Key | 한 행을 구분하는 대표값 |
-| Foreign Key | 다른 테이블과 연결하는 값 |
-
----
-
-## 12. 실제 제출/수업용 설명 문장 예시
-
-### 프로젝트 설명
-
-이 프로젝트는 C# WinForms와 ADO.NET을 사용하여 만든 도서 대여 관리 시스템이다.  
-SQL Server에 도서, 회원, 대여 내역, 대여 설정 정보를 저장하고, WinForms 화면에서 CRUD 및 대여/반납 처리를 수행한다.  
-데이터 접근은 DAO 계층으로 분리했으며, 공통 DB 실행은 `DBManager`에서 처리한다.
-
-### 사용 기술 설명
-
-- C# WinForms: Windows 데스크톱 화면 구현
-- ADO.NET: SQL Server와 직접 연결하여 데이터 처리
-- SQL Server: 도서, 회원, 대여 데이터 저장
-- DataGridView: DB 조회 결과 표시
-- MDI: 메인 창 안에 여러 업무 창 표시
-- CSV: 엑셀에서 열 수 있는 목록 파일 출력
-
-### 핵심 구현 설명
-
-도서와 회원은 각각 `BookDAO`, `MemberDAO`를 통해 등록, 수정, 삭제, 조회한다.  
-대여 처리는 `RentalForm`에서 회원과 도서를 확인한 뒤, `RentalSetting`의 기준값을 이용해 신간/구간을 판정하고 대여료와 연체료 기준을 결정한다.  
-반납 시에는 SQL Server의 `DATEDIFF`를 사용하여 연체일수를 계산하고, 연체료를 확정 저장한다.
-
----
-
-## 13. 확인 문제
-
-1. `DBManager.Query()`와 `DBManager.Execute()`의 차이는 무엇인가?
-2. `SqlParameter`를 쓰는 이유는 무엇인가?
-3. `BookDAO.Exists()`는 어떤 상황에서 필요한가?
-4. `Rental` 테이블에 `RentFee`, `OverdueRate`를 저장하는 이유는 무엇인가?
-5. `IDENTITY(1,1)`은 어떤 역할을 하는가?
-6. `FOREIGN KEY` 때문에 삭제가 막히는 것은 오류인가, 정상인가?
-7. 신간/구간 판정 기준은 어느 파일의 어느 메서드에서 적용되는가?
-8. CSV 저장 시 `new UTF8Encoding(true)`를 쓰는 이유는 무엇인가?
-
----
-
-## 14. 제출 전 최종 점검표
-
-| 점검 항목 | 완료 |
-|---|---|
-| 프로젝트명이 `BookRentalSystem`인지 확인 | □ |
-| 기본 `Form1.cs` 삭제 또는 미사용 처리 | □ |
-| `Program.cs`에서 `MainForm` 실행 확인 | □ |
-| `DB.cs`의 연결 문자열 수정 | □ |
-| SSMS에서 DB 생성 스크립트 실행 | □ |
-| 도서 등록 테스트 | □ |
-| 회원 등록 테스트 | □ |
-| 카드 발급 테스트 | □ |
-| 대여 등록 테스트 | □ |
-| 반납 처리 테스트 | □ |
-| 정보 조회 테스트 | □ |
-| CSV 출력 테스트 | □ |
-
----
-
-## 15. 오류가 날 때 보는 순서
-
-1. **DB 연결 오류인지 확인**
-   - `ConnectionString` 확인
-   - SQL Server 인스턴스 이름 확인
-   - `BookRentalDB` 생성 여부 확인
-
-2. **테이블 오류인지 확인**
-   - SSMS에서 `SELECT * FROM Book` 실행
-   - 테이블명이 정확한지 확인
-
-3. **컬럼명 오류인지 확인**
-   - SQL의 `AS 코드`와 C#의 `Cells["코드"]`가 일치하는지 확인
-
-4. **외래키 오류인지 확인**
-   - 대여 이력이 있는 도서/회원 삭제 시도 여부 확인
-
-5. **입력값 오류인지 확인**
-   - 회원번호는 숫자인지 확인
-   - 도서코드는 비어 있지 않은지 확인
-   - 날짜값이 정상인지 확인
-
----
-
-## 16. 수업 진행 순서 추천
-
-| 단계 | 수업 내용 |
-|---|---|
-| 1단계 | DB 테이블 생성과 관계 설명 |
-| 2단계 | `DB.cs`로 ADO.NET 공통 실행 구조 설명 |
-| 3단계 | `Models.cs`로 객체와 DB 행의 관계 설명 |
-| 4단계 | `DAO.cs`로 SQL 분리 구조 설명 |
-| 5단계 | `BookForm.cs`로 CRUD 흐름 실습 |
-| 6단계 | `MemberForm.cs`로 CRUD + 카드번호 실습 |
-| 7단계 | `RentalForm.cs`로 업무 로직 실습 |
-| 8단계 | `QueryForm.cs`로 집계 SQL 실습 |
-| 9단계 | `SettingForm.cs`로 설정값과 파일 출력 실습 |
-| 10단계 | 전체 실행 후 오류 해결 실습 |
-
----
-
-## 17. 핵심 결론
-
-이 예제에서 가장 중요한 것은 화면 디자인 자체가 아니다.  
-핵심은 다음 구조를 이해하는 것이다.
-
-```text
-화면(Form)은 입력과 표시를 담당한다.
-DAO는 SQL을 담당한다.
-DBManager는 DB 연결과 실행을 담당한다.
-SQL Server는 데이터를 저장한다.
-```
-
-이 구조를 이해하면 도서 대여 프로그램뿐 아니라 재고관리, 회원관리, 설비관리, 생산관리 같은 다른 업무 프로그램도 같은 방식으로 만들 수 있다.
