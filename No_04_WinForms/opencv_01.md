@@ -451,6 +451,7 @@ internal static class Program // 프로그램 시작 클래스를 정의합니�
 
 ```csharp
 // ProductEdgeViewer/MainForm.cs
+
 using OpenCvSharp; // OpenCV의 이미지 처리 기능을 C#에서 사용합니다.
 using System; // 기본 자료형과 이벤트 기능을 사용합니다.
 using System.Collections.Generic; // List 같은 컬렉션 기능을 사용합니다.
@@ -461,7 +462,7 @@ using System.Windows.Forms; // WinForms 화면, 버튼, PictureBox 기능을 사
 
 namespace ProductEdgeViewer; // 이 파일이 속한 프로젝트의 네임스페이스입니다.
 
-public sealed class MainForm : Form // 사용자가 보는 메인 화면 클래스를 정의합니다.
+public partial class MainForm : Form // WinForms Designer 파일과 합쳐지도록 partial 클래스로 정의합니다.
 {
     private readonly Button btnOpen = new(); // 사진 열기 버튼을 생성합니다.
     private readonly Label lblStatus = new(); // 현재 처리 상태를 보여줄 라벨을 생성합니다.
@@ -470,6 +471,10 @@ public sealed class MainForm : Form // 사용자가 보는 메인 화면 클래�
 
     public MainForm() // MainForm 화면이 생성될 때 실행되는 생성자입니다.
     {
+        InitializeComponent(); // Visual Studio WinForms Designer가 만든 기본 초기화 코드를 실행합니다.
+
+        Controls.Clear(); // Designer에서 자동 생성된 기본 컨트롤이 있으면 모두 제거하고 코드 기반 화면으로 다시 구성합니다.
+
         Text = "C# OpenCV 제품 경계 검출 시연"; // 창 제목을 설정합니다.
         Width = 1200; // 창 너비를 1200픽셀로 설정합니다.
         Height = 750; // 창 높이를 750픽셀로 설정합니다.
@@ -512,8 +517,10 @@ public sealed class MainForm : Form // 사용자가 보는 메인 화면 클래�
 
         imagePanel.Controls.Add(MakeTitleLabel("원본 사진"), 0, 0); // 왼쪽 제목 라벨을 추가합니다.
         imagePanel.Controls.Add(MakeTitleLabel("경계 검출 결과"), 1, 0); // 오른쪽 제목 라벨을 추가합니다.
+
         ConfigurePictureBox(picOriginal); // 원본 PictureBox의 공통 설정을 적용합니다.
         ConfigurePictureBox(picResult); // 결과 PictureBox의 공통 설정을 적용합니다.
+
         imagePanel.Controls.Add(picOriginal, 0, 1); // 원본 PictureBox를 왼쪽 이미지 영역에 추가합니다.
         imagePanel.Controls.Add(picResult, 1, 1); // 결과 PictureBox를 오른쪽 이미지 영역에 추가합니다.
     }
@@ -554,6 +561,7 @@ public sealed class MainForm : Form // 사용자가 보는 메인 화면 클래�
     private void ProcessImage(string filePath) // 이미지 파일을 읽고 경계 검출을 수행하는 함수입니다.
     {
         using var original = Cv2.ImRead(filePath, ImreadModes.Color); // OpenCV로 컬러 이미지를 읽습니다.
+
         if (original.Empty()) // 이미지 읽기에 실패했는지 확인합니다.
         {
             MessageBox.Show("이미지를 읽을 수 없습니다.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error); // 오류 메시지를 표시합니다.
@@ -573,13 +581,23 @@ public sealed class MainForm : Form // 사용자가 보는 메인 화면 클래�
         using var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(3, 3)); // 경계선 보정용 3x3 사각 커널을 생성합니다.
         Cv2.MorphologyEx(edges, closed, MorphTypes.Close, kernel); // 끊어진 작은 경계선을 닫기 연산으로 연결합니다.
 
-        Cv2.FindContours(closed.Clone(), out OpenCvSharp.Point[][] contours, out HierarchyIndex[] hierarchy, RetrievalModes.External, ContourApproximationModes.ApproxSimple); // 외곽 윤곽선을 찾습니다.
-        List<OpenCvSharp.Point[]> filteredContours = contours.Where(c => Cv2.ContourArea(c) > 300).ToList(); // 너무 작은 잡음 윤곽선을 제거합니다.
+        Cv2.FindContours( // 이진 이미지에서 윤곽선을 찾는 OpenCV 함수를 실행합니다.
+            closed.Clone(), // FindContours가 이미지를 내부적으로 수정할 수 있으므로 복사본을 전달합니다.
+            out OpenCvSharp.Point[][] contours, // 검출된 윤곽선 좌표 목록을 저장합니다.
+            out HierarchyIndex[] hierarchy, // 윤곽선의 포함 관계 정보를 저장합니다.
+            RetrievalModes.External, // 가장 바깥쪽 외곽선만 찾습니다.
+            ContourApproximationModes.ApproxSimple // 직선 구간의 중복 점을 줄여 메모리를 절약합니다.
+        );
+
+        List<OpenCvSharp.Point[]> filteredContours = contours // 검출된 전체 윤곽선 목록을 대상으로 합니다.
+            .Where(c => Cv2.ContourArea(c) > 300) // 면적이 300보다 큰 윤곽선만 남겨 작은 잡음을 제거합니다.
+            .ToList(); // 필터링 결과를 List 형태로 변환합니다.
 
         Cv2.DrawContours(result, filteredContours, -1, Scalar.LimeGreen, 3); // 필터링된 윤곽선을 원본 복사 이미지 위에 초록색으로 그립니다.
 
         ReplaceImage(picOriginal, MatToBitmap(original)); // 왼쪽 PictureBox에 원본 이미지를 표시합니다.
         ReplaceImage(picResult, MatToBitmap(result)); // 오른쪽 PictureBox에 윤곽선 결과 이미지를 표시합니다.
+
         lblStatus.Text = $"상태: 경계 검출 완료 / 윤곽선 {filteredContours.Count}개 검출"; // 처리 결과를 상태 라벨에 표시합니다.
     }
 
