@@ -1,3 +1,6 @@
+<img width="928" height="566" alt="image" src="https://github.com/user-attachments/assets/75a105d2-05b5-4108-bec8-e0ff795e1ff8" />
+
+
 # C# OpenCV 제품 경계 검출 튜토리얼
 
 ## 사진 1장을 불러와서 왼쪽은 원본, 오른쪽은 경계 검출 결과로 보기
